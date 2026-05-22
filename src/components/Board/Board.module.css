@@ -1,0 +1,12 @@
+.wrapper {
+  overflow-y: auto;
+  height: 100%;
+  padding: 12px;
+}
+
+.boardColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 240px;
+}

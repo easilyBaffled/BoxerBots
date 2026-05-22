@@ -1,0 +1,152 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #1a2a3a 0%, #0d1821 100%);
+  padding: 24px;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.mountain {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+  font-size: 0.95rem;
+}
+
+.section {
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.countRow {
+  display: flex;
+  gap: 10px;
+}
+
+.countBtn {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.countBtn.active {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.colorDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: var(--surface-2);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.rules {
+  text-align: left;
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.rules h3 {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.rules ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.startBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.startBtn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.startBtn:active {
+  transform: translateY(0);
+}

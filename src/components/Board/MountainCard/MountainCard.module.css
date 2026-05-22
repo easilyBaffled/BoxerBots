@@ -1,0 +1,107 @@
+.card {
+  border-radius: 10px;
+  padding: 8px 10px;
+  border: 2px solid var(--border);
+  background: var(--card-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 80px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.card.current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.hidden {
+  opacity: 0.5;
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  min-height: 60px;
+}
+
+.unknownIcon {
+  font-size: 1.8rem;
+  color: var(--text-muted);
+}
+
+.hiddenLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Terrain tints */
+.snow { background: #f0f7ff; }
+.ice { background: #e0f2fe; }
+.rock { background: #faf7f5; }
+.mixed { background: #f0fdf4; }
+.crevasse { background: #fdf4ff; }
+.summit { background: #fefce8; border-color: #ca8a04; }
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  max-width: 70%;
+}
+
+.terrain { font-size: 1rem; }
+
+.middleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.challenges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.safe {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.spaces {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.emptySpace {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px dashed var(--border);
+  opacity: 0.4;
+}
+
+.elevation {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}

@@ -1,0 +1,55 @@
+.shop {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+}
+
+.remaining {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.cards {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.cardWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cantAfford {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.6rem;
+  color: #dc2626;
+  background: rgba(255,255,255,0.9);
+  padding: 2px;
+  border-radius: 0 0 6px 6px;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0;
+}

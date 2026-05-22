@@ -1,0 +1,118 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #1a3a2a 0%, #0d2118 100%);
+  padding: 24px;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.summit { font-size: 3rem; margin-bottom: 8px; }
+
+.title {
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0 0 20px;
+  color: var(--text-primary);
+}
+
+.winner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.winnerDot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.winnerName {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.winnerSub {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.stats {
+  text-align: left;
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.stats h3 {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.standing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.standing:last-child { border-bottom: none; }
+
+.rank {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 24px;
+}
+
+.playerDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.playerName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.elevation {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.restartBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.restartBtn:hover { opacity: 0.88; }

@@ -1,0 +1,139 @@
+.controls {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.goldDisplay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: #fefce8;
+  border: 1.5px solid #fef08a;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.goldLabel {
+  font-size: 0.75rem;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.goldValue {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #92400e;
+}
+
+.goldBreak {
+  font-size: 0.7rem;
+  color: #a16207;
+}
+
+.phaseSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.primaryBtn {
+  padding: 10px 14px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.primaryBtn:hover { opacity: 0.88; }
+
+.secondaryBtn {
+  padding: 10px 14px;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.dangerBtn {
+  padding: 10px 14px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.moveButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.moveBtn {
+  flex: 1;
+  padding: 10px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.moveBtn:hover:not(:disabled) { background: var(--surface-hover); }
+.moveBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.jostleInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  padding: 6px 10px;
+  flex-wrap: wrap;
+}
+
+.jostleBtn {
+  padding: 4px 10px;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.jostleBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.campBtn {
+  padding: 10px 14px;
+  background: #d1fae5;
+  color: #065f46;
+  border: 1.5px solid #6ee7b7;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}

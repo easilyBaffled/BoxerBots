@@ -1,0 +1,83 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.desc {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.players {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+  padding: 12px;
+  background: var(--surface-2);
+  border-radius: 8px;
+}
+
+.playerBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.arrow {
+  font-size: 1.5rem;
+  color: #dc2626;
+}
+
+.ironWill {
+  background: #fef9c3;
+  border: 1px solid #fef08a;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  color: #92400e;
+}
+
+.cost {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirmBtn {
+  flex: 1;
+  padding: 10px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  padding: 10px 16px;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -1,0 +1,8 @@
+.camp {
+  font-size: 1.1rem;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 4px;
+  background: var(--surface-2);
+  line-height: 1;
+}

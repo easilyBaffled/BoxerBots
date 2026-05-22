@@ -1,0 +1,54 @@
+.log {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  padding: 8px 12px 4px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.entries {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 0.73rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.icon {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  opacity: 0.5;
+  margin-top: 1px;
+}
+
+.player {
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.message { word-break: break-word; }
+
+.system { color: var(--accent); }
+.challenge { color: #7c2d12; }
+.combat { color: #991b1b; }

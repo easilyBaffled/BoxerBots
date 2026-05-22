@@ -1,0 +1,43 @@
+.slot {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  border: 1.5px solid currentColor;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 90px;
+}
+
+.empty {
+  color: var(--text-muted);
+  border-color: var(--border);
+  opacity: 0.5;
+}
+
+.weather {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.animal {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.terrain {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.condition {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+.icon { flex-shrink: 0; font-size: 0.75rem; }
+.name { overflow: hidden; text-overflow: ellipsis; }
+.threshold { margin-left: auto; opacity: 0.8; }

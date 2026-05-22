@@ -1,0 +1,49 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--card-bg);
+}
+
+.controlsArea {
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.boardArea {
+  flex: 1;
+  overflow: hidden;
+  background: linear-gradient(180deg, #e8f4fd 0%, #fafaf9 100%);
+}
+
+.rightPanel {
+  width: 200px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--card-bg);
+  overflow-y: auto;
+}
+
+.handArea {
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--card-bg);
+}
