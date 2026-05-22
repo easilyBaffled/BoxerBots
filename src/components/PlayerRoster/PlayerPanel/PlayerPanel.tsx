@@ -1,4 +1,5 @@
 import type { Player } from '../../../types/game';
+import { BACKGROUNDS } from '../../../data/backgrounds';
 import styles from './PlayerPanel.module.css';
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function PlayerPanel({ player, isActive, locationName }: Props) {
+  const bg = BACKGROUNDS.find(b => b.id === player.backgroundId);
   return (
     <div className={`${styles.panel} ${isActive ? styles.active : ''}`}>
       <div
@@ -21,6 +23,7 @@ export function PlayerPanel({ player, isActive, locationName }: Props) {
           {player.respawning && <span className={styles.badge}>Respawning</span>}
           {isActive && <span className={styles.activeBadge}>▶</span>}
         </div>
+        {bg && <div className={styles.background}>{bg.icon} {bg.name}</div>}
         <div className={styles.location}>📍 {locationName}</div>
         <div className={styles.stats}>
           <span title="Gold">💰 {player.gold + 'g (bank)'}</span>

@@ -1,6 +1,7 @@
-import type { MountainCardDef, ChallengeCardDef, PlayerCard, SkillCard } from './cards';
+import type { MountainCardDef, ChallengeCardDef, PlayerCard, SkillCard, StatBlock } from './cards';
 
-export type TurnPhase = 'draw' | 'play' | 'move' | 'challenge' | 'buy' | 'end';
+// Challenge phase removed — challenges fire automatically on card entry during move
+export type TurnPhase = 'play' | 'move' | 'buy' | 'end';
 export type GamePhase = 'setup' | 'playing' | 'victory';
 export type PlayerColor = 'red' | 'blue' | 'green' | 'yellow';
 
@@ -8,6 +9,8 @@ export interface Player {
   id: string;
   name: string;
   color: PlayerColor;
+  backgroundId: string;
+  baseStats: StatBlock;
   positionIndex: number;
   deck: PlayerCard[];
   hand: PlayerCard[];
@@ -44,9 +47,11 @@ export interface ActiveChallenge {
   challengeSlotIndex: number;
   challengeCard: ChallengeCardDef;
   committedCardIds: string[];
-  currentStatTotal: number;
+  innateTotal: number;       // contribution from baseStats alone (always shown)
+  currentStatTotal: number;  // innate + cards + skills
   outcome: 'pass' | 'solve' | 'fail' | null;
   pendingSlots: number[];
+  canRetreat: boolean;
 }
 
 export interface LogEntry {

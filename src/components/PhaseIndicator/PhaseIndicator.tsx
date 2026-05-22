@@ -3,8 +3,7 @@ import styles from './PhaseIndicator.module.css';
 
 const PHASES: { id: TurnPhase; label: string }[] = [
   { id: 'play', label: 'Play Cards' },
-  { id: 'move', label: 'Move' },
-  { id: 'challenge', label: 'Challenge' },
+  { id: 'move', label: 'Move (challenges auto-fire)' },
   { id: 'buy', label: 'Buy' },
   { id: 'end', label: 'End' },
 ];

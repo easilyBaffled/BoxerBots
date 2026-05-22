@@ -1,13 +1,22 @@
 import type { GameState, ActiveChallenge, MountainSlot } from '../types/game';
-import type { PlayerCard, SkillCard, StatDomain, ChallengeCardDef } from '../types/cards';
+import type { PlayerCard, SkillCard, StatBlock, StatDomain, ChallengeCardDef } from '../types/cards';
 import { addLog } from './logHelpers';
+
+export function calculateInnate(baseStats: StatBlock, challenge: ChallengeCardDef): number {
+  let total = 0;
+  for (const domain of challenge.requiredDomains) {
+    total += (baseStats as Record<StatDomain, number>)[domain] ?? 0;
+  }
+  return total;
+}
 
 export function calculateTotal(
   committedCards: PlayerCard[],
   activeSkills: SkillCard[],
+  baseStats: StatBlock,
   challenge: ChallengeCardDef,
 ): number {
-  let total = 0;
+  let total = calculateInnate(baseStats, challenge);
   for (const card of committedCards) {
     for (const domain of challenge.requiredDomains) {
       total += (card.stats as Record<StatDomain, number>)[domain] ?? 0;
@@ -23,39 +32,43 @@ export function calculateTotal(
   return total;
 }
 
-export function beginChallenge(
+export function openChallenge(
   state: GameState,
-  payload: { mountainSlotIndex: number; challengeSlotIndex: number },
+  mountainSlotIndex: number,
+  challengeSlotIndex: number,
+  canRetreat: boolean,
 ): GameState {
-  const slot = state.board.mountainSlots[payload.mountainSlotIndex];
-  const challenge = slot?.challengeSlots[payload.challengeSlotIndex];
+  const slot = state.board.mountainSlots[mountainSlotIndex];
+  const challenge = slot?.challengeSlots[challengeSlotIndex];
   if (!challenge) return state;
 
   const activePlayer = state.players[state.activePlayerIndex];
 
-  // Collect other pending challenge slots on the same mountain card
   const pendingSlots: number[] = [];
   slot.challengeSlots.forEach((c, i) => {
-    if (c !== null && i !== payload.challengeSlotIndex) {
-      pendingSlots.push(i);
-    }
+    if (c !== null && i !== challengeSlotIndex) pendingSlots.push(i);
   });
 
+  const innateTotal = calculateInnate(activePlayer.baseStats, challenge);
+  const fullTotal = calculateTotal([], activePlayer.activeSkills, activePlayer.baseStats, challenge);
+
   const ac: ActiveChallenge = {
-    mountainSlotIndex: payload.mountainSlotIndex,
-    challengeSlotIndex: payload.challengeSlotIndex,
+    mountainSlotIndex,
+    challengeSlotIndex,
     challengeCard: challenge,
     committedCardIds: [],
-    currentStatTotal: calculateTotal([], activePlayer.activeSkills, challenge),
+    innateTotal,
+    currentStatTotal: fullTotal,
     outcome: null,
     pendingSlots,
+    canRetreat,
   };
 
   return {
     ...state,
     activeChallenge: ac,
     log: addLog(state.log, {
-      message: `${activePlayer.name} faces: ${challenge.name} (need ${challenge.passThreshold} to pass, ${challenge.solveThreshold} to solve)`,
+      message: `${activePlayer.name} faces: ${challenge.name} (pass ${challenge.passThreshold} / complete ${challenge.solveThreshold})`,
       type: 'challenge',
       playerName: activePlayer.name,
       playerColor: activePlayer.color,
@@ -74,12 +87,9 @@ export function commitCard(
   const cardInHand = player.hand.find(c => c.id === payload.cardId);
   if (!cardInHand) return state;
 
-  const committed = [
-    ...state.activeChallenge.committedCardIds,
-    payload.cardId,
-  ];
+  const committed = [...state.activeChallenge.committedCardIds, payload.cardId];
   const allCommittedCards = player.hand.filter(c => committed.includes(c.id));
-  const newTotal = calculateTotal(allCommittedCards, player.activeSkills, state.activeChallenge.challengeCard);
+  const newTotal = calculateTotal(allCommittedCards, player.activeSkills, player.baseStats, state.activeChallenge.challengeCard);
 
   return {
     ...state,
@@ -101,7 +111,7 @@ export function uncommitCard(
 
   const committed = state.activeChallenge.committedCardIds.filter(id => id !== payload.cardId);
   const allCommittedCards = player.hand.filter(c => committed.includes(c.id));
-  const newTotal = calculateTotal(allCommittedCards, player.activeSkills, state.activeChallenge.challengeCard);
+  const newTotal = calculateTotal(allCommittedCards, player.activeSkills, player.baseStats, state.activeChallenge.challengeCard);
 
   return {
     ...state,
@@ -134,14 +144,11 @@ export function resolveChallenge(state: GameState): GameState {
 
   // Move committed cards to discard
   const committed = new Set(ac.committedCardIds);
-  const newHand = activePlayer.hand.filter(c => !committed.has(c.id));
   const spentCards = activePlayer.hand.filter(c => committed.has(c.id));
+  const newHand = activePlayer.hand.filter(c => !committed.has(c.id));
+  const newDiscard = [...activePlayer.discardPile, ...spentCards];
 
-  let newDiscard = [...activePlayer.discardPile, ...spentCards];
-
-  // Apply outcome
   if (outcome === 'solve') {
-    // Remove challenge from slot permanently
     const newSlots = [...newState.board.mountainSlots];
     const slot = { ...newSlots[ac.mountainSlotIndex] };
     const challengeSlots = [...slot.challengeSlots];
@@ -153,7 +160,7 @@ export function resolveChallenge(state: GameState): GameState {
       ...newState,
       board: { ...newState.board, mountainSlots: newSlots },
       log: addLog(newState.log, {
-        message: `${activePlayer.name} SOLVED "${ac.challengeCard.name}"! Removed permanently for all climbers.`,
+        message: `${activePlayer.name} COMPLETED "${ac.challengeCard.name}"! Removed permanently for all climbers.`,
         type: 'challenge',
         playerName: activePlayer.name,
         playerColor: activePlayer.color,
@@ -170,25 +177,18 @@ export function resolveChallenge(state: GameState): GameState {
       }),
     };
   } else {
-    // fail
     newState = {
       ...newState,
       log: addLog(newState.log, {
-        message: `${activePlayer.name} FAILED "${ac.challengeCard.name}"! Penalty: ${ac.challengeCard.failPenalty.description}`,
+        message: `${activePlayer.name} failed "${ac.challengeCard.name}"! ${ac.challengeCard.failPenalty.description}`,
         type: 'challenge',
         playerName: activePlayer.name,
         playerColor: activePlayer.color,
       }),
     };
     newState = applyFailPenalty(newState, activePlayer.id, ac.challengeCard);
-    // Re-read player after penalty
-    const updatedPlayer = newState.players.find(p => p.id === activePlayer.id)!;
-    newHand.length = 0;
-    newHand.push(...updatedPlayer.hand);
-    newDiscard = [...updatedPlayer.discardPile, ...spentCards];
   }
 
-  // Update player hand/discard
   newState = {
     ...newState,
     players: newState.players.map(p =>
@@ -199,33 +199,10 @@ export function resolveChallenge(state: GameState): GameState {
     activeChallenge: null,
   };
 
-  // Check if there are more pending challenge slots to show
-  if (ac.pendingSlots.length > 0) {
-    const nextSlot = ac.pendingSlots[0];
-    const remaining = ac.pendingSlots.slice(1);
-    const slot: MountainSlot = newState.board.mountainSlots[ac.mountainSlotIndex];
-    const nextChallenge = slot?.challengeSlots[nextSlot];
-    if (nextChallenge) {
-      const updPlayer = newState.players.find(p => p.id === activePlayer.id)!;
-      newState = {
-        ...newState,
-        activeChallenge: {
-          mountainSlotIndex: ac.mountainSlotIndex,
-          challengeSlotIndex: nextSlot,
-          challengeCard: nextChallenge,
-          committedCardIds: [],
-          currentStatTotal: calculateTotal([], updPlayer.activeSkills, nextChallenge),
-          outcome: null,
-          pendingSlots: remaining,
-        },
-      };
-    }
-  }
-
-  return newState;
+  return advanceToNextChallenge(newState, ac);
 }
 
-export function skipChallenge(state: GameState): GameState {
+export function loseChallenge(state: GameState): GameState {
   if (!state.activeChallenge) return state;
   const ac = state.activeChallenge;
   const activePlayer = state.players[state.activePlayerIndex];
@@ -233,7 +210,7 @@ export function skipChallenge(state: GameState): GameState {
   let newState = {
     ...state,
     log: addLog(state.log, {
-      message: `${activePlayer.name} skipped "${ac.challengeCard.name}" — taking the penalty.`,
+      message: `${activePlayer.name} gave up on "${ac.challengeCard.name}" — taking the penalty.`,
       type: 'challenge',
       playerName: activePlayer.name,
       playerColor: activePlayer.color,
@@ -243,39 +220,86 @@ export function skipChallenge(state: GameState): GameState {
   newState = applyFailPenalty(newState, activePlayer.id, ac.challengeCard);
   newState = { ...newState, activeChallenge: null };
 
-  // Check pending
-  if (ac.pendingSlots.length > 0) {
-    const nextSlot = ac.pendingSlots[0];
-    const remaining = ac.pendingSlots.slice(1);
-    const slot: MountainSlot = newState.board.mountainSlots[ac.mountainSlotIndex];
-    const nextChallenge = slot?.challengeSlots[nextSlot];
-    if (nextChallenge) {
-      const updPlayer = newState.players.find(p => p.id === activePlayer.id)!;
-      newState = {
-        ...newState,
-        activeChallenge: {
-          mountainSlotIndex: ac.mountainSlotIndex,
-          challengeSlotIndex: nextSlot,
-          challengeCard: nextChallenge,
-          committedCardIds: [],
-          currentStatTotal: calculateTotal([], updPlayer.activeSkills, nextChallenge),
-          outcome: null,
-          pendingSlots: remaining,
-        },
-      };
-    }
+  return advanceToNextChallenge(newState, ac);
+}
+
+export function retreatFromChallenge(state: GameState): GameState {
+  if (!state.activeChallenge) return state;
+  const activePlayer = state.players[state.activePlayerIndex];
+  const retreatIndex = activePlayer.positionIndex - 1;
+
+  // Can't retreat below base
+  if (retreatIndex < 0) return state;
+
+  const fromIndex = activePlayer.positionIndex;
+  const newSlots = state.board.mountainSlots.map((slot, i) => {
+    if (i === fromIndex) return { ...slot, occupants: slot.occupants.filter(id => id !== activePlayer.id) };
+    if (i === retreatIndex) return { ...slot, occupants: [...slot.occupants, activePlayer.id] };
+    return slot;
+  });
+
+  let newState: GameState = {
+    ...state,
+    board: { ...state.board, mountainSlots: newSlots },
+    players: state.players.map(p =>
+      p.id === activePlayer.id
+        ? { ...p, positionIndex: retreatIndex, hasMovedThisTurn: true }
+        : p
+    ),
+    activeChallenge: null,
+    log: addLog(state.log, {
+      message: `${activePlayer.name} retreated to ${state.board.mountainSlots[retreatIndex].mountainCard.name}.`,
+      type: 'action',
+      playerName: activePlayer.name,
+      playerColor: activePlayer.color,
+    }),
+  };
+
+  // Trigger challenge on the retreat destination if one exists
+  const retreatSlot = newState.board.mountainSlots[retreatIndex];
+  const firstChIdx = retreatSlot.challengeSlots.findIndex(c => c !== null);
+  if (firstChIdx !== -1) {
+    // Retreat destinations can't be retreated from again
+    newState = openChallenge(newState, retreatIndex, firstChIdx, false);
   }
 
   return newState;
+}
+
+function advanceToNextChallenge(state: GameState, ac: ActiveChallenge): GameState {
+  if (ac.pendingSlots.length === 0) return state;
+
+  const nextSlot = ac.pendingSlots[0];
+  const remaining = ac.pendingSlots.slice(1);
+  const slot: MountainSlot = state.board.mountainSlots[ac.mountainSlotIndex];
+  const nextChallenge = slot?.challengeSlots[nextSlot];
+  if (!nextChallenge) return state;
+
+  const updPlayer = state.players[state.activePlayerIndex];
+  const innateTotal = calculateInnate(updPlayer.baseStats, nextChallenge);
+  const fullTotal = calculateTotal([], updPlayer.activeSkills, updPlayer.baseStats, nextChallenge);
+
+  return {
+    ...state,
+    activeChallenge: {
+      mountainSlotIndex: ac.mountainSlotIndex,
+      challengeSlotIndex: nextSlot,
+      challengeCard: nextChallenge,
+      committedCardIds: [],
+      innateTotal,
+      currentStatTotal: fullTotal,
+      outcome: null,
+      pendingSlots: remaining,
+      canRetreat: false, // can't retreat mid-sequence
+    },
+  };
 }
 
 function applyFailPenalty(state: GameState, playerId: string, challenge: ChallengeCardDef): GameState {
   const { type, amount } = challenge.failPenalty;
   const player = state.players.find(p => p.id === playerId)!;
 
-  if (type === 'fall') {
-    return playerFall(state, playerId);
-  }
+  if (type === 'fall') return playerFall(state, playerId);
 
   if (type === 'discard') {
     const n = amount ?? 1;
@@ -301,7 +325,6 @@ function applyFailPenalty(state: GameState, playerId: string, challenge: Challen
 
   if (type === 'lose_card') {
     const n = amount ?? 1;
-    // Exile n cards from hand (just remove them, no discard)
     return {
       ...state,
       players: state.players.map(p =>
@@ -317,7 +340,6 @@ export function playerFall(state: GameState, playerId: string): GameState {
   const player = state.players.find(p => p.id === playerId)!;
   const currentSlot = player.positionIndex;
 
-  // Find highest camp at or below current position (any player's camp)
   let respawnIndex = 0;
   for (let i = currentSlot - 1; i >= 0; i--) {
     if (state.board.mountainSlots[i].camp) {
@@ -326,7 +348,6 @@ export function playerFall(state: GameState, playerId: string): GameState {
     }
   }
 
-  // Remove from current slot
   const newSlots = state.board.mountainSlots.map((slot, idx) => {
     if (idx === currentSlot) {
       return { ...slot, occupants: slot.occupants.filter(id => id !== playerId) };

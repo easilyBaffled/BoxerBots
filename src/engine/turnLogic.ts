@@ -1,18 +1,14 @@
 import type { GameState, TurnPhase } from '../types/game';
-import type { PlayerCard, SkillCard, UtilityCard } from '../types/cards';
+import type { PlayerCard, SkillCard } from '../types/cards';
 import { drawCards } from './deckLogic';
 import { addLog } from './logHelpers';
-import { respawnPlayer } from './boardLogic';
+import { respawnPlayer } from './respawnLogic';
 
-const PHASE_ORDER: TurnPhase[] = ['play', 'move', 'challenge', 'buy', 'end'];
+const PHASE_ORDER: TurnPhase[] = ['play', 'move', 'buy', 'end'];
 
 export function advancePhase(state: GameState): GameState {
   const currentPhaseIndex = PHASE_ORDER.indexOf(state.turnPhase);
   const nextPhase = PHASE_ORDER[currentPhaseIndex + 1] ?? 'end';
-
-  if (nextPhase === 'challenge') {
-    return startChallengePhase({ ...state, turnPhase: 'challenge' });
-  }
 
   if (nextPhase === 'end') {
     return endTurn(state);
@@ -21,23 +17,9 @@ export function advancePhase(state: GameState): GameState {
   return { ...state, turnPhase: nextPhase };
 }
 
-function startChallengePhase(state: GameState): GameState {
-  const activePlayer = state.players[state.activePlayerIndex];
-  const currentSlot = state.board.mountainSlots[activePlayer.positionIndex];
-
-  const hasChallenges = currentSlot.challengeSlots.some(c => c !== null);
-  if (!hasChallenges) {
-    // Skip challenge phase
-    return { ...state, turnPhase: 'buy' };
-  }
-
-  return state;
-}
-
 export function endTurn(state: GameState): GameState {
   const activePlayer = state.players[state.activePlayerIndex];
 
-  // Discard non-permanent cards from hand
   const toDiscard = activePlayer.hand.filter(c => {
     if (c.category === 'skill') return !(c as SkillCard).permanent;
     return true;
@@ -47,10 +29,7 @@ export function endTurn(state: GameState): GameState {
   ) as SkillCard[];
 
   const newDiscard = [...activePlayer.discardPile, ...toDiscard];
-  const newActiveSkills = [
-    ...activePlayer.activeSkills,
-    ...permanentSkills,
-  ];
+  const newActiveSkills = [...activePlayer.activeSkills, ...permanentSkills];
 
   let updatedPlayers = state.players.map(p =>
     p.id === activePlayer.id
@@ -66,7 +45,6 @@ export function endTurn(state: GameState): GameState {
       : p
   );
 
-  // Respawn any waiting players
   let respawnState = { ...state, players: updatedPlayers };
   for (const p of updatedPlayers) {
     if (p.respawning) {
@@ -75,12 +53,11 @@ export function endTurn(state: GameState): GameState {
   }
   updatedPlayers = respawnState.players;
 
-  // Advance to next player
   const nextPlayerIndex = (state.activePlayerIndex + 1) % state.players.length;
   const nextPlayer = updatedPlayers[nextPlayerIndex];
 
-  // Draw cards for next player
-  const handSize = state.config.handSize + (nextPlayer.activeSkills.some(s => s.definitionId === 'endurance_training') ? 1 : 0);
+  const handSize = state.config.handSize +
+    (nextPlayer.activeSkills.some(s => s.definitionId === 'endurance_training') ? 1 : 0);
   const needed = handSize - nextPlayer.hand.length;
   const { drawn, newDeck, newDiscard: nd } = drawCards(nextPlayer.deck, nextPlayer.discardPile, needed);
 
@@ -115,21 +92,14 @@ export function playCard(
   if (!card) return state;
 
   let goldGained = 0;
+  if (card.definitionId === 'protein_bar') goldGained = 1;
+  if (card.definitionId === 'portaledge') goldGained = 2;
 
-  // Check for gold-producing effects
-  if (card.category === 'utility' && (card as UtilityCard).consumable) {
-    if (card.definitionId === 'protein_bar') goldGained = 1;
-    if (card.definitionId === 'portaledge') goldGained = 2;
-  }
-  if (card.category === 'tool' && card.definitionId === 'portaledge') goldGained = 2;
-
-  // Remove card from hand (put in discard if not permanent skill)
   const newHand = player.hand.filter(c => c.id !== payload.cardId);
   let newDiscard = [...player.discardPile];
 
   if (card.category === 'skill' && (card as SkillCard).permanent) {
-    // Goes to activeSkills
-    const newState = {
+    return {
       ...state,
       turnGold: state.turnGold + goldGained,
       players: state.players.map(p =>
@@ -144,22 +114,18 @@ export function playCard(
         playerColor: player.color,
       }),
     };
-    return newState;
   }
 
   newDiscard = [...newDiscard, card];
 
-  // Food rations: draw 1 card
-  let extraDraw: PlayerCard[] = [];
   if (card.definitionId === 'food_rations') {
     const { drawn, newDeck, newDiscard: nd } = drawCards(player.deck, newDiscard, 1);
-    extraDraw = drawn;
     return {
       ...state,
       turnGold: state.turnGold + goldGained,
       players: state.players.map(p =>
         p.id === payload.playerId
-          ? { ...p, hand: [...newHand, ...extraDraw], deck: newDeck, discardPile: nd }
+          ? { ...p, hand: [...newHand, ...drawn], deck: newDeck, discardPile: nd }
           : p
       ),
       log: addLog(state.log, {
@@ -204,25 +170,18 @@ export function buyCard(
   if (goldFromTurn >= card.cost) {
     goldFromTurn -= card.cost;
   } else {
-    const rem = card.cost - goldFromTurn;
+    playerGold -= card.cost - goldFromTurn;
     goldFromTurn = 0;
-    playerGold -= rem;
   }
 
   const newAvailable = state.shop.available.filter(c => c.id !== payload.shopCardId);
-  let newDrawPile = [...state.shop.drawPile];
-  let refilled: PlayerCard[] = [];
-  if (newDrawPile.length > 0) {
-    refilled = [newDrawPile.shift()!];
-  }
+  const newDrawPile = [...state.shop.drawPile];
+  const refilled: PlayerCard[] = newDrawPile.length > 0 ? [newDrawPile.shift()!] : [];
 
   return {
     ...state,
     turnGold: goldFromTurn,
-    shop: {
-      available: [...newAvailable, ...refilled],
-      drawPile: newDrawPile,
-    },
+    shop: { available: [...newAvailable, ...refilled], drawPile: newDrawPile },
     players: state.players.map(p =>
       p.id === payload.playerId
         ? { ...p, discardPile: [...p.discardPile, card], gold: playerGold }

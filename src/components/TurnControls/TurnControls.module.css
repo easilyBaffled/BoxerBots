@@ -5,6 +5,20 @@
   gap: 12px;
 }
 
+.bgBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 7px 10px;
+  flex-wrap: wrap;
+}
+
+.bgIcon { font-size: 1rem; }
+.bgName { font-size: 0.8rem; font-weight: 700; color: var(--text-primary); }
+.bgFlavor { font-size: 0.68rem; color: var(--text-secondary); }
+
 .goldDisplay {
   display: flex;
   align-items: center;

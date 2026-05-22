@@ -11,7 +11,7 @@
   background: var(--card-bg);
   border-radius: 16px;
   padding: 40px;
-  max-width: 480px;
+  max-width: 640px;
   width: 100%;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -149,4 +149,61 @@
 
 .startBtn:active {
   transform: translateY(0);
+}
+
+.playerSetup {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.playerSetup:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.bgGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.bgCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+}
+
+.bgCard:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.bgSelected {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.bgIcon { font-size: 1.3rem; }
+
+.bgName {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.bgFlavor {
+  font-size: 0.58rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
 }

@@ -2,14 +2,15 @@ import type { GameState } from '../types/game';
 import type { GameAction } from '../types/actions';
 import { buildInitialState } from './setupLogic';
 import { advancePhase, endTurn, playCard, buyCard } from './turnLogic';
-import { movePlayer, revealCard, placeCamp, initiateJostle, resolveJostle, respawnPlayer } from './boardLogic';
-import { beginChallenge, commitCard, uncommitCard, resolveChallenge, skipChallenge, playerFall } from './challengeLogic';
+import { movePlayer, revealCard, placeCamp, initiateJostle, resolveJostle } from './boardLogic';
+import { commitCard, uncommitCard, resolveChallenge, loseChallenge, retreatFromChallenge, playerFall } from './challengeLogic';
+import { respawnPlayer } from './respawnLogic';
 import { addLog } from './logHelpers';
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'SETUP_START_GAME':
-      return buildInitialState(action.payload.playerNames);
+      return buildInitialState(action.payload.playerNames, action.payload.backgroundIds);
 
     case 'ADVANCE_PHASE':
       return advancePhase(state);
@@ -26,9 +27,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'REVEAL_MOUNTAIN_CARD':
       return revealCard(state, action.payload);
 
-    case 'BEGIN_CHALLENGE':
-      return beginChallenge(state, action.payload);
-
     case 'COMMIT_CARD_TO_CHALLENGE':
       return commitCard(state, action.payload);
 
@@ -38,8 +36,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'RESOLVE_CHALLENGE':
       return resolveChallenge(state);
 
-    case 'SKIP_CHALLENGE':
-      return skipChallenge(state);
+    case 'LOSE_CHALLENGE':
+      return loseChallenge(state);
+
+    case 'RETREAT_FROM_CHALLENGE':
+      return retreatFromChallenge(state);
 
     case 'BUY_CARD':
       return buyCard(state, action.payload);
@@ -70,10 +71,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         gamePhase: 'victory',
         winner: action.payload.playerId,
-        log: addLog(state.log, {
-          message: `Victory declared!`,
-          type: 'system',
-        }),
+        log: addLog(state.log, { message: 'Victory declared!', type: 'system' }),
       };
 
     default:

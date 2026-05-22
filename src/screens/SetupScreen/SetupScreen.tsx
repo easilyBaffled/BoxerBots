@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useGame } from '../../context/GameContext';
+import { BACKGROUNDS } from '../../data/backgrounds';
 import styles from './SetupScreen.module.css';
 
 const PLAYER_COLORS = ['red', 'blue', 'green', 'yellow'];
@@ -9,6 +10,12 @@ export function SetupScreen() {
   const { dispatch } = useGame();
   const [playerCount, setPlayerCount] = useState(2);
   const [names, setNames] = useState(['', '', '', '']);
+  const [backgrounds, setBackgrounds] = useState([
+    BACKGROUNDS[0].id,
+    BACKGROUNDS[1].id,
+    BACKGROUNDS[2].id,
+    BACKGROUNDS[3].id,
+  ]);
 
   const updateName = (i: number, v: string) => {
     const n = [...names];
@@ -16,11 +23,18 @@ export function SetupScreen() {
     setNames(n);
   };
 
+  const updateBackground = (playerIdx: number, bgId: string) => {
+    const b = [...backgrounds];
+    b[playerIdx] = bgId;
+    setBackgrounds(b);
+  };
+
   const start = () => {
     const playerNames = names.slice(0, playerCount).map((n, i) =>
       n.trim() || COLOR_LABELS[i]
     );
-    dispatch({ type: 'SETUP_START_GAME', payload: { playerNames } });
+    const backgroundIds = backgrounds.slice(0, playerCount);
+    dispatch({ type: 'SETUP_START_GAME', payload: { playerNames, backgroundIds } });
   };
 
   return (
@@ -46,20 +60,38 @@ export function SetupScreen() {
         </div>
 
         <div className={styles.section}>
-          <label className={styles.label}>Player Names</label>
+          <label className={styles.label}>Players & Backgrounds</label>
           {Array.from({ length: playerCount }, (_, i) => (
-            <div key={i} className={styles.nameRow}>
-              <span
-                className={styles.colorDot}
-                style={{ background: `var(--color-${PLAYER_COLORS[i]})` }}
-              />
-              <input
-                className={styles.input}
-                placeholder={COLOR_LABELS[i]}
-                value={names[i]}
-                onChange={e => updateName(i, e.target.value)}
-                maxLength={20}
-              />
+            <div key={i} className={styles.playerSetup}>
+              <div className={styles.nameRow}>
+                <span
+                  className={styles.colorDot}
+                  style={{ background: `var(--color-${PLAYER_COLORS[i]})` }}
+                />
+                <input
+                  className={styles.input}
+                  placeholder={COLOR_LABELS[i]}
+                  value={names[i]}
+                  onChange={e => updateName(i, e.target.value)}
+                  maxLength={20}
+                />
+              </div>
+              <div className={styles.bgGrid}>
+                {BACKGROUNDS.map(bg => {
+                  const selected = backgrounds[i] === bg.id;
+                  return (
+                    <button
+                      key={bg.id}
+                      className={`${styles.bgCard} ${selected ? styles.bgSelected : ''}`}
+                      onClick={() => updateBackground(i, bg.id)}
+                    >
+                      <span className={styles.bgIcon}>{bg.icon}</span>
+                      <span className={styles.bgName}>{bg.name}</span>
+                      <span className={styles.bgFlavor}>{bg.flavor}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>
@@ -67,12 +99,12 @@ export function SetupScreen() {
         <div className={styles.rules}>
           <h3>How to Play</h3>
           <ul>
-            <li>Take turns climbing the mountain, revealing cards as you go</li>
-            <li>Play tool, utility, and skill cards to overcome challenges</li>
-            <li>Pass a challenge to get through; solve it to remove it for everyone</li>
-            <li>Build camps as respawn points — any player can use them</li>
-            <li>Fewer spaces near the top mean competition gets brutal</li>
-            <li>First player to reach The Summit wins!</li>
+            <li>Move up the mountain — challenges fire the moment you enter a new card</li>
+            <li>Use your innate skills + cards to pass or fully complete challenges</li>
+            <li>Completing a challenge removes it permanently for everyone</li>
+            <li>You can retreat one space to face an easier challenge instead</li>
+            <li>Build camps as respawn points; spaces narrow near the summit</li>
+            <li>First to The Summit wins!</li>
           </ul>
         </div>
 

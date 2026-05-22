@@ -6,19 +6,21 @@ import { makeToolCards } from '../data/toolCards';
 import { makeUtilityCards } from '../data/utilityCards';
 import { makeSkillCards } from '../data/skillCards';
 import { makeStarterDeck } from '../data/starterDeck';
+import { BACKGROUNDS } from '../data/backgrounds';
 import { shuffle, cloneCardWithNewId } from './deckLogic';
 
 const COLORS: PlayerColor[] = ['red', 'blue', 'green', 'yellow'];
 
-function buildPlayer(name: string, index: number): Player {
-  const starterDeck = shuffle(
-    makeStarterDeck().map(c => cloneCardWithNewId(c))
-  );
+function buildPlayer(name: string, index: number, backgroundId: string): Player {
+  const bg = BACKGROUNDS.find(b => b.id === backgroundId) ?? BACKGROUNDS[0];
+  const starterDeck = shuffle(makeStarterDeck().map(c => cloneCardWithNewId(c)));
   const hand = starterDeck.splice(0, 5);
   return {
     id: `player_${index}`,
     name,
     color: COLORS[index],
+    backgroundId: bg.id,
+    baseStats: bg.baseStats,
     positionIndex: 0,
     deck: starterDeck,
     hand,
@@ -60,18 +62,18 @@ function buildShopDeck(): PlayerCard[] {
   const tools = makeToolCards().map(c => cloneCardWithNewId(c));
   const utils = makeUtilityCards().map(c => cloneCardWithNewId(c));
   const skills = makeSkillCards().map(c => cloneCardWithNewId(c));
-  const all: PlayerCard[] = [...tools, ...utils, ...skills,
+  const all: PlayerCard[] = [
+    ...tools, ...utils, ...skills,
     ...makeToolCards().map(c => cloneCardWithNewId(c)),
     ...makeUtilityCards().map(c => cloneCardWithNewId(c)),
   ];
   return shuffle(all);
 }
 
-export function buildInitialState(playerNames: string[]): GameState {
-  const players = playerNames.map((name, i) => buildPlayer(name, i));
+export function buildInitialState(playerNames: string[], backgroundIds: string[]): GameState {
+  const players = playerNames.map((name, i) => buildPlayer(name, i, backgroundIds[i] ?? BACKGROUNDS[0].id));
   const mountainSlots = buildMountainSlots();
 
-  // Place all players at base camp (slot 0)
   mountainSlots[0].occupants = players.map(p => p.id);
 
   const shopDeck = buildShopDeck();

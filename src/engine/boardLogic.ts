@@ -1,5 +1,9 @@
 import type { GameState } from '../types/game';
 import { addLog } from './logHelpers';
+import { openChallenge } from './challengeLogic';
+import { respawnPlayer } from './respawnLogic';
+
+export { respawnPlayer };
 
 export function movePlayer(
   state: GameState,
@@ -14,13 +18,10 @@ export function movePlayer(
   const targetSlot = state.board.mountainSlots[targetIndex];
   const { playerSpaces, name } = targetSlot.mountainCard;
 
-  // Check space available
   if (targetSlot.occupants.length >= playerSpaces && !targetSlot.occupants.includes(playerId)) {
-    // No room — player must jostle; don't move, let UI prompt
     return state;
   }
 
-  // Remove from old slot, add to new slot
   const newSlots = state.board.mountainSlots.map((slot, idx) => {
     if (idx === player.positionIndex) {
       return { ...slot, occupants: slot.occupants.filter(id => id !== playerId) };
@@ -45,24 +46,31 @@ export function movePlayer(
     }),
   };
 
-  // Reveal card if needed
   if (!targetSlot.revealed && delta > 0) {
     newState = revealCard(newState, { slotIndex: targetIndex });
   }
 
-  // Check win
   if (targetIndex === state.board.summitIndex) {
-    newState = {
+    return {
       ...newState,
       gamePhase: 'victory',
       winner: playerId,
       log: addLog(newState.log, {
-        message: `🏔️ ${player.name} reached THE SUMMIT! They win!`,
+        message: `${player.name} reached THE SUMMIT! They win!`,
         type: 'system',
         playerName: player.name,
         playerColor: player.color,
       }),
     };
+  }
+
+  // Trigger challenges on entry
+  const updatedTargetSlot = newState.board.mountainSlots[targetIndex];
+  const firstChallengeIdx = updatedTargetSlot.challengeSlots.findIndex(c => c !== null);
+  if (firstChallengeIdx !== -1) {
+    // canRetreat: only when moving up (retreating downward from a challenge makes sense)
+    const canRetreat = delta > 0 && targetIndex > 0;
+    newState = openChallenge(newState, targetIndex, firstChallengeIdx, canRetreat);
   }
 
   return newState;
@@ -107,13 +115,11 @@ export function placeCamp(
   const campCost = state.config.campCost;
   let goldFromTurn = state.turnGold;
   let goldFromPlayer = player.gold;
-
   if (goldFromTurn >= campCost) {
     goldFromTurn -= campCost;
   } else {
-    const remainder = campCost - goldFromTurn;
+    goldFromPlayer -= campCost - goldFromTurn;
     goldFromTurn = 0;
-    goldFromPlayer -= remainder;
   }
 
   const camp = {
@@ -169,17 +175,15 @@ export function initiateJostle(
 
 export function resolveJostle(state: GameState): GameState {
   if (!state.pendingJostle) return state;
-  const { attackerId, targetId, slotIndex } = state.pendingJostle;
+  const { attackerId, targetId } = state.pendingJostle;
 
   const attacker = state.players.find(p => p.id === attackerId)!;
   const target = state.players.find(p => p.id === targetId)!;
 
-  // Check if target has Iron Will and enough cards
   const hasIronWill = target.activeSkills.some(s => s.definitionId === 'iron_will');
   if (hasIronWill && target.hand.length >= 2) {
-    // Iron Will: target discards 2 cards to resist
     const toDiscard = target.hand.slice(0, 2);
-    const newState = {
+    return {
       ...state,
       pendingJostle: null,
       players: state.players.map(p =>
@@ -194,27 +198,22 @@ export function resolveJostle(state: GameState): GameState {
         playerColor: target.color,
       }),
     };
-    return newState;
   }
 
-  // Pay jostle cost
   const jostleCost = state.config.jostleCost;
   let goldFromTurn = state.turnGold;
   let attackerGold = attacker.gold;
   if (goldFromTurn >= jostleCost) {
     goldFromTurn -= jostleCost;
   } else {
-    const rem = jostleCost - goldFromTurn;
+    attackerGold -= jostleCost - goldFromTurn;
     goldFromTurn = 0;
-    attackerGold -= rem;
   }
 
-  // Move target down one slot
   const targetNewIndex = Math.max(0, target.positionIndex - 1);
 
-  // Remove target from current slot, place in new slot
-  let newSlots = state.board.mountainSlots.map((slot, i) => {
-    if (i === slotIndex) {
+  const newSlots = state.board.mountainSlots.map((slot, i) => {
+    if (i === target.positionIndex) {
       return { ...slot, occupants: slot.occupants.filter(id => id !== targetId) };
     }
     if (i === targetNewIndex) {
@@ -223,7 +222,7 @@ export function resolveJostle(state: GameState): GameState {
     return slot;
   });
 
-  let newState: GameState = {
+  return {
     ...state,
     board: { ...state.board, mountainSlots: newSlots },
     pendingJostle: null,
@@ -238,42 +237,6 @@ export function resolveJostle(state: GameState): GameState {
       type: 'combat',
       playerName: attacker.name,
       playerColor: attacker.color,
-    }),
-  };
-
-  return newState;
-}
-
-export function respawnPlayer(state: GameState, payload: { playerId: string }): GameState {
-  const player = state.players.find(p => p.id === payload.playerId)!;
-  if (!player.respawning || player.respawnTargetIndex === null) return state;
-
-  const targetIndex = player.respawnTargetIndex;
-  const targetSlot = state.board.mountainSlots[targetIndex];
-
-  // Add to respawn slot occupants
-  const newSlots = state.board.mountainSlots.map((s, i) => {
-    if (i === targetIndex) {
-      if (!s.occupants.includes(payload.playerId)) {
-        return { ...s, occupants: [...s.occupants, payload.playerId] };
-      }
-    }
-    return s;
-  });
-
-  return {
-    ...state,
-    board: { ...state.board, mountainSlots: newSlots },
-    players: state.players.map(p =>
-      p.id === payload.playerId
-        ? { ...p, respawning: false, respawnTargetIndex: null, positionIndex: targetIndex }
-        : p
-    ),
-    log: addLog(state.log, {
-      message: `${player.name} respawned at ${targetSlot.mountainCard.name}.`,
-      type: 'info',
-      playerName: player.name,
-      playerColor: player.color,
     }),
   };
 }
