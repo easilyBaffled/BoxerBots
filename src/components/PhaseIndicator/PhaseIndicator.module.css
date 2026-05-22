@@ -6,6 +6,7 @@
   background: var(--surface-2);
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .player {
@@ -41,4 +42,35 @@
   background: var(--surface-2);
   color: var(--text-muted);
   opacity: 0.6;
+}
+
+/* Compact mode (mobile) */
+.compact {
+  padding: 8px 14px;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.compact .player {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.phasePill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--accent);
+  color: white;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.phaseHint {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

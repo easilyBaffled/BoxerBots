@@ -1,3 +1,4 @@
+/* ── Desktop layout ── */
 .layout {
   display: flex;
   flex-direction: column;
@@ -46,4 +47,95 @@
   border-top: 1px solid var(--border);
   flex-shrink: 0;
   background: var(--card-bg);
+}
+
+/* ── Mobile layout ── */
+.mobileLayout {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;     /* dynamic viewport height — avoids browser chrome issues */
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.mobileContent {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileBoardPanel {
+  flex: 1;
+  overflow: hidden;
+  background: linear-gradient(180deg, #e8f4fd 0%, #fafaf9 100%);
+}
+
+.mobileHandPanel {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--card-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.mobilePlayersPanel {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--card-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileShopPanel {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--card-bg);
+}
+
+/* ── Bottom tab bar ── */
+.tabBar {
+  display: flex;
+  border-top: 1px solid var(--border);
+  background: var(--card-bg);
+  flex-shrink: 0;
+  /* safe area inset for iPhone home bar */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.tabBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 10px 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tabBtn:active {
+  background: var(--surface-2);
+}
+
+.tabActive {
+  color: var(--accent);
+}
+
+.tabIcon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.tabLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }

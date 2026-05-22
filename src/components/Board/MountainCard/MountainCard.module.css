@@ -105,3 +105,16 @@
   color: var(--text-muted);
   font-weight: 600;
 }
+
+@media (max-width: 680px) {
+  .card {
+    min-height: 96px;
+    padding: 10px 12px;
+  }
+
+  .name { font-size: 0.9rem; }
+  .terrain { font-size: 1.1rem; }
+
+  .emptySpace,
+  .elevation { /* keep same size, board is already full-width */ }
+}

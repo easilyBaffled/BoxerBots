@@ -83,3 +83,22 @@
   padding-top: 3px;
   margin-top: 2px;
 }
+
+@media (max-width: 680px) {
+  .card {
+    min-width: 130px;
+    max-width: 150px;
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+
+  .name { font-size: 0.85rem; }
+  .stat { font-size: 0.72rem; padding: 2px 5px; }
+  .effect { font-size: 0.72rem; }
+  .category { font-size: 1rem; }
+
+  .clickable:active {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+}
