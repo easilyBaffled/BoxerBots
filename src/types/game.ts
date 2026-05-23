@@ -24,6 +24,7 @@ export interface Player {
   gold: number;
   campsPlaced: number;
   maxCamps: number;
+  handSizeBonus: number;
   hasMovedThisTurn: boolean;
   actionsRemaining: number;
   skipNextMove: boolean;

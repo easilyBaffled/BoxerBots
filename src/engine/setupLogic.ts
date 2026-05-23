@@ -11,10 +11,39 @@ import { shuffle, cloneCardWithNewId } from './deckLogic';
 
 const COLORS: PlayerColor[] = ['red', 'blue', 'green', 'yellow'];
 
+function makeExtraCard(definitionId: string): PlayerCard | null {
+  const tool = makeToolCards().find(c => c.definitionId === definitionId);
+  if (tool) return cloneCardWithNewId(tool);
+  const util = makeUtilityCards().find(c => c.definitionId === definitionId);
+  if (util) return cloneCardWithNewId(util);
+  return null;
+}
+
 function buildPlayer(name: string, index: number, backgroundId: string): Player {
   const bg = BACKGROUNDS.find(b => b.id === backgroundId) ?? BACKGROUNDS[0];
-  const starterDeck = shuffle(makeStarterDeck().map(c => cloneCardWithNewId(c)));
-  const hand = starterDeck.splice(0, 5);
+
+  let starterCards = makeStarterDeck().map(c => cloneCardWithNewId(c));
+
+  // Remove basic footwork cards to make room for background extras
+  let removed = 0;
+  starterCards = starterCards.filter(c => {
+    if (c.definitionId === 'basic_footwork' && removed < bg.removeStarterCount) {
+      removed++;
+      return false;
+    }
+    return true;
+  });
+
+  // Add background-specific starter cards
+  for (const defId of bg.extraStarterDefinitionIds) {
+    const card = makeExtraCard(defId);
+    if (card) starterCards.push(card);
+  }
+
+  const deck = shuffle(starterCards);
+  const handSize = 5 + bg.handSizeBonus;
+  const hand = deck.splice(0, handSize);
+
   return {
     id: `player_${index}`,
     name,
@@ -22,13 +51,14 @@ function buildPlayer(name: string, index: number, backgroundId: string): Player 
     backgroundId: bg.id,
     baseStats: bg.baseStats,
     positionIndex: 0,
-    deck: starterDeck,
+    deck,
     hand,
     discardPile: [],
     activeSkills: [],
-    gold: 3,
+    gold: Math.max(0, 3 + bg.startingGoldBonus),
     campsPlaced: 0,
-    maxCamps: 2,
+    maxCamps: 2 + bg.maxCampsBonus,
+    handSizeBonus: bg.handSizeBonus,
     hasMovedThisTurn: false,
     actionsRemaining: 1,
     skipNextMove: false,

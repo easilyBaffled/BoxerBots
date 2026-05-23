@@ -124,6 +124,15 @@
   border-radius: 4px;
 }
 
+.inateStatNeg {
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
 .innateZero {
   font-size: 0.78rem;
   color: #6b7280;

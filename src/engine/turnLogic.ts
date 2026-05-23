@@ -57,7 +57,7 @@ export function endTurn(state: GameState): GameState {
   const nextPlayerIndex = (state.activePlayerIndex + 1) % state.players.length;
   const nextPlayer = updatedPlayers[nextPlayerIndex];
 
-  const handSize = state.config.handSize +
+  const handSize = state.config.handSize + nextPlayer.handSizeBonus +
     (nextPlayer.activeSkills.some(s => s.definitionId === 'endurance_training') ? 1 : 0);
   const needed = handSize - nextPlayer.hand.length;
   const { drawn, newDeck, newDiscard: nd } = drawCards(nextPlayer.deck, nextPlayer.discardPile, needed);

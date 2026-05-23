@@ -6,7 +6,14 @@ export interface Background {
   icon: string;
   description: string;
   baseStats: StatBlock;
-  flavor: string;
+  handSizeBonus: number;
+  startingGoldBonus: number;
+  maxCampsBonus: number;
+  abilityId: string;
+  abilityName: string;
+  abilityDescription: string;
+  extraStarterDefinitionIds: string[];
+  removeStarterCount: number;
 }
 
 export const BACKGROUNDS: Background[] = [
@@ -14,40 +21,75 @@ export const BACKGROUNDS: Background[] = [
     id: 'mountaineer',
     name: 'Mountaineer',
     icon: '⛏',
-    description: 'Expert in technical climbing. Shines on rock and ice.',
-    baseStats: { strength: 2, agility: 2 },
-    flavor: 'Strength +2, Agility +2',
+    description: 'Expert technical climber. Dominates rock and ice but neglects recovery.',
+    baseStats: { strength: 3, agility: 2, survival: -2, warmth: -1 },
+    handSizeBonus: 0,
+    startingGoldBonus: 0,
+    maxCampsBonus: 0,
+    abilityId: 'sure_footed',
+    abilityName: 'Sure-Footed',
+    abilityDescription: 'Terrain falls become "discard 1" instead of falling.',
+    extraStarterDefinitionIds: ['rope'],
+    removeStarterCount: 1,
   },
   {
     id: 'doctor',
     name: 'Field Doctor',
     icon: '🏥',
-    description: 'Trained wilderness medic. Tough body, calm under pressure.',
-    baseStats: { survival: 3, warmth: 1 },
-    flavor: 'Survival +3, Warmth +1',
+    description: 'Wilderness medic. Incredible endurance but slow on the mountain.',
+    baseStats: { survival: 3, warmth: 2, strength: -2, agility: -1 },
+    handSizeBonus: 1,
+    startingGoldBonus: -1,
+    maxCampsBonus: 0,
+    abilityId: 'triage',
+    abilityName: 'Triage',
+    abilityDescription: 'Discard and lose-card penalties cost 1 fewer card (min 1).',
+    extraStarterDefinitionIds: ['first_aid'],
+    removeStarterCount: 1,
   },
   {
     id: 'scout',
     name: 'Mountain Scout',
     icon: '🔭',
-    description: 'Reads terrain and weather instinctively. Born navigator.',
-    baseStats: { navigation: 3, agility: 1 },
-    flavor: 'Navigation +3, Agility +1',
+    description: 'Reads terrain instinctively. Travels light but freezes easily.',
+    baseStats: { navigation: 3, agility: 2, warmth: -2, survival: -1 },
+    handSizeBonus: -1,
+    startingGoldBonus: 1,
+    maxCampsBonus: 0,
+    abilityId: 'reconnaissance',
+    abilityName: 'Reconnaissance',
+    abilityDescription: 'Gain 1 gold whenever you reveal a new mountain card.',
+    extraStarterDefinitionIds: ['trekking_poles'],
+    removeStarterCount: 1,
   },
   {
     id: 'survivalist',
     name: 'Survivalist',
     icon: '🏕',
-    description: 'Hardened against cold and the elements above all else.',
-    baseStats: { warmth: 3, survival: 1 },
-    flavor: 'Warmth +3, Survival +1',
+    description: 'Built for the long haul. Gets lost, but never gives up.',
+    baseStats: { warmth: 3, survival: 2, navigation: -2, strength: -1 },
+    handSizeBonus: 0,
+    startingGoldBonus: 0,
+    maxCampsBonus: 1,
+    abilityId: 'endure',
+    abilityName: 'Endure',
+    abilityDescription: 'Skip-turn penalties become "discard 1" instead.',
+    extraStarterDefinitionIds: ['thermos'],
+    removeStarterCount: 1,
   },
   {
     id: 'athlete',
     name: 'Elite Athlete',
     icon: '💪',
-    description: 'Peak physical condition. Balanced across all physical demands.',
-    baseStats: { strength: 2, agility: 1, survival: 1 },
-    flavor: 'Strength +2, Agility +1, Survival +1',
+    description: 'Peak physical specimen. Instinct over preparation.',
+    baseStats: { strength: 2, agility: 2, navigation: -1, warmth: -1 },
+    handSizeBonus: 0,
+    startingGoldBonus: -1,
+    maxCampsBonus: 0,
+    abilityId: 'rising_to_challenge',
+    abilityName: 'Rising to the Challenge',
+    abilityDescription: 'Gain 1 gold whenever you pass or complete a challenge.',
+    extraStarterDefinitionIds: ['energy_drink'],
+    removeStarterCount: 1,
   },
 ];

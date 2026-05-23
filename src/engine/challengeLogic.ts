@@ -151,6 +151,20 @@ export function resolveChallenge(state: GameState): GameState {
     ),
   };
 
+  // Rising to the Challenge (athlete): gain 1g on pass or complete
+  if ((outcome === 'pass' || outcome === 'solve') && activePlayer.backgroundId === 'athlete') {
+    newState = {
+      ...newState,
+      turnGold: newState.turnGold + 1,
+      log: addLog(newState.log, {
+        message: `${activePlayer.name}'s Rising to the Challenge — gained 1 gold.`,
+        type: 'action',
+        playerName: activePlayer.name,
+        playerColor: activePlayer.color,
+      }),
+    };
+  }
+
   if (outcome === 'solve') {
     // Remove challenge permanently from the board
     const newSlots = [...newState.board.mountainSlots];
@@ -286,10 +300,32 @@ function applyFailPenalty(state: GameState, playerId: string, challenge: Challen
   const { type, amount } = challenge.failPenalty;
   const player = state.players.find(p => p.id === playerId)!;
 
-  if (type === 'fall') return playerFall(state, playerId);
+  if (type === 'fall') {
+    // Sure-Footed (mountaineer): terrain falls become discard 1 instead
+    if (player.backgroundId === 'mountaineer' && challenge.challengeType === 'terrain') {
+      const toDiscard = player.hand.slice(0, 1);
+      return {
+        ...state,
+        players: state.players.map(p =>
+          p.id === playerId
+            ? { ...p, hand: p.hand.slice(1), discardPile: [...p.discardPile, ...toDiscard] }
+            : p
+        ),
+        log: addLog(state.log, {
+          message: `${player.name}'s Sure-Footed ability prevented the fall — discarded 1 card instead.`,
+          type: 'action',
+          playerName: player.name,
+          playerColor: player.color,
+        }),
+      };
+    }
+    return playerFall(state, playerId);
+  }
 
   if (type === 'discard') {
-    const n = amount ?? 1;
+    let n = amount ?? 1;
+    // Triage (doctor): reduce discard penalty by 1, min 1
+    if (player.backgroundId === 'doctor') n = Math.max(1, n - 1);
     const toDiscard = player.hand.slice(0, n);
     return {
       ...state,
@@ -302,6 +338,24 @@ function applyFailPenalty(state: GameState, playerId: string, challenge: Challen
   }
 
   if (type === 'skip_turn') {
+    // Endure (survivalist): skip-turn becomes discard 1 instead
+    if (player.backgroundId === 'survivalist') {
+      const toDiscard = player.hand.slice(0, 1);
+      return {
+        ...state,
+        players: state.players.map(p =>
+          p.id === playerId
+            ? { ...p, hand: p.hand.slice(1), discardPile: [...p.discardPile, ...toDiscard] }
+            : p
+        ),
+        log: addLog(state.log, {
+          message: `${player.name}'s Endure ability converted the skip-turn penalty to discard 1.`,
+          type: 'action',
+          playerName: player.name,
+          playerColor: player.color,
+        }),
+      };
+    }
     return {
       ...state,
       players: state.players.map(p =>
@@ -311,7 +365,9 @@ function applyFailPenalty(state: GameState, playerId: string, challenge: Challen
   }
 
   if (type === 'lose_card') {
-    const n = amount ?? 1;
+    let n = amount ?? 1;
+    // Triage (doctor): reduce lose_card penalty by 1, min 1
+    if (player.backgroundId === 'doctor') n = Math.max(1, n - 1);
     return {
       ...state,
       players: state.players.map(p =>

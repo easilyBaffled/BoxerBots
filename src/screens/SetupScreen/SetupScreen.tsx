@@ -1,10 +1,35 @@
 import { useState } from 'react';
 import { useGame } from '../../context/GameContext';
 import { BACKGROUNDS } from '../../data/backgrounds';
+import type { StatDomain } from '../../types/cards';
 import styles from './SetupScreen.module.css';
 
 const PLAYER_COLORS = ['red', 'blue', 'green', 'yellow'];
 const COLOR_LABELS = ['Red', 'Blue', 'Green', 'Yellow'];
+
+const STAT_LABELS: Record<StatDomain, string> = {
+  strength: 'Str',
+  agility: 'Agi',
+  warmth: 'Warm',
+  survival: 'Surv',
+  navigation: 'Nav',
+};
+
+function StatPills({ baseStats }: { baseStats: Record<string, number> }) {
+  const entries = Object.entries(baseStats).filter(([, v]) => v !== 0);
+  const pos = entries.filter(([, v]) => v > 0);
+  const neg = entries.filter(([, v]) => v < 0);
+  return (
+    <div className={styles.statPills}>
+      {pos.map(([d, v]) => (
+        <span key={d} className={styles.statPos}>+{v} {STAT_LABELS[d as StatDomain]}</span>
+      ))}
+      {neg.map(([d, v]) => (
+        <span key={d} className={styles.statNeg}>{v} {STAT_LABELS[d as StatDomain]}</span>
+      ))}
+    </div>
+  );
+}
 
 export function SetupScreen() {
   const { dispatch } = useGame();
@@ -61,39 +86,68 @@ export function SetupScreen() {
 
         <div className={styles.section}>
           <label className={styles.label}>Players & Backgrounds</label>
-          {Array.from({ length: playerCount }, (_, i) => (
-            <div key={i} className={styles.playerSetup}>
-              <div className={styles.nameRow}>
-                <span
-                  className={styles.colorDot}
-                  style={{ background: `var(--color-${PLAYER_COLORS[i]})` }}
-                />
-                <input
-                  className={styles.input}
-                  placeholder={COLOR_LABELS[i]}
-                  value={names[i]}
-                  onChange={e => updateName(i, e.target.value)}
-                  maxLength={20}
-                />
+          {Array.from({ length: playerCount }, (_, i) => {
+            const selectedBg = BACKGROUNDS.find(b => b.id === backgrounds[i])!;
+            return (
+              <div key={i} className={styles.playerSetup}>
+                <div className={styles.nameRow}>
+                  <span
+                    className={styles.colorDot}
+                    style={{ background: `var(--color-${PLAYER_COLORS[i]})` }}
+                  />
+                  <input
+                    className={styles.input}
+                    placeholder={COLOR_LABELS[i]}
+                    value={names[i]}
+                    onChange={e => updateName(i, e.target.value)}
+                    maxLength={20}
+                  />
+                </div>
+                <div className={styles.bgGrid}>
+                  {BACKGROUNDS.map(bg => {
+                    const selected = backgrounds[i] === bg.id;
+                    return (
+                      <button
+                        key={bg.id}
+                        className={`${styles.bgCard} ${selected ? styles.bgSelected : ''}`}
+                        onClick={() => updateBackground(i, bg.id)}
+                      >
+                        <span className={styles.bgIcon}>{bg.icon}</span>
+                        <span className={styles.bgName}>{bg.name}</span>
+                        <StatPills baseStats={bg.baseStats as Record<string, number>} />
+                        <span className={styles.bgAbilityName}>✦ {bg.abilityName}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Detail panel for selected background */}
+                <div className={styles.bgDetail}>
+                  <div className={styles.bgDetailRow}>
+                    <span className={styles.bgDetailLabel}>Hand</span>
+                    <span className={selectedBg.handSizeBonus !== 0 ? (selectedBg.handSizeBonus > 0 ? styles.detailPos : styles.detailNeg) : styles.detailNeutral}>
+                      {5 + selectedBg.handSizeBonus} cards
+                      {selectedBg.handSizeBonus > 0 ? ` (+${selectedBg.handSizeBonus})` : selectedBg.handSizeBonus < 0 ? ` (${selectedBg.handSizeBonus})` : ''}
+                    </span>
+                    <span className={styles.bgDetailLabel}>Gold</span>
+                    <span className={selectedBg.startingGoldBonus !== 0 ? (selectedBg.startingGoldBonus > 0 ? styles.detailPos : styles.detailNeg) : styles.detailNeutral}>
+                      {3 + selectedBg.startingGoldBonus}
+                      {selectedBg.startingGoldBonus > 0 ? ` (+${selectedBg.startingGoldBonus})` : selectedBg.startingGoldBonus < 0 ? ` (${selectedBg.startingGoldBonus})` : ''}
+                    </span>
+                    <span className={styles.bgDetailLabel}>Camps</span>
+                    <span className={selectedBg.maxCampsBonus !== 0 ? styles.detailPos : styles.detailNeutral}>
+                      {2 + selectedBg.maxCampsBonus}
+                      {selectedBg.maxCampsBonus > 0 ? ` (+${selectedBg.maxCampsBonus})` : ''}
+                    </span>
+                  </div>
+                  <div className={styles.bgAbilityDetail}>
+                    <span className={styles.bgAbilityDetailName}>✦ {selectedBg.abilityName}:</span>
+                    {' '}{selectedBg.abilityDescription}
+                  </div>
+                </div>
               </div>
-              <div className={styles.bgGrid}>
-                {BACKGROUNDS.map(bg => {
-                  const selected = backgrounds[i] === bg.id;
-                  return (
-                    <button
-                      key={bg.id}
-                      className={`${styles.bgCard} ${selected ? styles.bgSelected : ''}`}
-                      onClick={() => updateBackground(i, bg.id)}
-                    >
-                      <span className={styles.bgIcon}>{bg.icon}</span>
-                      <span className={styles.bgName}>{bg.name}</span>
-                      <span className={styles.bgFlavor}>{bg.flavor}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className={styles.rules}>

@@ -87,7 +87,7 @@ export function revealCard(
     i === payload.slotIndex ? { ...s, revealed: true } : s
   );
 
-  return {
+  let newState: GameState = {
     ...state,
     board: { ...state.board, mountainSlots: newSlots },
     log: addLog(state.log, {
@@ -95,6 +95,23 @@ export function revealCard(
       type: 'info',
     }),
   };
+
+  // Reconnaissance (scout): gain 1 gold on reveal
+  const activePlayer = newState.players[newState.activePlayerIndex];
+  if (activePlayer.backgroundId === 'scout') {
+    newState = {
+      ...newState,
+      turnGold: newState.turnGold + 1,
+      log: addLog(newState.log, {
+        message: `${activePlayer.name}'s Reconnaissance — gained 1 gold for scouting new terrain.`,
+        type: 'action',
+        playerName: activePlayer.name,
+        playerColor: activePlayer.color,
+      }),
+    };
+  }
+
+  return newState;
 }
 
 export function placeCamp(

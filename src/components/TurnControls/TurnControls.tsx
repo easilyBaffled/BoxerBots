@@ -50,7 +50,7 @@ export function TurnControls() {
         <div className={styles.bgBadge}>
           <span className={styles.bgIcon}>{bg.icon}</span>
           <span className={styles.bgName}>{bg.name}</span>
-          <span className={styles.bgFlavor}>{bg.flavor}</span>
+          <span className={styles.bgFlavor}>✦ {bg.abilityName}</span>
         </div>
       )}
 

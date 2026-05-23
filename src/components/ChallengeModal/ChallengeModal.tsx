@@ -17,15 +17,18 @@ function statLabel(domain: StatDomain): string {
 }
 
 function InnateStats({ baseStats, domains }: { baseStats: StatBlock; domains: StatDomain[] }) {
-  const relevant = domains.filter(d => ((baseStats as Record<StatDomain, number>)[d] ?? 0) > 0);
+  const relevant = domains.filter(d => ((baseStats as Record<StatDomain, number>)[d] ?? 0) !== 0);
   if (relevant.length === 0) return <span className={styles.innateZero}>0 (no innate match)</span>;
   return (
     <span className={styles.innateBreakdown}>
-      {relevant.map(d => (
-        <span key={d} className={styles.inateStat}>
-          +{(baseStats as Record<StatDomain, number>)[d]} {statLabel(d)}
-        </span>
-      ))}
+      {relevant.map(d => {
+        const val = (baseStats as Record<StatDomain, number>)[d];
+        return (
+          <span key={d} className={val > 0 ? styles.inateStat : styles.inateStatNeg}>
+            {val > 0 ? '+' : ''}{val} {statLabel(d)}
+          </span>
+        );
+      })}
     </span>
   );
 }
