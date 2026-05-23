@@ -74,26 +74,24 @@ export function TurnControls() {
           <div className={styles.hint}>
             Move up the mountain. Challenges fire automatically on entry.
           </div>
-          <div className={styles.moveButtons}>
-            <button
-              className={styles.moveBtn}
-              onClick={() => move(1)}
-              disabled={!canMoveUp && !targetSlotUpFull}
-            >
-              ↑ Climb
-            </button>
-            <button
-              className={styles.moveBtn}
-              onClick={() => move(-1)}
-              disabled={!canMoveDown}
-            >
-              ↓ Descend
-            </button>
-          </div>
-          {targetSlotUpFull && (
+          {(canMoveUp || canMoveDown) && (
+            <div className={styles.moveButtons}>
+              {canMoveUp && (
+                <button className={styles.moveBtn} onClick={() => move(1)}>
+                  ↑ Climb
+                </button>
+              )}
+              {canMoveDown && (
+                <button className={styles.moveBtn} onClick={() => move(-1)}>
+                  ↓ Descend
+                </button>
+              )}
+            </div>
+          )}
+          {canJostle && (
             <div className={styles.jostleInfo}>
               Space above is full!
-              <button className={styles.jostleBtn} onClick={jostle} disabled={!canJostle}>
+              <button className={styles.jostleBtn} onClick={jostle}>
                 Jostle ({config.jostleCost}g)
               </button>
             </div>

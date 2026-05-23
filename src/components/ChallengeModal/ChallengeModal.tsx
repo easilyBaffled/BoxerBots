@@ -142,20 +142,19 @@ export function ChallengeModal() {
           </div>
         </div>
 
-        {/* Four action buttons */}
+        {/* Action buttons */}
         <div className={styles.actions}>
-          <button
-            className={styles.retreatBtn}
-            onClick={() => dispatch({ type: 'RETREAT_FROM_CHALLENGE' })}
-            disabled={!canRetreat}
-            title={!canRetreat ? 'Cannot retreat from here' : 'Move back one space (face that card\'s challenge)'}
-          >
-            ← Retreat
-          </button>
+          {canRetreat && (
+            <button
+              className={styles.retreatBtn}
+              onClick={() => dispatch({ type: 'RETREAT_FROM_CHALLENGE' })}
+            >
+              ← Retreat
+            </button>
+          )}
           <button
             className={styles.loseBtn}
             onClick={() => dispatch({ type: 'LOSE_CHALLENGE' })}
-            title="Accept the penalty without attempting"
           >
             Lose (take penalty)
           </button>
