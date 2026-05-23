@@ -1,5 +1,10 @@
 import type { MountainCardDef, ChallengeCardDef, PlayerCard, SkillCard, StatBlock } from './cards';
 
+export interface StashedCard {
+  card: PlayerCard;
+  ownerId: string;
+}
+
 // Challenge phase removed — challenges fire automatically on card entry during move
 export type TurnPhase = 'play' | 'move' | 'buy' | 'end';
 export type GamePhase = 'setup' | 'playing' | 'victory';
@@ -22,6 +27,7 @@ export interface Player {
   hasMovedThisTurn: boolean;
   actionsRemaining: number;
   skipNextMove: boolean;
+  hasLootedStashThisTurn: boolean;
   alive: boolean;
   respawning: boolean;
   respawnTargetIndex: number | null;
@@ -32,6 +38,7 @@ export interface CampToken {
   ownerId: string;
   ownerName: string;
   ownerColor: PlayerColor;
+  stash: StashedCard[];
 }
 
 export interface MountainSlot {

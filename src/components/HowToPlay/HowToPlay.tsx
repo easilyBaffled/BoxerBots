@@ -72,6 +72,11 @@ export function HowToPlay({ onClose }: Props) {
             place a <strong>Camp</strong> (costs gold) on eligible tiles. Any player can respawn at any
             camp, so camps are a cooperative investment even in a competitive game.
           </p>
+          <p className={styles.body}>
+            While standing on a camp, you can <strong>stash cards</strong> from your hand into it for
+            safekeeping — useful before a dangerous section. Any player passing through can take
+            one card from someone else's stash per turn, so choose what you leave wisely.
+          </p>
         </section>
 
         <section className={styles.section}>

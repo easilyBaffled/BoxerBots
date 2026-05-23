@@ -111,6 +111,56 @@ export function TurnControls() {
       {turnPhase === 'buy' && (
         <div className={styles.phaseSection}>
           <div className={styles.hint}>Spend gold on cards from the shop.</div>
+
+          {currentSlot.camp && (
+            <div className={styles.stashSection}>
+              <div className={styles.stashHeader}>⛺ Camp Stash</div>
+
+              {currentSlot.camp.stash.length === 0 && (
+                <p className={styles.stashEmpty}>Empty — stash cards here for safekeeping.</p>
+              )}
+
+              {currentSlot.camp.stash.map(({ card, ownerId }) => {
+                const isOwn = ownerId === activePlayer.id;
+                const depositor = state.players.find(p => p.id === ownerId);
+                const canTake = isOwn || !activePlayer.hasLootedStashThisTurn;
+                return (
+                  <div key={card.id} className={styles.stashRow}>
+                    <span className={styles.stashCardName}>
+                      {card.name}
+                      {!isOwn && <span className={styles.stashOwner}> ({depositor?.name})</span>}
+                    </span>
+                    <button
+                      className={styles.stashTakeBtn}
+                      onClick={() => dispatch({ type: 'TAKE_STASH_CARD', payload: { playerId: activePlayer.id, cardId: card.id } })}
+                      disabled={!canTake}
+                      title={!canTake ? 'Already looted once this turn' : isOwn ? 'Retrieve your card' : 'Take this card'}
+                    >
+                      {isOwn ? 'Retrieve' : 'Take'}
+                    </button>
+                  </div>
+                );
+              })}
+
+              {activePlayer.hand.length > 0 && (
+                <>
+                  <div className={styles.stashDivider}>Your hand — stash a card:</div>
+                  {activePlayer.hand.map(card => (
+                    <div key={card.id} className={styles.stashRow}>
+                      <span className={styles.stashCardName}>{card.name}</span>
+                      <button
+                        className={styles.stashDepositBtn}
+                        onClick={() => dispatch({ type: 'STASH_CARD', payload: { playerId: activePlayer.id, cardId: card.id } })}
+                      >
+                        Stash
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
+
           {canPlaceCamp && (
             <button
               className={styles.campBtn}

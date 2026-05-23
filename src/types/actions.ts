@@ -14,6 +14,8 @@ export type GameAction =
   | { type: 'BUY_CARD'; payload: { playerId: string; shopCardId: string } }
   | { type: 'REFILL_SHOP' }
   | { type: 'PLACE_CAMP'; payload: { playerId: string; mountainSlotIndex: number } }
+  | { type: 'STASH_CARD'; payload: { playerId: string; cardId: string } }
+  | { type: 'TAKE_STASH_CARD'; payload: { playerId: string; cardId: string } }
   | { type: 'INITIATE_JOSTLE'; payload: { attackerId: string; targetId: string; slotIndex: number } }
   | { type: 'RESOLVE_JOSTLE' }
   | { type: 'PLAYER_FALL'; payload: { playerId: string } }

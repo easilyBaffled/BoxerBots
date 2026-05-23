@@ -1,4 +1,4 @@
-import type { GameState } from '../types/game';
+import type { GameState, StashedCard } from '../types/game';
 import { addLog } from './logHelpers';
 import { openChallenge } from './challengeLogic';
 import { respawnPlayer } from './respawnLogic';
@@ -127,6 +127,7 @@ export function placeCamp(
     ownerId: playerId,
     ownerName: player.name,
     ownerColor: player.color,
+    stash: [],
   };
 
   const newSlots = state.board.mountainSlots.map((s, i) =>
@@ -237,6 +238,85 @@ export function resolveJostle(state: GameState): GameState {
       type: 'combat',
       playerName: attacker.name,
       playerColor: attacker.color,
+    }),
+  };
+}
+
+export function stashCard(
+  state: GameState,
+  payload: { playerId: string; cardId: string },
+): GameState {
+  const { playerId, cardId } = payload;
+  const player = state.players.find(p => p.id === playerId)!;
+  const card = player.hand.find(c => c.id === cardId);
+  if (!card) return state;
+
+  const slotIndex = player.positionIndex;
+  const slot = state.board.mountainSlots[slotIndex];
+  if (!slot.camp) return state;
+
+  const stashedItem: StashedCard = { card, ownerId: playerId };
+  const newCamp = { ...slot.camp, stash: [...slot.camp.stash, stashedItem] };
+  const newSlots = state.board.mountainSlots.map((s, i) =>
+    i === slotIndex ? { ...s, camp: newCamp } : s
+  );
+
+  return {
+    ...state,
+    board: { ...state.board, mountainSlots: newSlots },
+    players: state.players.map(p =>
+      p.id === playerId ? { ...p, hand: p.hand.filter(c => c.id !== cardId) } : p
+    ),
+    log: addLog(state.log, {
+      message: `${player.name} stashed ${card.name} at ${slot.mountainCard.name}.`,
+      type: 'action',
+      playerName: player.name,
+      playerColor: player.color,
+    }),
+  };
+}
+
+export function takeStashCard(
+  state: GameState,
+  payload: { playerId: string; cardId: string },
+): GameState {
+  const { playerId, cardId } = payload;
+  const player = state.players.find(p => p.id === playerId)!;
+
+  const slotIndex = player.positionIndex;
+  const slot = state.board.mountainSlots[slotIndex];
+  if (!slot.camp) return state;
+
+  const itemIndex = slot.camp.stash.findIndex(s => s.card.id === cardId);
+  if (itemIndex === -1) return state;
+
+  const item = slot.camp.stash[itemIndex];
+  const isOwn = item.ownerId === playerId;
+
+  if (!isOwn && player.hasLootedStashThisTurn) return state;
+
+  const depositor = state.players.find(p => p.id === item.ownerId);
+  const newStash = slot.camp.stash.filter((_, i) => i !== itemIndex);
+  const newCamp = { ...slot.camp, stash: newStash };
+  const newSlots = state.board.mountainSlots.map((s, i) =>
+    i === slotIndex ? { ...s, camp: newCamp } : s
+  );
+
+  return {
+    ...state,
+    board: { ...state.board, mountainSlots: newSlots },
+    players: state.players.map(p =>
+      p.id === playerId
+        ? { ...p, hand: [...p.hand, item.card], hasLootedStashThisTurn: isOwn ? p.hasLootedStashThisTurn : true }
+        : p
+    ),
+    log: addLog(state.log, {
+      message: isOwn
+        ? `${player.name} retrieved ${item.card.name} from their stash.`
+        : `${player.name} took ${item.card.name} from ${depositor?.name ?? 'someone'}'s stash!`,
+      type: 'action',
+      playerName: player.name,
+      playerColor: player.color,
     }),
   };
 }

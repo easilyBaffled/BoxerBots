@@ -2,7 +2,7 @@ import type { GameState } from '../types/game';
 import type { GameAction } from '../types/actions';
 import { buildInitialState } from './setupLogic';
 import { advancePhase, endTurn, playCard, buyCard } from './turnLogic';
-import { movePlayer, revealCard, placeCamp, initiateJostle, resolveJostle } from './boardLogic';
+import { movePlayer, revealCard, placeCamp, stashCard, takeStashCard, initiateJostle, resolveJostle } from './boardLogic';
 import { commitCard, uncommitCard, resolveChallenge, loseChallenge, retreatFromChallenge, playerFall } from './challengeLogic';
 import { respawnPlayer } from './respawnLogic';
 import { addLog } from './logHelpers';
@@ -47,6 +47,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'PLACE_CAMP':
       return placeCamp(state, action.payload);
+
+    case 'STASH_CARD':
+      return stashCard(state, action.payload);
+
+    case 'TAKE_STASH_CARD':
+      return takeStashCard(state, action.payload);
 
     case 'INITIATE_JOSTLE':
       return initiateJostle(state, action.payload);

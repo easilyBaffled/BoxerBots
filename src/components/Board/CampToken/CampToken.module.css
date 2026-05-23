@@ -5,4 +5,25 @@
   padding: 2px 4px;
   background: var(--surface-2);
   line-height: 1;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.stashBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 16px;
+  height: 16px;
+  background: #f59e0b;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
 }

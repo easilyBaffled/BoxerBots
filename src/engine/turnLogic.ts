@@ -41,6 +41,7 @@ export function endTurn(state: GameState): GameState {
           hasMovedThisTurn: false,
           actionsRemaining: 1,
           skipNextMove: false,
+          hasLootedStashThisTurn: false,
         }
       : p
   );

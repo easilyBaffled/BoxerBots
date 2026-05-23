@@ -32,6 +32,7 @@ function buildPlayer(name: string, index: number, backgroundId: string): Player 
     hasMovedThisTurn: false,
     actionsRemaining: 1,
     skipNextMove: false,
+    hasLootedStashThisTurn: false,
     alive: true,
     respawning: false,
     respawnTargetIndex: null,

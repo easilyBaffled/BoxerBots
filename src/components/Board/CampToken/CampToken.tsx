@@ -10,9 +10,12 @@ export function CampToken({ camp }: Props) {
     <div
       className={styles.camp}
       style={{ borderColor: `var(--color-${camp.ownerColor})` }}
-      title={`${camp.ownerName}'s camp`}
+      title={`${camp.ownerName}'s camp${camp.stash.length > 0 ? ` · ${camp.stash.length} card${camp.stash.length !== 1 ? 's' : ''} stashed` : ''}`}
     >
       ⛺
+      {camp.stash.length > 0 && (
+        <span className={styles.stashBadge}>{camp.stash.length}</span>
+      )}
     </div>
   );
 }
