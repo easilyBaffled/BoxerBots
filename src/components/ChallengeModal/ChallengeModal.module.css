@@ -56,6 +56,14 @@
 .threshold.met { color: #ca8a04; font-weight: 600; }
 .threshold.metSolve { color: #16a34a; font-weight: 700; }
 
+.rewardBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #16a34a;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
 .progressBar {
   flex: 1;
   height: 6px;

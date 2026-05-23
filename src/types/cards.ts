@@ -21,6 +21,11 @@ export interface MountainCardDef {
   flavorText?: string;
 }
 
+export interface SolveReward {
+  gold?: number;
+  draw?: number;
+}
+
 export interface ChallengeCardDef {
   definitionId: string;
   name: string;
@@ -29,6 +34,7 @@ export interface ChallengeCardDef {
   passThreshold: number;
   solveThreshold: number;
   failPenalty: FailPenalty;
+  solveReward: SolveReward;
   description: string;
 }
 

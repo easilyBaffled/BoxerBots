@@ -50,7 +50,6 @@ export interface ActiveChallenge {
   innateTotal: number;       // contribution from baseStats alone (always shown)
   currentStatTotal: number;  // innate + cards + skills
   outcome: 'pass' | 'solve' | 'fail' | null;
-  pendingSlots: number[];
   canRetreat: boolean;
 }
 

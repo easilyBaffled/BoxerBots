@@ -9,6 +9,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 4,
     solveThreshold: 8,
     failPenalty: { type: 'fall', description: 'You are swept off the mountain!' },
+    solveReward: { gold: 3 },
     description: 'A sudden whiteout strips visibility and saps body heat.',
   },
   {
@@ -19,6 +20,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 3,
     solveThreshold: 7,
     failPenalty: { type: 'fall', description: 'The ice cracks and you plunge!' },
+    solveReward: { gold: 2 },
     description: 'A deceptively thin sheet of ice over a void.',
   },
   {
@@ -29,6 +31,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 3,
     solveThreshold: 6,
     failPenalty: { type: 'discard', amount: 2, description: 'You collapse, dropping your gear.' },
+    solveReward: { draw: 2 },
     description: 'Your head pounds and lungs burn.',
   },
   {
@@ -39,6 +42,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 3,
     solveThreshold: 5,
     failPenalty: { type: 'skip_turn', description: 'You are pinned down until your next turn.' },
+    solveReward: { gold: 1 },
     description: 'A territorial goat blocks the path and charges.',
   },
   {
@@ -49,6 +53,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 2,
     solveThreshold: 5,
     failPenalty: { type: 'discard', amount: 2, description: 'Rocks knock gear from your hands.' },
+    solveReward: { draw: 1 },
     description: 'Boulders cascade from above.',
   },
   {
@@ -59,6 +64,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 4,
     solveThreshold: 7,
     failPenalty: { type: 'fall', description: 'You slip into the crevasse!' },
+    solveReward: { gold: 2 },
     description: 'A gaping split in the glacier must be crossed.',
   },
   {
@@ -69,6 +75,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 3,
     solveThreshold: 6,
     failPenalty: { type: 'discard', amount: 2, description: 'Gear is torn away in the wind.' },
+    solveReward: { gold: 1, draw: 1 },
     description: 'An unexpected squall hits with full force.',
   },
   {
@@ -79,6 +86,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 4,
     solveThreshold: 7,
     failPenalty: { type: 'lose_card', amount: 1, description: 'Frostbite costs you a card permanently.' },
+    solveReward: { draw: 2 },
     description: 'Extremities going numb — act fast.',
   },
   {
@@ -89,6 +97,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 5,
     solveThreshold: 9,
     failPenalty: { type: 'fall', description: 'A serac collapses and carries you down!' },
+    solveReward: { gold: 3 },
     description: 'Towers of ice teeter overhead.',
   },
   {
@@ -99,6 +108,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 4,
     solveThreshold: 7,
     failPenalty: { type: 'discard', amount: 3, description: 'You collapse, scattering your supplies.' },
+    solveReward: { draw: 2 },
     description: 'Your body is running on empty.',
   },
   {
@@ -109,6 +119,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 5,
     solveThreshold: 10,
     failPenalty: { type: 'fall', description: 'The ice storm hurls you from the mountain!' },
+    solveReward: { gold: 4 },
     description: 'Razor ice pellets in hurricane winds.',
   },
   {
@@ -119,6 +130,7 @@ export const CHALLENGE_CARDS: ChallengeCardDef[] = [
     passThreshold: 3,
     solveThreshold: 6,
     failPenalty: { type: 'skip_turn', description: 'The leopard forces you to wait it out.' },
+    solveReward: { gold: 1 },
     description: 'A rare apex predator eyes you hungrily.',
   },
 ];

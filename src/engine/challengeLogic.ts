@@ -1,6 +1,7 @@
-import type { GameState, ActiveChallenge, MountainSlot } from '../types/game';
+import type { GameState, ActiveChallenge } from '../types/game';
 import type { PlayerCard, SkillCard, StatBlock, StatDomain, ChallengeCardDef } from '../types/cards';
 import { addLog } from './logHelpers';
+import { drawCards } from './deckLogic';
 
 export function calculateInnate(baseStats: StatBlock, challenge: ChallengeCardDef): number {
   let total = 0;
@@ -43,12 +44,6 @@ export function openChallenge(
   if (!challenge) return state;
 
   const activePlayer = state.players[state.activePlayerIndex];
-
-  const pendingSlots: number[] = [];
-  slot.challengeSlots.forEach((c, i) => {
-    if (c !== null && i !== challengeSlotIndex) pendingSlots.push(i);
-  });
-
   const innateTotal = calculateInnate(activePlayer.baseStats, challenge);
   const fullTotal = calculateTotal([], activePlayer.activeSkills, activePlayer.baseStats, challenge);
 
@@ -60,7 +55,6 @@ export function openChallenge(
     innateTotal,
     currentStatTotal: fullTotal,
     outcome: null,
-    pendingSlots,
     canRetreat,
   };
 
@@ -127,7 +121,7 @@ export function resolveChallenge(state: GameState): GameState {
   if (!state.activeChallenge) return state;
 
   const ac = state.activeChallenge;
-  const { passThreshold, solveThreshold } = ac.challengeCard;
+  const { passThreshold, solveThreshold, solveReward } = ac.challengeCard;
   const total = ac.currentStatTotal;
 
   let outcome: 'pass' | 'solve' | 'fail';
@@ -140,27 +134,63 @@ export function resolveChallenge(state: GameState): GameState {
   }
 
   const activePlayer = state.players[state.activePlayerIndex];
-  let newState: GameState = { ...state, activeChallenge: { ...ac, outcome } };
 
   // Move committed cards to discard
   const committed = new Set(ac.committedCardIds);
   const spentCards = activePlayer.hand.filter(c => committed.has(c.id));
-  const newHand = activePlayer.hand.filter(c => !committed.has(c.id));
-  const newDiscard = [...activePlayer.discardPile, ...spentCards];
+  const afterHand = activePlayer.hand.filter(c => !committed.has(c.id));
+  const afterDiscard = [...activePlayer.discardPile, ...spentCards];
+
+  let newState: GameState = {
+    ...state,
+    activeChallenge: null,
+    players: state.players.map(p =>
+      p.id === activePlayer.id
+        ? { ...p, hand: afterHand, discardPile: afterDiscard }
+        : p
+    ),
+  };
 
   if (outcome === 'solve') {
+    // Remove challenge permanently from the board
     const newSlots = [...newState.board.mountainSlots];
     const slot = { ...newSlots[ac.mountainSlotIndex] };
     const challengeSlots = [...slot.challengeSlots];
     challengeSlots[ac.challengeSlotIndex] = null;
     slot.challengeSlots = challengeSlots;
     newSlots[ac.mountainSlotIndex] = slot;
+    newState = { ...newState, board: { ...newState.board, mountainSlots: newSlots } };
+
+    // Apply solve reward
+    let rewardGold = solveReward.gold ?? 0;
+    let rewardDraw = solveReward.draw ?? 0;
+
+    if (rewardGold > 0) {
+      newState = { ...newState, turnGold: newState.turnGold + rewardGold };
+    }
+
+    if (rewardDraw > 0) {
+      const solver = newState.players.find(p => p.id === activePlayer.id)!;
+      const { drawn, newDeck, newDiscard } = drawCards(solver.deck, solver.discardPile, rewardDraw);
+      newState = {
+        ...newState,
+        players: newState.players.map(p =>
+          p.id === activePlayer.id
+            ? { ...p, hand: [...p.hand, ...drawn], deck: newDeck, discardPile: newDiscard }
+            : p
+        ),
+      };
+    }
+
+    const rewardParts: string[] = [];
+    if (rewardGold > 0) rewardParts.push(`${rewardGold} gold`);
+    if (rewardDraw > 0) rewardParts.push(`draw ${rewardDraw}`);
+    const rewardText = rewardParts.length > 0 ? ` Reward: ${rewardParts.join(', ')}.` : '';
 
     newState = {
       ...newState,
-      board: { ...newState.board, mountainSlots: newSlots },
       log: addLog(newState.log, {
-        message: `${activePlayer.name} COMPLETED "${ac.challengeCard.name}"! Removed permanently for all climbers.`,
+        message: `${activePlayer.name} COMPLETED "${ac.challengeCard.name}"! Removed permanently for all climbers.${rewardText}`,
         type: 'challenge',
         playerName: activePlayer.name,
         playerColor: activePlayer.color,
@@ -189,17 +219,7 @@ export function resolveChallenge(state: GameState): GameState {
     newState = applyFailPenalty(newState, activePlayer.id, ac.challengeCard);
   }
 
-  newState = {
-    ...newState,
-    players: newState.players.map(p =>
-      p.id === activePlayer.id
-        ? { ...p, hand: newHand, discardPile: newDiscard }
-        : p
-    ),
-    activeChallenge: null,
-  };
-
-  return advanceToNextChallenge(newState, ac);
+  return newState;
 }
 
 export function loseChallenge(state: GameState): GameState {
@@ -209,6 +229,7 @@ export function loseChallenge(state: GameState): GameState {
 
   let newState = {
     ...state,
+    activeChallenge: null,
     log: addLog(state.log, {
       message: `${activePlayer.name} gave up on "${ac.challengeCard.name}" — taking the penalty.`,
       type: 'challenge',
@@ -217,10 +238,7 @@ export function loseChallenge(state: GameState): GameState {
     }),
   };
 
-  newState = applyFailPenalty(newState, activePlayer.id, ac.challengeCard);
-  newState = { ...newState, activeChallenge: null };
-
-  return advanceToNextChallenge(newState, ac);
+  return applyFailPenalty(newState, activePlayer.id, ac.challengeCard);
 }
 
 export function retreatFromChallenge(state: GameState): GameState {
@@ -228,7 +246,6 @@ export function retreatFromChallenge(state: GameState): GameState {
   const activePlayer = state.players[state.activePlayerIndex];
   const retreatIndex = activePlayer.positionIndex - 1;
 
-  // Can't retreat below base
   if (retreatIndex < 0) return state;
 
   const fromIndex = activePlayer.positionIndex;
@@ -255,44 +272,14 @@ export function retreatFromChallenge(state: GameState): GameState {
     }),
   };
 
-  // Trigger challenge on the retreat destination if one exists
+  // Trigger first challenge on the retreat destination (can't retreat again)
   const retreatSlot = newState.board.mountainSlots[retreatIndex];
   const firstChIdx = retreatSlot.challengeSlots.findIndex(c => c !== null);
   if (firstChIdx !== -1) {
-    // Retreat destinations can't be retreated from again
     newState = openChallenge(newState, retreatIndex, firstChIdx, false);
   }
 
   return newState;
-}
-
-function advanceToNextChallenge(state: GameState, ac: ActiveChallenge): GameState {
-  if (ac.pendingSlots.length === 0) return state;
-
-  const nextSlot = ac.pendingSlots[0];
-  const remaining = ac.pendingSlots.slice(1);
-  const slot: MountainSlot = state.board.mountainSlots[ac.mountainSlotIndex];
-  const nextChallenge = slot?.challengeSlots[nextSlot];
-  if (!nextChallenge) return state;
-
-  const updPlayer = state.players[state.activePlayerIndex];
-  const innateTotal = calculateInnate(updPlayer.baseStats, nextChallenge);
-  const fullTotal = calculateTotal([], updPlayer.activeSkills, updPlayer.baseStats, nextChallenge);
-
-  return {
-    ...state,
-    activeChallenge: {
-      mountainSlotIndex: ac.mountainSlotIndex,
-      challengeSlotIndex: nextSlot,
-      challengeCard: nextChallenge,
-      committedCardIds: [],
-      innateTotal,
-      currentStatTotal: fullTotal,
-      outcome: null,
-      pendingSlots: remaining,
-      canRetreat: false, // can't retreat mid-sequence
-    },
-  };
 }
 
 function applyFailPenalty(state: GameState, playerId: string, challenge: ChallengeCardDef): GameState {

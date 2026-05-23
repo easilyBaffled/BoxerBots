@@ -56,10 +56,15 @@ export function ChallengeModal() {
   const passProgress = Math.min(1, currentStatTotal / challengeCard.passThreshold);
   const solveProgress = Math.min(1, currentStatTotal / challengeCard.solveThreshold);
 
+  const rewardParts: string[] = [];
+  if (challengeCard.solveReward.gold) rewardParts.push(`${challengeCard.solveReward.gold}💰`);
+  if (challengeCard.solveReward.draw) rewardParts.push(`draw ${challengeCard.solveReward.draw}`);
+  const rewardText = rewardParts.join(' + ');
+
   let resolveLabel = 'Attempt (will fail)';
   let resolveClass = styles.failBtn;
   if (willSolve) {
-    resolveLabel = 'Complete Challenge ✓';
+    resolveLabel = `Complete ✓  +${rewardText}`;
     resolveClass = styles.solveBtn;
   } else if (willPass) {
     resolveLabel = 'Pass Challenge →';
@@ -95,6 +100,7 @@ export function ChallengeModal() {
             <div className={styles.progressBar}>
               <div className={styles.solveBar} style={{ width: `${solveProgress * 100}%` }} />
             </div>
+            <span className={styles.rewardBadge}>+{rewardText}</span>
           </div>
           <div className={styles.totalRow}>
             <span>Total: <strong>{currentStatTotal}</strong></span>
