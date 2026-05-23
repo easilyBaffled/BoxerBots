@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit — V2 Trail Journal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Barlow+Semi+Condensed:ital,wght@0,400;0,600;0,700;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#1a1208; --surface:#2a1e10; --s2:#362818; --s3:#422f1c;
+  --b1:#503820; --b2:#705030; --am:#d4823a; --am2:#f0a858;
+  --sage:#8ab870; --rust:#a04020; --t1:#c8b88a; --t2:#907858; --t3:#604830;
+  --mono:'Share Tech Mono','Courier New',monospace;
+}
+body { background:var(--bg); color:var(--t1); font-family:'Barlow Semi Condensed','Arial Narrow',sans-serif; height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+
+/* HUD */
+.hud { background:var(--surface); border-bottom:2px solid var(--am); display:flex; align-items:center; justify-content:space-between; padding:0 20px; height:54px; flex-shrink:0; }
+.hud-left { display:flex; align-items:center; gap:10px; }
+.hud-emoji { font-size:1.4rem; }
+.hud-name strong { display:block; font-family:'Cinzel',serif; font-weight:700; font-size:1rem; color:var(--t1); letter-spacing:.14em; }
+.hud-name small { font-family:var(--mono); font-size:.56rem; color:var(--t2); letter-spacing:.1em; text-transform:uppercase; }
+.hud-center { display:flex; align-items:center; gap:5px; font-family:var(--mono); font-size:.63rem; letter-spacing:.05em; }
+.ph { color:var(--t3); text-transform:uppercase; padding:2px 3px; }
+.ph-arr { color:var(--b2); }
+.ph-active { display:inline-flex; align-items:center; gap:4px; background:rgba(212,130,58,.13); border:1px solid rgba(212,130,58,.38); border-radius:3px; padding:2px 9px; color:var(--am); font-weight:bold; letter-spacing:.08em; }
+.hud-right { display:flex; align-items:center; gap:12px; }
+.gold { font-family:var(--mono); font-size:.85rem; color:var(--am2); background:rgba(212,130,58,.1); border:1px solid rgba(212,130,58,.28); border-radius:3px; padding:3px 9px; }
+.deck-info { font-family:var(--mono); font-size:.56rem; color:var(--t2); line-height:1.6; text-align:right; }
+.help { width:22px; height:22px; border-radius:50%; border:1px solid var(--b2); background:transparent; color:var(--t2); font-family:var(--mono); font-size:.68rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+
+/* LAYOUT */
+.main { display:flex; flex:1; overflow:hidden; }
+
+/* MOUNTAIN COLUMN */
+.mountain-col { width:240px; flex-shrink:0; border-right:2px solid var(--am); background:var(--surface); display:flex; flex-direction:column; overflow:hidden; }
+.trail-header { padding:9px 12px 7px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--b1); flex-shrink:0; }
+.trail-header::before,.trail-header::after { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--am),transparent); opacity:.55; }
+.trail-header span { font-family:'Cinzel',serif; font-size:.68rem; font-weight:700; color:var(--am); letter-spacing:.22em; white-space:nowrap; }
+.tiles { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:6px; }
+.tiles::-webkit-scrollbar { width:3px; }
+.tiles::-webkit-scrollbar-thumb { background:var(--b2); border-radius:2px; }
+
+/* TILE — journal-entry style with topo contour texture */
+.tile { position:relative; border-radius:4px; border:1px solid var(--b1); background:var(--s2); padding:8px 10px 8px 12px; display:flex; align-items:center; gap:8px; overflow:hidden; cursor:default; }
+.tile::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent 0,transparent 10px,rgba(212,130,58,.035) 10px,rgba(212,130,58,.035) 11px,transparent 11px,transparent 17px,rgba(212,130,58,.02) 17px,rgba(212,130,58,.02) 18px); pointer-events:none; }
+.tile-mark { position:absolute; right:26px; top:50%; transform:translateY(-50%); font-size:2.1rem; opacity:.07; pointer-events:none; user-select:none; line-height:1; }
+.tile-body { flex:1; position:relative; z-index:1; min-width:0; }
+.tile-name { font-family:'Cinzel',serif; font-weight:700; font-size:.71rem; color:var(--t1); letter-spacing:.06em; line-height:1.2; }
+.tile-zone { font-family:var(--mono); font-size:.52rem; color:var(--t3); text-transform:uppercase; letter-spacing:.1em; margin-top:1px; }
+.tile-elev { position:relative; z-index:1; font-family:var(--mono); font-size:.88rem; color:var(--am); font-weight:bold; text-align:right; white-space:nowrap; min-width:22px; }
+.tile-elev small { display:block; font-size:.48rem; color:var(--t3); letter-spacing:.06em; text-align:center; }
+.tile.current { border-left:4px solid var(--am); border-color:var(--am); background:var(--s3); }
+.tile.current .tile-name { color:var(--am2); }
+/* Shield-crest tokens */
+.tokens { display:flex; gap:3px; margin-top:4px; }
+.token { width:20px; height:20px; clip-path:polygon(50% 0%,100% 18%,100% 65%,50% 100%,0% 65%,0% 18%); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.46rem; font-weight:bold; }
+.token.alex { background:linear-gradient(160deg,#3a6e2a,#5a9840); color:#c8f0a8; }
+.token.raj  { background:linear-gradient(160deg,#1a3a7e,#2858b0); color:#a8c8f8; }
+/* Summit pulsing glow */
+.tile.summit { border-color:var(--am2); animation:glow 2.6s ease-in-out infinite; }
+.tile.summit .tile-name { color:var(--am2); }
+@keyframes glow { 0%,100%{box-shadow:0 0 5px rgba(240,168,88,.18)} 50%{box-shadow:0 0 14px rgba(240,168,88,.52),0 0 30px rgba(240,168,88,.14)} }
+/* Hidden / unexplored */
+.tile.hidden { border-style:dashed; border-color:var(--b1); opacity:.62; }
+.tile.hidden .tile-name { font-family:var(--mono); font-size:.55rem; color:var(--t3); letter-spacing:.16em; }
+.tile.hidden .tile-mark { font-size:1.6rem; opacity:.12; }
+
+/* RIGHT AREA */
+.right-area { flex:1; display:flex; flex-direction:column; padding:18px 20px 14px; gap:12px; overflow:hidden; }
+.section-head { font-family:'Cinzel',serif; font-weight:700; font-size:.95rem; color:var(--t1); letter-spacing:.18em; text-transform:uppercase; display:flex; align-items:center; gap:10px; }
+.section-head::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--b1),transparent); }
+.section-sub { font-size:.7rem; color:var(--t2); font-style:italic; margin-top:-6px; }
+.routes { display:flex; flex-direction:column; gap:8px; flex:1; }
+.route { border:1px solid var(--b1); border-radius:4px; background:var(--s2); padding:11px 16px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:all .14s; position:relative; overflow:hidden; }
+.route::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:transparent; transition:background .14s; }
+.route:hover,.route.sel { border-color:var(--am); background:var(--s3); }
+.route:hover::before,.route.sel::before { background:var(--am); }
+.route-ico { font-size:1.4rem; width:34px; text-align:center; flex-shrink:0; }
+.route-info { flex:1; }
+.route-dest { font-family:'Cinzel',serif; font-weight:700; font-size:.82rem; color:var(--t1); letter-spacing:.07em; }
+.route-meta { font-family:var(--mono); font-size:.58rem; color:var(--t2); margin-top:2px; display:flex; gap:10px; }
+.route-tags { display:flex; gap:4px; margin-top:4px; }
+.tag { font-family:var(--mono); font-size:.5rem; padding:1px 5px; border-radius:2px; text-transform:uppercase; letter-spacing:.07em; }
+.tag.diff { background:rgba(160,64,32,.28); color:var(--rust); border:1px solid rgba(160,64,32,.38); }
+.tag.exp  { background:rgba(212,130,58,.13); color:var(--am);   border:1px solid rgba(212,130,58,.28); }
+.tag.sce  { background:rgba(138,184,112,.1); color:var(--sage); border:1px solid rgba(138,184,112,.24); }
+.tag.tech { background:rgba(120,100,160,.18); color:#b0a0d8;    border:1px solid rgba(120,100,160,.32); }
+.route-cost { font-family:var(--mono); font-size:.75rem; color:var(--am); font-weight:bold; text-align:right; min-width:32px; }
+.route-cost small { display:block; font-size:.5rem; color:var(--t3); text-align:center; }
+.advance-row { display:flex; justify-content:flex-end; padding-top:2px; }
+.btn-advance { font-family:'Cinzel',serif; font-weight:700; font-size:.78rem; letter-spacing:.2em; color:var(--surface); background:linear-gradient(135deg,var(--am),var(--am2)); border:none; border-radius:4px; padding:10px 28px; cursor:pointer; box-shadow:0 3px 12px rgba(212,130,58,.35); transition:all .14s; }
+.btn-advance:hover { transform:translateY(-1px); box-shadow:0 5px 18px rgba(212,130,58,.5); }
+
+/* HAND TRAY */
+.hand-tray { background:var(--surface); border-top:2px solid var(--am); padding:9px 16px 10px; flex-shrink:0; display:flex; flex-direction:column; gap:7px; }
+.tray-hdr { display:flex; align-items:center; justify-content:space-between; }
+.tray-title { font-family:'Cinzel',serif; font-weight:700; font-size:.73rem; color:var(--am); letter-spacing:.16em; text-transform:uppercase; }
+.btn-end { font-family:'Cinzel',serif; font-weight:700; font-size:.63rem; letter-spacing:.14em; color:var(--am); background:transparent; border:1px solid var(--am); border-radius:3px; padding:5px 13px; cursor:pointer; text-transform:uppercase; transition:background .14s; }
+.btn-end:hover { background:rgba(212,130,58,.12); }
+.cards-row { display:flex; gap:10px; justify-content:center; align-items:flex-end; }
+
+/* CARDS — PARKS-style portrait */
+.card { width:90px; height:130px; border-radius:5px; border:1px solid var(--b1); background:var(--s2); display:flex; flex-direction:column; overflow:hidden; cursor:pointer; transition:transform .15s,box-shadow .15s,border-color .15s; position:relative; flex-shrink:0; }
+.card:hover    { transform:translateY(-7px);  box-shadow:0 10px 22px rgba(212,130,58,.22); border-color:var(--b2); }
+.card.selected { transform:translateY(-11px); box-shadow:0 13px 28px rgba(212,130,58,.48); border-color:var(--am); }
+/* Art area — full-bleed warm gradient top 55% */
+.card-art { height:55%; position:relative; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.card-art.tool    { background:linear-gradient(160deg,#1a1a2e 0%,#2e2a48 65%,#1c1a3a 100%); }
+.card-art.utility { background:linear-gradient(160deg,#0e1e0a 0%,#1e3214 65%,#0c1a08 100%); }
+.card-art.skill   { background:linear-gradient(160deg,#1e100a 0%,#3a2010 65%,#2a180a 100%); }
+.card-icon { font-size:2rem; line-height:1; position:relative; z-index:1; }
+/* Left-edge cost strip at art/stats boundary — NOT a floating badge */
+.cost-strip { position:absolute; left:0; bottom:0; width:20px; background:var(--am); color:#1a1208; font-family:var(--mono); font-size:.56rem; font-weight:bold; padding:2px 0; text-align:center; border-top-right-radius:3px; z-index:2; }
+/* Dark name band — 8px clear separation from art */
+.card-name-band { background:rgba(10,7,3,.78); padding:5px 5px 3px; text-align:center; border-top:1px solid rgba(255,255,255,.06); }
+.card-name { font-family:'Cinzel',serif; font-weight:700; font-size:.57rem; color:var(--t1); letter-spacing:.06em; text-transform:uppercase; line-height:1.2; }
+.card-type { font-family:var(--mono); font-size:.46rem; color:var(--t3); text-transform:uppercase; letter-spacing:.1em; margin-top:1px; }
+/* Tinted bottom stats band */
+.card-stats { background:rgba(255,255,255,.05); flex:1; padding:4px 5px; display:flex; flex-direction:column; gap:2px; border-top:1px solid rgba(255,255,255,.04); }
+.stat-line { font-family:var(--mono); font-size:.48rem; color:var(--t2); letter-spacing:.04em; }
+.effect { font-family:'Barlow Semi Condensed',sans-serif; font-size:.51rem; color:var(--t1); line-height:1.35; margin-top:1px; }
+
+/* SAMPLE BADGE */
+.sample-badge { position:fixed; bottom:10px; right:10px; background:rgba(26,18,8,.92); border:1px solid var(--am); border-radius:3px; padding:4px 10px; font-family:var(--mono); font-size:.56rem; color:var(--am); letter-spacing:.1em; text-transform:uppercase; z-index:100; backdrop-filter:blur(4px); }
+</style>
+</head>
+<body>
+
+<!-- HUD BAR -->
+<header class="hud">
+  <div class="hud-left">
+    <div class="hud-emoji">🧗</div>
+    <div class="hud-name">
+      <strong>ALEX</strong>
+      <small>Lead Climber</small>
+    </div>
+  </div>
+
+  <div class="hud-center">
+    <span class="ph">◀ Play Cards</span>
+    <span class="ph-arr">▶</span>
+    <span class="ph-active">▶ MOVE</span>
+    <span class="ph-arr">◀</span>
+    <span class="ph">Buy</span>
+    <span class="ph-arr">◀</span>
+    <span class="ph">End</span>
+  </div>
+
+  <div class="hud-right">
+    <div class="gold">💰 5g</div>
+    <div class="deck-info">
+      <div>DECK 12 · DISCARD 3</div>
+      <div>HAND 5 · PLAYED 0</div>
+    </div>
+    <button class="help">?</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- Mountain Column — Trail Log -->
+  <aside class="mountain-col">
+    <div class="trail-header"><span>▲ TRAIL LOG</span></div>
+    <div class="tiles">
+
+      <!-- Frost Summit — pulsing glow, top of trail -->
+      <div class="tile summit">
+        <div class="tile-mark">🏔️</div>
+        <div class="tile-body">
+          <div class="tile-name">Frost Summit</div>
+          <div class="tile-zone">Zone · Summit Peak</div>
+        </div>
+        <div class="tile-elev">12<small>ELEV</small></div>
+      </div>
+
+      <!-- Unexplored zone -->
+      <div class="tile hidden">
+        <div class="tile-mark">?</div>
+        <div class="tile-body">
+          <div class="tile-name">UNEXPLORED</div>
+          <div class="tile-zone">Zone · Unknown</div>
+        </div>
+        <div class="tile-elev" style="color:var(--t3)">10<small>ELEV</small></div>
+      </div>
+
+      <!-- Unexplored zone -->
+      <div class="tile hidden">
+        <div class="tile-mark">?</div>
+        <div class="tile-body">
+          <div class="tile-name">UNEXPLORED</div>
+          <div class="tile-zone">Zone · Unknown</div>
+        </div>
+        <div class="tile-elev" style="color:var(--t3)">9<small>ELEV</small></div>
+      </div>
+
+      <!-- Dead Ridge — scouted ahead -->
+      <div class="tile">
+        <div class="tile-mark">🪨</div>
+        <div class="tile-body">
+          <div class="tile-name">Dead Ridge</div>
+          <div class="tile-zone">Zone · High Alpine</div>
+        </div>
+        <div class="tile-elev">8<small>ELEV</small></div>
+      </div>
+
+      <!-- Glacier Field — current position, alex + raj tokens -->
+      <div class="tile current">
+        <div class="tile-mark">🧊</div>
+        <div class="tile-body">
+          <div class="tile-name">Glacier Field</div>
+          <div class="tile-zone">Zone · Alpine · Active Camp</div>
+          <div class="tokens">
+            <div class="token alex">AL</div>
+            <div class="token raj">RJ</div>
+          </div>
+        </div>
+        <div class="tile-elev">7<small>ELEV</small></div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Right Area — Route Selection -->
+  <div class="right-area">
+    <div class="section-head">Choose Your Route</div>
+    <div class="section-sub">Select an adjacent zone to advance. Entry costs apply on arrival.</div>
+
+    <div class="routes">
+
+      <div class="route sel">
+        <div class="route-ico">🪨</div>
+        <div class="route-info">
+          <div class="route-dest">Dead Ridge</div>
+          <div class="route-meta">
+            <span>⬆ Elev 8 (+1)</span><span>≈ 1.4 km</span><span>⏱ 2 hrs</span>
+          </div>
+          <div class="route-tags">
+            <span class="tag exp">Exposed</span><span class="tag sce">Scenic</span>
+          </div>
+        </div>
+        <div class="route-cost">0g<small>COST</small></div>
+      </div>
+
+      <div class="route">
+        <div class="route-ico">🌬️</div>
+        <div class="route-info">
+          <div class="route-dest">Windward Shelf</div>
+          <div class="route-meta">
+            <span>⬆ Elev 8 (+1)</span><span>≈ 1.8 km</span><span>⏱ 3 hrs</span>
+          </div>
+          <div class="route-tags">
+            <span class="tag diff">Difficult</span><span class="tag tech">Technical</span>
+          </div>
+        </div>
+        <div class="route-cost">2g<small>COST</small></div>
+      </div>
+
+      <div class="route">
+        <div class="route-ico">🌲</div>
+        <div class="route-info">
+          <div class="route-dest">Treeline Camp</div>
+          <div class="route-meta">
+            <span>⬇ Elev 5 (−2)</span><span>≈ 2.1 km</span><span>⏱ 1 hr</span>
+          </div>
+          <div class="route-tags">
+            <span class="tag sce">Scenic</span>
+          </div>
+        </div>
+        <div class="route-cost">0g<small>RETREAT</small></div>
+      </div>
+
+    </div>
+
+    <div class="advance-row">
+      <button class="btn-advance">ADVANCE →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- HAND TRAY -->
+<div class="hand-tray">
+  <div class="tray-hdr">
+    <div class="tray-title">Field Kit — 5 Cards</div>
+    <button class="btn-end">End Turn ▶</button>
+  </div>
+  <div class="cards-row">
+
+    <!-- Ice Axe · tool · 2g — SELECTED -->
+    <div class="card selected">
+      <div class="card-art tool">
+        <div class="card-icon">⛏️</div>
+        <div class="cost-strip">2g</div>
+      </div>
+      <div class="card-name-band">
+        <div class="card-name">Ice Axe</div>
+        <div class="card-type">Tool</div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-line">CLB +2 · ANC +1</div>
+        <div class="effect">+2 climb on ice terrain. May set anchor.</div>
+      </div>
+    </div>
+
+    <!-- Survey Map · utility · 1g -->
+    <div class="card">
+      <div class="card-art utility">
+        <div class="card-icon">🗺️</div>
+        <div class="cost-strip">1g</div>
+      </div>
+      <div class="card-name-band">
+        <div class="card-name">Survey Map</div>
+        <div class="card-type">Utility</div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-line">VIS +3 · RNG +1</div>
+        <div class="effect">Reveal 2 hidden tiles. Draw 1 card.</div>
+      </div>
+    </div>
+
+    <!-- Acclimatize · skill · 0g -->
+    <div class="card">
+      <div class="card-art skill">
+        <div class="card-icon">🫁</div>
+        <div class="cost-strip">0g</div>
+      </div>
+      <div class="card-name-band">
+        <div class="card-name">Acclimatize</div>
+        <div class="card-type">Skill</div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-line">STA +2 · ALT IGN</div>
+        <div class="effect">Ignore altitude penalty this turn.</div>
+      </div>
+    </div>
+
+    <!-- Piton Set · tool · 3g -->
+    <div class="card">
+      <div class="card-art tool">
+        <div class="card-icon">🔩</div>
+        <div class="cost-strip">3g</div>
+      </div>
+      <div class="card-name-band">
+        <div class="card-name">Piton Set</div>
+        <div class="card-type">Tool</div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-line">CLB +3 · SAF +1</div>
+        <div class="effect">Secure route. Others pay +1g to follow.</div>
+      </div>
+    </div>
+
+    <!-- Trail Rations · utility · 1g -->
+    <div class="card">
+      <div class="card-art utility">
+        <div class="card-icon">🥜</div>
+        <div class="cost-strip">1g</div>
+      </div>
+      <div class="card-name-band">
+        <div class="card-name">Trail Rations</div>
+        <div class="card-type">Utility</div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-line">STA +3 · MOV +1</div>
+        <div class="effect">Restore 3 stamina. Free move +1 zone.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SAMPLE BADGE -->
+<div class="sample-badge">V2 · Option 2 · Trail Journal</div>
+
+</body>
+</html>

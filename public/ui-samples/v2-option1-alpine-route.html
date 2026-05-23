@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit — Alpine Route UI v2 Option 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+/* ─── CSS TOKENS ─────────────────────────────────────────────────────────── */
+:root {
+  --bg:       #f0f4f8;
+  --surface:  #ffffff;
+  --surface2: #e8eef4;
+  --border:   #c8d8e8;
+  --navy:     #1a2a3a;
+  --navy2:    #2a4060;
+  --glacier:  #4a90c4;
+  --amber:    #e8a020;
+  --text1:    #1a2a3a;
+  --text2:    #4a6a8a;
+  --text3:    #8aaac8;
+  --tool-stripe:   #4a90c4;
+  --util-stripe:   #5a9a6a;
+  --skill-stripe:  #8a6ab8;
+  --tool-bg:   #e8f0f8;
+  --util-bg:   #e8f4ec;
+  --skill-bg:  #f0eaf8;
+}
+
+/* ─── RESET & BASE ───────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text1);
+  overflow: hidden;
+}
+
+/* ─── SAMPLE BADGE ───────────────────────────────────────────────────────── */
+.sample-badge {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 999;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  color: var(--text2);
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+
+/* ─── LAYOUT SHELL ───────────────────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ─── HUD BAR ────────────────────────────────────────────────────────────── */
+.hud {
+  flex: 0 0 auto;
+  background: var(--surface);
+  border-bottom: 2px solid var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 50px;
+  padding: 0 12px;
+  position: relative;
+}
+
+/* Player identity */
+.hud-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+}
+.hud-player-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--glacier);
+  flex-shrink: 0;
+}
+.hud-player-info { display: flex; flex-direction: column; }
+.hud-player-name {
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: var(--navy);
+  line-height: 1;
+}
+.hud-player-role {
+  font-family: 'Courier New', monospace;
+  font-size: 0.55rem;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+/* Phase progress bar */
+.hud-phase {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 0 24px;
+}
+.phase-bar {
+  display: flex;
+  width: 100%;
+  max-width: 360px;
+  height: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.phase-seg {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', monospace;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+  background: var(--surface2);
+  border-right: 1.5px solid var(--border);
+  transition: background 0.2s, color 0.2s;
+}
+.phase-seg:last-child { border-right: none; }
+.phase-seg.active {
+  background: var(--glacier);
+  color: #fff;
+}
+.phase-seg.done {
+  background: var(--navy2);
+  color: rgba(255,255,255,0.6);
+}
+
+/* HUD right */
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 180px;
+  justify-content: flex-end;
+}
+.hud-gold {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 0.05em;
+}
+.hud-counts {
+  font-family: 'Courier New', monospace;
+  font-size: 0.65rem;
+  color: var(--text2);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.hud-help {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  font-size: 0.7rem;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.hud-help:hover { border-color: var(--glacier); color: var(--glacier); }
+
+/* ─── MAIN AREA ──────────────────────────────────────────────────────────── */
+.main {
+  flex: 1 1 0;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ─── MOUNTAIN COLUMN ────────────────────────────────────────────────────── */
+.mountain-col {
+  flex: 0 0 220px;
+  border-right: 1.5px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.mountain-header {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  text-align: center;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+}
+
+/* Weather forecast strip */
+.forecast-strip {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.forecast-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  text-transform: uppercase;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+.forecast-tiles {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+.forecast-tile {
+  width: 38px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3px 2px 2px;
+  gap: 1px;
+}
+.forecast-tile .day-num {
+  font-family: 'Courier New', monospace;
+  font-size: 0.45rem;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+}
+.forecast-tile .day-icon { font-size: 0.9rem; line-height: 1; }
+.forecast-tile .day-label {
+  font-size: 0.45rem;
+  color: var(--text2);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-align: center;
+  line-height: 1.1;
+}
+
+/* Route map */
+.route-map {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.route-track {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  padding: 0 8px;
+}
+/* Vertical center line */
+.route-track::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 13px;
+  bottom: 13px;
+  width: 2px;
+  background: var(--border);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.route-node-row {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0;
+  min-height: 44px;
+}
+
+/* Elevation number (left) */
+.node-elev {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  color: var(--glacier);
+  font-weight: 700;
+  width: 22px;
+  text-align: right;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Node circle area (center) */
+.node-circle-wrap {
+  flex-shrink: 0;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.node-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+.node-circle.hidden {
+  border: 2px dashed var(--border);
+  background: var(--surface2);
+}
+.node-circle.current {
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--amber);
+  background: var(--glacier);
+  box-shadow: 0 0 0 3px rgba(232,160,32,0.25);
+}
+.node-circle.visited {
+  border-color: var(--navy2);
+  background: var(--surface2);
+}
+.node-circle.summit {
+  border-color: var(--glacier);
+  background: var(--glacier);
+}
+.node-circle-q {
+  font-size: 0.6rem;
+  color: var(--text3);
+  font-weight: 700;
+}
+.node-circle-summit-icon { font-size: 0.65rem; }
+
+/* Tokens inside/beside nodes */
+.node-tokens {
+  position: absolute;
+  display: flex;
+  gap: 1px;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+}
+.token {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--surface);
+  font-size: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+.token-alex  { background: var(--glacier); }
+.token-raj   { background: var(--amber); }
+.token-maya  { background: #c06080; }
+
+/* Node label (right) */
+.node-label-wrap {
+  flex: 1;
+  padding-left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.node-name {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text1);
+  line-height: 1.1;
+}
+.node-name.hidden-name {
+  color: var(--text3);
+  font-style: italic;
+  font-weight: 400;
+}
+.node-name.current-name { color: var(--glacier); }
+.node-sub {
+  font-family: 'Courier New', monospace;
+  font-size: 0.48rem;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+}
+
+/* Connector segments between nodes */
+.route-connector {
+  height: 6px;
+  position: relative;
+  z-index: 0;
+}
+
+/* ─── RIGHT PANEL ────────────────────────────────────────────────────────── */
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  padding: 20px;
+  gap: 16px;
+}
+
+.panel-heading {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--text2);
+  text-transform: uppercase;
+  border-bottom: 1.5px solid var(--border);
+  padding-bottom: 8px;
+}
+
+/* Movement option cards */
+.move-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.move-option {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  position: relative;
+}
+.move-option:hover {
+  border-color: var(--glacier);
+  box-shadow: 0 2px 8px rgba(74,144,196,0.15);
+}
+.move-option.recommended {
+  border-color: var(--glacier);
+}
+.move-option-accent {
+  width: 5px;
+  align-self: stretch;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.move-option.recommended .move-option-accent { background: var(--glacier); }
+.move-option-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  gap: 12px;
+}
+.move-dest {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.move-dest-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text1);
+  letter-spacing: 0.03em;
+}
+.move-dest-sub {
+  font-family: 'Courier New', monospace;
+  font-size: 0.5rem;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+}
+.move-elev-arrow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.65rem;
+  color: var(--text2);
+  font-weight: 600;
+}
+.move-elev-from { color: var(--text3); }
+.move-elev-to { color: var(--glacier); }
+.move-elev-delta {
+  font-size: 0.7rem;
+  color: var(--glacier);
+  font-weight: 700;
+}
+.move-cost {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 60px;
+}
+.move-cost-val {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--amber);
+}
+.move-cost-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.45rem;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.move-rec-badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.1em;
+  color: var(--glacier);
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--tool-bg);
+  border: 1px solid var(--glacier);
+  border-radius: 2px;
+  padding: 1px 4px;
+}
+
+/* Terrain info */
+.terrain-info {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 14px;
+}
+.terrain-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text2);
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.terrain-details {
+  display: flex;
+  gap: 16px;
+}
+.terrain-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.terrain-stat-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.48rem;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.terrain-stat-val {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text1);
+}
+
+/* Panel bottom row */
+.panel-bottom {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+.btn-end-turn {
+  background: var(--glacier);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 8px 22px;
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-end-turn:hover { background: var(--navy2); transform: translateY(-1px); }
+
+/* ─── HAND TRAY ──────────────────────────────────────────────────────────── */
+.hand-tray {
+  flex: 0 0 auto;
+  background: var(--surface);
+  border-top: 2px solid var(--navy);
+  box-shadow: inset 0 4px 12px rgba(26,42,58,0.08);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 10px;
+  gap: 6px;
+}
+.hand-tray-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hand-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+.btn-end-turn-tray {
+  background: transparent;
+  color: var(--glacier);
+  border: 1.5px solid var(--glacier);
+  border-radius: 3px;
+  padding: 3px 14px;
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-end-turn-tray:hover { background: var(--glacier); color: #fff; }
+
+.hand-cards {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* ─── CARDS ──────────────────────────────────────────────────────────────── */
+.card {
+  width: 88px;
+  height: 124px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  overflow: visible;
+  flex-shrink: 0;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(74,144,196,0.2);
+}
+.card.selected {
+  transform: translateY(-12px);
+  box-shadow: 0 12px 28px rgba(74,144,196,0.35);
+  border-color: var(--glacier);
+  border-width: 2px;
+}
+
+/* Left stripe */
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 5px 0 0 5px;
+}
+.card.tool::before   { background: var(--tool-stripe); }
+.card.utility::before { background: var(--util-stripe); }
+.card.skill::before  { background: var(--skill-stripe); }
+
+/* Art zone (flat, no gradient) */
+.card-art {
+  height: 56px;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+  position: relative;
+}
+.card.tool   .card-art { background: var(--tool-bg); }
+.card.utility .card-art { background: var(--util-bg); }
+.card.skill  .card-art { background: var(--skill-bg); }
+
+/* Cost badge */
+.card-cost {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  background: var(--navy);
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  z-index: 2;
+}
+
+/* Card body */
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 6px 3px 8px;
+  gap: 2px;
+  overflow: hidden;
+}
+.card-name {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text1);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+.card-stats {
+  font-family: 'Courier New', monospace;
+  font-size: 0.5rem;
+  color: var(--text2);
+  line-height: 1.2;
+}
+.card-effect {
+  font-size: 0.55rem;
+  color: var(--text3);
+  line-height: 1.2;
+  flex: 1;
+}
+.card-discard {
+  font-family: 'Courier New', monospace;
+  font-size: 0.48rem;
+  color: var(--text3);
+  border-top: 1px solid var(--surface2);
+  padding-top: 2px;
+  margin-top: auto;
+}
+
+/* ─── SCROLLBAR STYLING ──────────────────────────────────────────────────── */
+.route-map::-webkit-scrollbar { width: 4px; }
+.route-map::-webkit-scrollbar-track { background: transparent; }
+.route-map::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+</style>
+</head>
+<body>
+
+<!-- Sample badge -->
+<div class="sample-badge">V2 · OPTION 1 · ALPINE ROUTE</div>
+
+<div class="app">
+
+  <!-- ── HUD BAR ─────────────────────────────────────────────────────────── -->
+  <div class="hud">
+
+    <!-- Player identity -->
+    <div class="hud-player">
+      <div class="hud-player-dot"></div>
+      <div class="hud-player-info">
+        <div class="hud-player-name">ALEX</div>
+        <div class="hud-player-role">LEAD CLIMBER</div>
+      </div>
+    </div>
+
+    <!-- Phase progress bar -->
+    <div class="hud-phase">
+      <div class="phase-bar">
+        <div class="phase-seg done">PLAY CARDS</div>
+        <div class="phase-seg active">MOVE</div>
+        <div class="phase-seg">BUY</div>
+        <div class="phase-seg">END TURN</div>
+      </div>
+    </div>
+
+    <!-- Right: gold + counts + help -->
+    <div class="hud-right">
+      <div class="hud-gold">5g</div>
+      <div class="hud-counts">
+        <span title="Hand">✋5</span>
+        <span title="Deck">📦12</span>
+        <span title="Discard">♻3</span>
+      </div>
+      <div class="hud-help">?</div>
+    </div>
+
+  </div><!-- /hud -->
+
+  <!-- ── MAIN AREA ───────────────────────────────────────────────────────── -->
+  <div class="main">
+
+    <!-- Mountain column -->
+    <div class="mountain-col">
+      <div class="mountain-header">Route Map</div>
+
+      <!-- Weather forecast strip -->
+      <div class="forecast-strip">
+        <div class="forecast-label">FCST</div>
+        <div class="forecast-tiles">
+          <div class="forecast-tile">
+            <div class="day-num">DAY 4</div>
+            <div class="day-icon">❄️</div>
+            <div class="day-label">Blizzard</div>
+          </div>
+          <div class="forecast-tile">
+            <div class="day-num">DAY 5</div>
+            <div class="day-icon">☁️</div>
+            <div class="day-label">Overcast</div>
+          </div>
+          <div class="forecast-tile">
+            <div class="day-num">DAY 6</div>
+            <div class="day-icon">🌤️</div>
+            <div class="day-label">Clear</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Route node map -->
+      <div class="route-map">
+        <div class="route-track">
+
+          <!-- 10 — Summit -->
+          <div class="route-node-row">
+            <div class="node-elev">10</div>
+            <div class="node-circle-wrap">
+              <div class="node-circle summit">
+                <span class="node-circle-summit-icon">▲</span>
+              </div>
+            </div>
+            <div class="node-label-wrap">
+              <div class="node-name">Summit</div>
+              <div class="node-sub">PEAK · 8611m</div>
+            </div>
+          </div>
+          <div class="route-connector"></div>
+
+          <!-- 9 — Hidden -->
+          <div class="route-node-row">
+            <div class="node-elev">9</div>
+            <div class="node-circle-wrap">
+              <div class="node-circle hidden">
+                <span class="node-circle-q">?</span>
+              </div>
+            </div>
+            <div class="node-label-wrap">
+              <div class="node-name hidden-name">Unknown</div>
+              <div class="node-sub">UNEXPLORED</div>
+            </div>
+          </div>
+          <div class="route-connector"></div>
+
+          <!-- 8 — Hidden -->
+          <div class="route-node-row">
+            <div class="node-elev">8</div>
+            <div class="node-circle-wrap">
+              <div class="node-circle hidden">
+                <span class="node-circle-q">?</span>
+              </div>
+            </div>
+            <div class="node-label-wrap">
+              <div class="node-name hidden-name">Unknown</div>
+              <div class="node-sub">UNEXPLORED</div>
+            </div>
+          </div>
+          <div class="route-connector"></div>
+
+          <!-- 7 — Glacier Field (current: Alex + Raj) -->
+          <div class="route-node-row">
+            <div class="node-elev">7</div>
+            <div class="node-circle-wrap">
+              <div class="node-circle current">
+                <div class="node-tokens">
+                  <div class="token token-alex" title="Alex">A</div>
+                  <div class="token token-raj" title="Raj">R</div>
+                </div>
+              </div>
+            </div>
+            <div class="node-label-wrap">
+              <div class="node-name current-name">Glacier Field</div>
+              <div class="node-sub">CURRENT · 6200m</div>
+            </div>
+          </div>
+          <div class="route-connector"></div>
+
+          <!-- 5 — Scree Slope (Maya) -->
+          <div class="route-node-row">
+            <div class="node-elev">5</div>
+            <div class="node-circle-wrap">
+              <div class="node-circle visited" style="position:relative;">
+                <div class="node-tokens">
+                  <div class="token token-maya" title="Maya">M</div>
+                </div>
+              </div>
+            </div>
+            <div class="node-label-wrap">
+              <div class="node-name">Scree Slope</div>
+              <div class="node-sub">BELOW · 4900m</div>
+            </div>
+          </div>
+          <div class="route-connector"></div>
+
+          <!-- 3 — Treeline -->
+          <div class="route-node-row">
+            <div class="node-elev">3</div>
+            <div class="node-circle-wrap">
+              <div class="node-circle visited"></div>
+            </div>
+            <div class="node-label-wrap">
+              <div class="node-name">Treeline</div>
+              <div class="node-sub">VISITED · 3200m</div>
+            </div>
+          </div>
+          <div class="route-connector"></div>
+
+          <!-- 1 — Base Camp -->
+          <div class="route-node-row">
+            <div class="node-elev">1</div>
+            <div class="node-circle-wrap">
+              <div class="node-circle visited"></div>
+            </div>
+            <div class="node-label-wrap">
+              <div class="node-name">Base Camp</div>
+              <div class="node-sub">START · 1800m</div>
+            </div>
+          </div>
+
+        </div><!-- /route-track -->
+      </div><!-- /route-map -->
+
+    </div><!-- /mountain-col -->
+
+    <!-- Right panel — movement selection -->
+    <div class="right-panel">
+
+      <div class="panel-heading">Select Movement — Elevation 7</div>
+
+      <div class="move-options">
+
+        <!-- Option 1: advance to Elevation 8 (recommended) -->
+        <div class="move-option recommended">
+          <div class="move-option-accent"></div>
+          <div class="move-option-body">
+            <div class="move-dest">
+              <div class="move-dest-name">Upper Icefall</div>
+              <div class="move-dest-sub">ELEVATION 8 · MODERATE HAZARD</div>
+            </div>
+            <div class="move-elev-arrow">
+              <span class="move-elev-from">7</span>
+              <span>→</span>
+              <span class="move-elev-to">8</span>
+              <span class="move-elev-delta">+1</span>
+            </div>
+            <div class="move-cost">
+              <div class="move-cost-val">2g</div>
+              <div class="move-cost-label">Move Cost</div>
+            </div>
+          </div>
+          <div class="move-rec-badge">★ RECOMMENDED</div>
+        </div>
+
+        <!-- Option 2: advance to Elevation 9 (costly) -->
+        <div class="move-option">
+          <div class="move-option-accent"></div>
+          <div class="move-option-body">
+            <div class="move-dest">
+              <div class="move-dest-name">High Camp</div>
+              <div class="move-dest-sub">ELEVATION 9 · HIGH HAZARD</div>
+            </div>
+            <div class="move-elev-arrow">
+              <span class="move-elev-from">7</span>
+              <span>→</span>
+              <span class="move-elev-to">9</span>
+              <span class="move-elev-delta">+2</span>
+            </div>
+            <div class="move-cost">
+              <div class="move-cost-val">4g</div>
+              <div class="move-cost-label">Move Cost</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 3: retreat to Elevation 5 -->
+        <div class="move-option">
+          <div class="move-option-accent" style="background:#c06080;"></div>
+          <div class="move-option-body">
+            <div class="move-dest">
+              <div class="move-dest-name">Scree Slope</div>
+              <div class="move-dest-sub">ELEVATION 5 · RETREAT</div>
+            </div>
+            <div class="move-elev-arrow">
+              <span class="move-elev-from">7</span>
+              <span>→</span>
+              <span class="move-elev-to" style="color:var(--text3);">5</span>
+              <span class="move-elev-delta" style="color:var(--text3);">−2</span>
+            </div>
+            <div class="move-cost">
+              <div class="move-cost-val" style="color:var(--text2);">0g</div>
+              <div class="move-cost-label">Move Cost</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /move-options -->
+
+      <!-- Terrain info block -->
+      <div class="terrain-info">
+        <div class="terrain-title">Current Terrain — Glacier Field</div>
+        <div class="terrain-details">
+          <div class="terrain-stat">
+            <div class="terrain-stat-label">HAZARD</div>
+            <div class="terrain-stat-val">Low</div>
+          </div>
+          <div class="terrain-stat">
+            <div class="terrain-stat-label">WIND</div>
+            <div class="terrain-stat-val">12 kn</div>
+          </div>
+          <div class="terrain-stat">
+            <div class="terrain-stat-label">TEMP</div>
+            <div class="terrain-stat-val">−14°C</div>
+          </div>
+          <div class="terrain-stat">
+            <div class="terrain-stat-label">CONDITION</div>
+            <div class="terrain-stat-val">Firm</div>
+          </div>
+          <div class="terrain-stat">
+            <div class="terrain-stat-label">BONUS</div>
+            <div class="terrain-stat-val">+1 Str</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-bottom">
+        <button class="btn-end-turn">End Turn</button>
+      </div>
+
+    </div><!-- /right-panel -->
+
+  </div><!-- /main -->
+
+  <!-- ── HAND TRAY ───────────────────────────────────────────────────────── -->
+  <div class="hand-tray">
+
+    <div class="hand-tray-header">
+      <div class="hand-label">Hand — 5 Cards</div>
+      <button class="btn-end-turn-tray">End Turn</button>
+    </div>
+
+    <div class="hand-cards">
+
+      <!-- Card 1: Ice Axe (tool/2g) — SELECTED -->
+      <div class="card tool selected">
+        <div class="card-art">⛏️</div>
+        <div class="card-cost">2</div>
+        <div class="card-body">
+          <div class="card-name">Ice Axe</div>
+          <div class="card-stats">+3 str / +1 agi</div>
+          <div class="card-effect">Cut steps into ice. Reduce hazard by 1 on move.</div>
+          <div class="card-discard">→ discard</div>
+        </div>
+      </div>
+
+      <!-- Card 2: Survey Map (utility/1g) -->
+      <div class="card utility">
+        <div class="card-art">🗺️</div>
+        <div class="card-cost">1</div>
+        <div class="card-body">
+          <div class="card-name">Survey Map</div>
+          <div class="card-stats">+2 foresight</div>
+          <div class="card-effect">Reveal next 2 route nodes. Draw 1 card.</div>
+          <div class="card-discard">→ discard</div>
+        </div>
+      </div>
+
+      <!-- Card 3: Acclimatize (skill/0g) -->
+      <div class="card skill">
+        <div class="card-art">🫁</div>
+        <div class="card-cost">0</div>
+        <div class="card-body">
+          <div class="card-name">Acclimatize</div>
+          <div class="card-stats">+2 endurance</div>
+          <div class="card-effect">Negate altitude penalty this turn. +1 card draw.</div>
+          <div class="card-discard">→ discard</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Piton Set (tool/3g) -->
+      <div class="card tool">
+        <div class="card-art">🪝</div>
+        <div class="card-cost">3</div>
+        <div class="card-body">
+          <div class="card-name">Piton Set</div>
+          <div class="card-stats">+4 str / +2 sec</div>
+          <div class="card-effect">Place anchor. Ignore fall damage once this round.</div>
+          <div class="card-discard">→ discard</div>
+        </div>
+      </div>
+
+      <!-- Card 5: Trail Rations (utility/1g) -->
+      <div class="card utility">
+        <div class="card-art">🎒</div>
+        <div class="card-cost">1</div>
+        <div class="card-body">
+          <div class="card-name">Trail Rations</div>
+          <div class="card-stats">+1 endurance</div>
+          <div class="card-effect">Restore 2 stamina. May be played as a free action.</div>
+          <div class="card-discard">→ discard</div>
+        </div>
+      </div>
+
+    </div><!-- /hand-cards -->
+
+  </div><!-- /hand-tray -->
+
+</div><!-- /app -->
+
+</body>
+</html>

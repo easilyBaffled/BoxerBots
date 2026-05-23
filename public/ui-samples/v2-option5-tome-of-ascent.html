@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit — Tome of Ascent (V2 Option 5)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Barlow+Semi+Condensed:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c10;
+  --surface: #101828;
+  --surface2: #162030;
+  --surface3: #1e2c3e;
+  --border: #253548;
+  --border2: #3a5070;
+  --amber: #d4923c;
+  --amber2: #f0b05a;
+  --text1: #c8d8e8;
+  --text2: #7090b0;
+  --text3: #405570;
+  --mono: monospace;
+  --tool: #4a7ab8;
+  --utility: #4aaa6a;
+  --skill: #7a4ab8;
+  --zone-low: #4aaa6a;
+  --zone-mid: #4a7ab8;
+  --zone-high: #d4923c;
+  --zone-summit: #f0d060;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text1);
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── HUD BAR ── */
+.hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border-bottom: 2px solid var(--amber);
+  padding: 0 16px;
+  height: 52px;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.hud-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+.hud-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text1);
+  letter-spacing: 0.08em;
+}
+.hud-icon { font-size: 1.1rem; }
+.hud-role {
+  font-family: var(--mono);
+  font-size: 0.48rem;
+  color: var(--text3);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.hud-left-stack { display: flex; flex-direction: column; }
+
+/* initiative tracker */
+.initiative {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.init-step {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text2);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.init-step.active {
+  background: var(--amber);
+  border-color: var(--amber2);
+  color: #080c10;
+  font-weight: 700;
+}
+.init-num {
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+.init-arrow {
+  font-size: 0.6rem;
+  color: var(--text3);
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+  justify-content: flex-end;
+}
+.hud-gold {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--amber);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.hud-stats {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: var(--text2);
+  letter-spacing: 0.04em;
+}
+.hud-help {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  color: var(--text2);
+  font-size: 0.75rem;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: var(--mono);
+}
+
+/* ── MAIN AREA ── */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── MOUNTAIN COLUMN ── */
+.mountain-col {
+  width: 240px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background-color: var(--bg);
+  background-image:
+    repeating-linear-gradient(60deg, rgba(74,122,184,0.015) 0px, rgba(74,122,184,0.015) 1px, transparent 1px, transparent 20px),
+    repeating-linear-gradient(-60deg, rgba(74,122,184,0.015) 0px, rgba(74,122,184,0.015) 1px, transparent 1px, transparent 20px),
+    repeating-linear-gradient(0deg, rgba(74,122,184,0.01) 0px, rgba(74,122,184,0.01) 1px, transparent 1px, transparent 20px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.mountain-col::-webkit-scrollbar { width: 4px; }
+.mountain-col::-webkit-scrollbar-track { background: var(--bg); }
+.mountain-col::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.mountain-header {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,12,16,0.6);
+}
+
+/* dungeon tile cards */
+.tile {
+  display: flex;
+  position: relative;
+  margin: 6px 8px;
+  border-radius: 3px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 0.15s;
+  min-height: 52px;
+}
+.tile-accent {
+  width: 4px;
+  flex-shrink: 0;
+}
+.tile-body {
+  flex: 1;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  overflow: hidden;
+}
+.tile-watermark {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  opacity: 0.05;
+  pointer-events: none;
+  line-height: 1;
+}
+.tile-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.6rem;
+  color: var(--text1);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.tile-zone {
+  font-family: var(--mono);
+  font-size: 0.42rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.tile-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 6px 8px;
+  flex-shrink: 0;
+}
+.tile-elev-num {
+  font-family: var(--mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--amber);
+  line-height: 1;
+}
+.tile-elev-denom {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  color: var(--text3);
+}
+.tile-tokens {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+.token {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  font-family: var(--mono);
+  font-size: 0.42rem;
+  font-weight: 700;
+  color: var(--text1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0;
+}
+
+/* current position glow */
+.tile.current {
+  border: 1px solid var(--amber);
+  box-shadow: 0 0 10px rgba(212,146,60,0.35), inset 0 0 12px rgba(212,146,60,0.06);
+  background: #1a1e14;
+}
+.tile.current .tile-accent {
+  box-shadow: 0 0 6px rgba(212,146,60,0.5);
+}
+.tile.current .tile-name { color: var(--amber2); }
+
+/* hidden tile */
+.tile.hidden {
+  border-style: dashed;
+  border-color: var(--border);
+  background: rgba(8,12,16,0.5);
+}
+.tile.hidden .tile-body { align-items: center; justify-content: center; }
+.tile-unknown {
+  font-family: var(--mono);
+  font-size: 0.42rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-variant: small-caps;
+  color: var(--text3);
+}
+.tile-q { font-size: 1.2rem; color: var(--text3); line-height: 1; }
+
+/* summit tile */
+.tile.summit {
+  border-color: var(--zone-summit);
+  box-shadow: 0 0 14px rgba(240,208,96,0.3);
+  background: #12100a;
+}
+.tile.summit .tile-elev-num { color: var(--zone-summit); }
+.summit-badge {
+  font-family: var(--mono);
+  font-size: 0.38rem;
+  background: var(--zone-summit);
+  color: #080c10;
+  padding: 1px 4px;
+  border-radius: 2px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: uppercase;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* ── RIGHT AREA ── */
+.right-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  overflow-y: auto;
+}
+.right-area::-webkit-scrollbar { width: 4px; }
+.right-area::-webkit-scrollbar-track { background: var(--bg); }
+.right-area::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.phase-heading {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.move-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.move-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px;
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.move-card:hover {
+  border-color: var(--border2);
+}
+.move-card.active {
+  border-color: var(--amber);
+  box-shadow: 0 0 10px rgba(212,146,60,0.25);
+}
+.move-icon { font-size: 1.5rem; line-height: 1; }
+.move-dest {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  color: var(--text1);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+.move-arrow-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text2);
+}
+.move-arrow { color: var(--amber2); font-size: 0.7rem; }
+.move-cost {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--amber);
+}
+.move-cost-label {
+  font-family: var(--mono);
+  font-size: 0.42rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+}
+
+.execute-btn {
+  background: var(--amber);
+  color: #080c10;
+  border: none;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: background 0.15s;
+  align-self: flex-start;
+}
+.execute-btn:hover { background: var(--amber2); }
+
+/* ── HAND TRAY ── */
+.hand-tray {
+  background: var(--surface);
+  border-top: 2px solid var(--amber);
+  padding: 10px 16px 12px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hand-tray-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hand-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text2);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.end-turn-btn {
+  background: var(--amber);
+  color: #080c10;
+  border: none;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  cursor: pointer;
+}
+.end-turn-btn:hover { background: var(--amber2); }
+
+.hand-cards {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+/* ── GLOOMHAVEN SPLIT CARD ── */
+.card {
+  width: 92px;
+  height: 138px;
+  border-radius: 4px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+  flex-shrink: 0;
+}
+.card:hover {
+  transform: translateY(-6px);
+}
+/* tool = blue */
+.card.tool {
+  border: 1px solid var(--tool);
+  box-shadow: 0 0 6px rgba(74,122,184,0.25);
+}
+.card.tool:hover {
+  box-shadow: 0 0 14px rgba(74,122,184,0.5);
+}
+/* utility = green */
+.card.utility {
+  border: 1px solid var(--utility);
+  box-shadow: 0 0 6px rgba(74,170,106,0.25);
+}
+.card.utility:hover {
+  box-shadow: 0 0 14px rgba(74,170,106,0.5);
+}
+/* skill = purple */
+.card.skill {
+  border: 1px solid var(--skill);
+  box-shadow: 0 0 6px rgba(122,74,184,0.25);
+}
+.card.skill:hover {
+  box-shadow: 0 0 14px rgba(122,74,184,0.5);
+}
+
+/* selected state */
+.card.selected {
+  transform: translateY(-10px);
+}
+.card.tool.selected {
+  border: 1px solid var(--tool);
+  box-shadow: 0 0 18px rgba(74,122,184,0.7), 0 0 4px rgba(74,122,184,0.9);
+}
+
+/* ── TOP HALF ── */
+.card-top {
+  flex: 0 0 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px 4px 0;
+}
+.card.tool .card-top {
+  background: linear-gradient(180deg, rgba(74,122,184,0.12) 0%, rgba(74,122,184,0.04) 100%);
+}
+.card.utility .card-top {
+  background: linear-gradient(180deg, rgba(74,170,106,0.12) 0%, rgba(74,170,106,0.04) 100%);
+}
+.card.skill .card-top {
+  background: linear-gradient(180deg, rgba(122,74,184,0.12) 0%, rgba(122,74,184,0.04) 100%);
+}
+.top-icon { font-size: 1.8rem; line-height: 1; }
+.top-value {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text1);
+  line-height: 1;
+}
+.top-label {
+  font-family: var(--mono);
+  font-size: 0.4rem;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* ── CENTER STRIPE ── */
+.card-stripe {
+  flex: 0 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: visible;
+}
+.card.tool .card-stripe { background: rgba(74,122,184,0.3); }
+.card.utility .card-stripe { background: rgba(74,170,106,0.3); }
+.card.skill .card-stripe { background: rgba(122,74,184,0.3); }
+
+.stripe-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.48rem;
+  font-weight: 700;
+  color: var(--text1);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0 24px 0 4px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.cost-badge {
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--amber);
+  color: #080c10;
+  font-family: var(--mono);
+  font-size: 0.46rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ── BOTTOM HALF ── */
+.card-bottom {
+  flex: 1;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 2px 4px 2px;
+  position: relative;
+}
+.bot-icon { font-size: 1.4rem; line-height: 1; }
+.bot-effect {
+  font-family: var(--mono);
+  font-size: 0.42rem;
+  color: var(--text2);
+  text-align: center;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+.bot-discard {
+  font-family: var(--mono);
+  font-size: 0.38rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  position: absolute;
+  bottom: 3px;
+}
+
+/* ── BADGE ── */
+.version-badge {
+  position: fixed;
+  bottom: 10px;
+  right: 12px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.45rem;
+  color: var(--text3);
+  padding: 3px 7px;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+  z-index: 100;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ── HUD BAR ── -->
+<div class="hud">
+  <div class="hud-left">
+    <span class="hud-icon">🧗</span>
+    <div class="hud-left-stack">
+      <span class="hud-name">ALEX</span>
+      <span class="hud-role">LEAD</span>
+    </div>
+  </div>
+
+  <div class="initiative">
+    <div class="init-step">
+      <span class="init-num">1</span>
+      <span>PLAY</span>
+    </div>
+    <span class="init-arrow">→</span>
+    <div class="init-step active">
+      <span class="init-num">2</span>
+      <span>MOVE</span>
+    </div>
+    <span class="init-arrow">→</span>
+    <div class="init-step">
+      <span class="init-num">3</span>
+      <span>BUY</span>
+    </div>
+    <span class="init-arrow">→</span>
+    <div class="init-step">
+      <span class="init-num">4</span>
+      <span>END</span>
+    </div>
+  </div>
+
+  <div class="hud-right">
+    <span class="hud-gold">5 GOLD</span>
+    <span class="hud-stats">✋5 &nbsp;/&nbsp; 📦12 &nbsp;/&nbsp; ♻3</span>
+    <div class="hud-help">?</div>
+  </div>
+</div>
+
+<!-- ── MAIN AREA ── -->
+<div class="main">
+
+  <!-- ── MOUNTAIN COLUMN ── -->
+  <div class="mountain-col">
+    <div class="mountain-header">⛰ The Ascent</div>
+
+    <!-- Summit (elev 10) -->
+    <div class="tile summit">
+      <div class="tile-accent" style="background:var(--zone-summit);"></div>
+      <div class="tile-body">
+        <span class="tile-watermark">🏔</span>
+        <span class="tile-name">The Summit</span>
+        <span class="tile-zone">· summit zone ·</span>
+        <span class="summit-badge">OBJECTIVE</span>
+      </div>
+      <div class="tile-right">
+        <span class="tile-elev-num">10<span class="tile-elev-denom">/10</span></span>
+      </div>
+    </div>
+
+    <!-- Hidden elev 9 -->
+    <div class="tile hidden">
+      <div class="tile-accent" style="background:var(--border);"></div>
+      <div class="tile-body">
+        <span class="tile-q">?</span>
+        <span class="tile-unknown">Unknown</span>
+      </div>
+      <div class="tile-right">
+        <span class="tile-elev-num" style="color:var(--text3);">9<span class="tile-elev-denom">/10</span></span>
+      </div>
+    </div>
+
+    <!-- Hidden elev 8 -->
+    <div class="tile hidden">
+      <div class="tile-accent" style="background:var(--border);"></div>
+      <div class="tile-body">
+        <span class="tile-q">?</span>
+        <span class="tile-unknown">Unknown</span>
+      </div>
+      <div class="tile-right">
+        <span class="tile-elev-num" style="color:var(--text3);">8<span class="tile-elev-denom">/10</span></span>
+      </div>
+    </div>
+
+    <!-- CURRENT: Glacier Field (elev 7) -->
+    <div class="tile current">
+      <div class="tile-accent" style="background:var(--zone-high); box-shadow: 0 0 6px rgba(212,146,60,0.6);"></div>
+      <div class="tile-body">
+        <span class="tile-watermark">🧊</span>
+        <span class="tile-name">Glacier Field</span>
+        <span class="tile-zone">· high zone ·</span>
+        <div class="tile-tokens">
+          <div class="token" style="background:rgba(212,146,60,0.2); border-color:var(--amber); color:var(--amber);">AL</div>
+        </div>
+      </div>
+      <div class="tile-right">
+        <span class="tile-elev-num">7<span class="tile-elev-denom">/10</span></span>
+      </div>
+    </div>
+
+    <!-- Ridgeline (elev 6) -->
+    <div class="tile">
+      <div class="tile-accent" style="background:var(--zone-high);"></div>
+      <div class="tile-body">
+        <span class="tile-watermark">🪨</span>
+        <span class="tile-name">Ridgeline</span>
+        <span class="tile-zone">· high zone ·</span>
+      </div>
+      <div class="tile-right">
+        <span class="tile-elev-num">6<span class="tile-elev-denom">/10</span></span>
+      </div>
+    </div>
+
+    <!-- Snowfield (elev 5) -->
+    <div class="tile">
+      <div class="tile-accent" style="background:var(--zone-mid);"></div>
+      <div class="tile-body">
+        <span class="tile-watermark">❄</span>
+        <span class="tile-name">Snowfield</span>
+        <span class="tile-zone">· mid zone ·</span>
+        <div class="tile-tokens">
+          <div class="token">BX</div>
+        </div>
+      </div>
+      <div class="tile-right">
+        <span class="tile-elev-num">5<span class="tile-elev-denom">/10</span></span>
+      </div>
+    </div>
+
+    <!-- Rocky Pass (elev 4) -->
+    <div class="tile">
+      <div class="tile-accent" style="background:var(--zone-mid);"></div>
+      <div class="tile-body">
+        <span class="tile-watermark">⛰</span>
+        <span class="tile-name">Rocky Pass</span>
+        <span class="tile-zone">· mid zone ·</span>
+      </div>
+      <div class="tile-right">
+        <span class="tile-elev-num">4<span class="tile-elev-denom">/10</span></span>
+      </div>
+    </div>
+
+    <!-- Forest Camp (elev 2) -->
+    <div class="tile">
+      <div class="tile-accent" style="background:var(--zone-low);"></div>
+      <div class="tile-body">
+        <span class="tile-watermark">🌲</span>
+        <span class="tile-name">Forest Camp</span>
+        <span class="tile-zone">· low zone ·</span>
+      </div>
+      <div class="tile-right">
+        <span class="tile-elev-num">2<span class="tile-elev-denom">/10</span></span>
+      </div>
+    </div>
+
+    <!-- Base Camp (elev 1) -->
+    <div class="tile">
+      <div class="tile-accent" style="background:var(--zone-low);"></div>
+      <div class="tile-body">
+        <span class="tile-watermark">🏕</span>
+        <span class="tile-name">Base Camp</span>
+        <span class="tile-zone">· low zone ·</span>
+        <div class="tile-tokens">
+          <div class="token">CM</div>
+          <div class="token">DX</div>
+        </div>
+      </div>
+      <div class="tile-right">
+        <span class="tile-elev-num">1<span class="tile-elev-denom">/10</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT AREA ── -->
+  <div class="right-area">
+    <div class="phase-heading">⚡ Movement Phase</div>
+
+    <div class="move-options">
+      <!-- Option 1 -->
+      <div class="move-card active">
+        <div class="move-icon">🧊</div>
+        <div class="move-dest">Ice Wall<br>Traverse</div>
+        <div class="move-arrow-row">
+          <span>Elv 7</span>
+          <span class="move-arrow">↑</span>
+          <span>Elv 8</span>
+        </div>
+        <div class="move-cost">2 STR</div>
+        <div class="move-cost-label">cost</div>
+      </div>
+
+      <!-- Option 2 -->
+      <div class="move-card">
+        <div class="move-icon">❄</div>
+        <div class="move-dest">Cracked<br>Serac</div>
+        <div class="move-arrow-row">
+          <span>Elv 7</span>
+          <span class="move-arrow">↑</span>
+          <span>Elv 8</span>
+        </div>
+        <div class="move-cost">3 STR</div>
+        <div class="move-cost-label">cost · hazard</div>
+      </div>
+
+      <!-- Option 3 -->
+      <div class="move-card">
+        <div class="move-icon">🪨</div>
+        <div class="move-dest">Ridgeline<br>Retreat</div>
+        <div class="move-arrow-row">
+          <span>Elv 7</span>
+          <span class="move-arrow">↓</span>
+          <span>Elv 6</span>
+        </div>
+        <div class="move-cost">0 STR</div>
+        <div class="move-cost-label">retreat</div>
+      </div>
+    </div>
+
+    <button class="execute-btn">⚡ Execute Move</button>
+  </div>
+</div>
+
+<!-- ── HAND TRAY ── -->
+<div class="hand-tray">
+  <div class="hand-tray-bar">
+    <span class="hand-label">Hand · 5 Cards</span>
+    <button class="end-turn-btn">End Turn →</button>
+  </div>
+  <div class="hand-cards">
+
+    <!-- Ice Axe (tool, 2g) — SELECTED -->
+    <div class="card tool selected">
+      <div class="card-top">
+        <span class="top-icon">⛏️</span>
+        <span class="top-value">+3</span>
+        <span class="top-label">on play · str</span>
+      </div>
+      <div class="card-stripe">
+        <span class="stripe-name">Ice Axe</span>
+        <span class="cost-badge">2g</span>
+      </div>
+      <div class="card-bottom">
+        <span class="bot-icon">🎽</span>
+        <span class="bot-effect">+1 AGI</span>
+        <span class="bot-discard">→ DISCARD</span>
+      </div>
+    </div>
+
+    <!-- Survey Map (utility, 1g) -->
+    <div class="card utility">
+      <div class="card-top">
+        <span class="top-icon">🗺️</span>
+        <span class="top-value">+2g</span>
+        <span class="top-label">on play</span>
+      </div>
+      <div class="card-stripe">
+        <span class="stripe-name">Survey Map</span>
+        <span class="cost-badge">1g</span>
+      </div>
+      <div class="card-bottom">
+        <span class="bot-icon">👁️</span>
+        <span class="bot-effect">Reveal 2 tiles</span>
+        <span class="bot-discard">→ DISCARD</span>
+      </div>
+    </div>
+
+    <!-- Acclimatize (skill, 0g) -->
+    <div class="card skill">
+      <div class="card-top">
+        <span class="top-icon">🧠</span>
+        <span class="top-value">PASS</span>
+        <span class="top-label">passive · +2 end</span>
+      </div>
+      <div class="card-stripe">
+        <span class="stripe-name">Acclimatize</span>
+        <span class="cost-badge">0g</span>
+      </div>
+      <div class="card-bottom">
+        <span class="bot-icon">🛡️</span>
+        <span class="bot-effect">Ignore weather</span>
+        <span class="bot-discard">→ KEEP</span>
+      </div>
+    </div>
+
+    <!-- Piton Set (tool, 3g) -->
+    <div class="card tool">
+      <div class="card-top">
+        <span class="top-icon">🔩</span>
+        <span class="top-value">+4</span>
+        <span class="top-label">on play · str</span>
+      </div>
+      <div class="card-stripe">
+        <span class="stripe-name">Piton Set</span>
+        <span class="cost-badge">3g</span>
+      </div>
+      <div class="card-bottom">
+        <span class="bot-icon">⛰️</span>
+        <span class="bot-effect">+2 on rock</span>
+        <span class="bot-discard">→ DISCARD</span>
+      </div>
+    </div>
+
+    <!-- Trail Rations (utility, 1g) -->
+    <div class="card utility">
+      <div class="card-top">
+        <span class="top-icon">🎒</span>
+        <span class="top-value">+1</span>
+        <span class="top-label">on play · end</span>
+      </div>
+      <div class="card-stripe">
+        <span class="stripe-name">Trail Rations</span>
+        <span class="cost-badge">1g</span>
+      </div>
+      <div class="card-bottom">
+        <span class="bot-icon">🃏</span>
+        <span class="bot-effect">Draw 1 card</span>
+        <span class="bot-discard">→ DISCARD</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="version-badge">V2 · OPTION 5 · TOME OF ASCENT</div>
+
+</body>
+</html>

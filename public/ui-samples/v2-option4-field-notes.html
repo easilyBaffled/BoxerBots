@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit — Field Notes (V2 Option 4)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #1a1510;
+  --surface: #252018;
+  --surface2: #302a20;
+  --surface3: #3c3428;
+  --border: #504030;
+  --border2: #706050;
+  --gold: #c8b070;
+  --gold2: #e8d090;
+  --sage: #7ab870;
+  --blue: #6a90c8;
+  --purple: #9a7ab8;
+  --text1: #e8dcc8;
+  --text2: #a89870;
+  --text3: #706050;
+}
+
+body {
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  background: var(--bg);
+  color: var(--text1);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── HUD ── */
+.hud {
+  background: var(--surface);
+  border-bottom: 2px solid var(--gold);
+  padding: 0 18px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.hud-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-player {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--gold2);
+  letter-spacing: 0.04em;
+}
+
+.hud-turn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text2);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+.hud-center {
+  display: flex;
+  gap: 5px;
+}
+
+.phase-pill {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  color: var(--text3);
+  background: var(--surface3);
+  border-color: var(--border);
+}
+
+.phase-pill.active {
+  background: #3a2c10;
+  border-color: var(--gold);
+  color: var(--gold2);
+  box-shadow: 0 0 8px rgba(200,176,112,0.18);
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.gold-display {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+}
+
+.gold-display span:last-child {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--gold);
+}
+
+.deck-stats {
+  display: flex;
+  gap: 9px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text2);
+}
+
+.deck-stat {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.hud-help {
+  font-size: 0.7rem;
+  color: var(--text3);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── MAIN ── */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  gap: 0;
+}
+
+/* ── MOUNTAIN COLUMN ── */
+.mountain-col {
+  width: 244px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px 10px;
+  gap: 7px;
+}
+
+.col-header {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  padding-left: 2px;
+}
+
+/* Tile */
+.tile {
+  position: relative;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 1px 1px 0 var(--bg), inset 0 0 0 1px rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.tile:hover {
+  box-shadow: 1px 1px 0 var(--bg), 0 0 8px rgba(200,176,112,0.12), inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.tile.current {
+  border-left: 4px solid var(--gold);
+  background: #2e2616;
+  box-shadow: 1px 1px 0 var(--bg), 0 0 12px rgba(200,176,112,0.15), inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.tile-body {
+  padding: 7px 8px 7px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tile-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tile-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text1);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.tile.current .tile-name { color: var(--gold2); }
+
+.tile-elev {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--gold);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tile-zone {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.56rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tile-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.tile-tokens {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.token-stamp {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  font-weight: 800;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0;
+  border: 2px solid rgba(0,0,0,0.4);
+  flex-shrink: 0;
+}
+
+.token-alex { background: #8a5c2a; color: #f0d080; border-color: var(--gold); }
+.token-ben  { background: #2a5a4a; color: #80e0c0; border-color: #60c0a0; }
+
+.challenge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Watermark */
+.tile::before {
+  content: attr(data-icon);
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  font-size: 2.4rem;
+  opacity: 0.06;
+  pointer-events: none;
+  line-height: 1;
+}
+
+/* Color band at bottom of tile */
+.tile-band {
+  height: 5px;
+  width: 100%;
+}
+
+/* Hidden / undiscovered */
+.tile.hidden {
+  border: 1px dashed var(--border);
+  background: var(--surface);
+  opacity: 0.6;
+}
+
+.tile.hidden .tile-name { color: var(--text3); }
+
+/* ── RIGHT AREA ── */
+.right-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 16px 18px;
+  gap: 14px;
+}
+
+.panel-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--gold2);
+  letter-spacing: 0.04em;
+}
+
+.panel-sub {
+  font-size: 0.72rem;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+.move-options {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 4px;
+}
+
+.move-card {
+  background: #f5f0e8;
+  border: 1px solid #d0c0a0;
+  border-radius: 5px;
+  border-left: 4px solid var(--gold);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: box-shadow 0.12s, transform 0.1s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+
+.move-card:hover {
+  transform: translateX(3px);
+  box-shadow: 0 2px 10px rgba(200,176,112,0.22);
+}
+
+.move-card.blue { border-left-color: var(--blue); }
+.move-card.sage { border-left-color: var(--sage); }
+
+.move-dest {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2c2010;
+  flex: 1;
+}
+
+.move-detail {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: #605040;
+  display: flex;
+  gap: 10px;
+}
+
+.move-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: #2c2010;
+  color: var(--gold2);
+  white-space: nowrap;
+}
+
+.advance-btn {
+  margin-top: 8px;
+  align-self: flex-start;
+  background: linear-gradient(135deg, #a0800a, #c8a030);
+  border: 1px solid var(--gold);
+  color: #1a1000;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  padding: 9px 22px;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(200,176,112,0.22);
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+
+.advance-btn:hover {
+  box-shadow: 0 4px 16px rgba(200,176,112,0.35);
+  transform: translateY(-1px);
+}
+
+/* ── HAND TRAY ── */
+.hand-tray {
+  flex-shrink: 0;
+  height: 180px;
+  background: var(--surface);
+  border-top: 2px solid var(--gold);
+  box-shadow: 0 -4px 18px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 10px;
+  gap: 6px;
+}
+
+.tray-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tray-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.tray-count {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text2);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+
+.end-turn-btn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  padding: 5px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.end-turn-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold2);
+}
+
+.hand-cards {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding-bottom: 2px;
+}
+
+/* ── CARDS (Wingspan layered) ── */
+.card {
+  width: 90px;
+  height: 130px;
+  border-radius: 5px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(200,176,112,0.28), 0 0 0 1px var(--gold);
+}
+
+.card.selected {
+  transform: translateY(-12px);
+  box-shadow: 0 10px 28px rgba(200,176,112,0.4), 0 0 0 2px var(--gold2);
+  border-color: var(--gold2);
+}
+
+/* Art area */
+.card-art {
+  height: 72px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-art-tool   { background: linear-gradient(160deg, #0c1828, #1e3048); }
+.card-art-utility { background: linear-gradient(160deg, #081a0c, #142e18); }
+.card-art-skill  { background: linear-gradient(160deg, #180c28, #2c1848); }
+
+.card-emoji {
+  font-size: 2rem;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* Cost strip — left edge, from bottom of art area down through card body */
+.card-cost-strip {
+  position: absolute;
+  left: 0;
+  top: 72px; /* starts at bottom of art area */
+  bottom: 0;
+  width: 14px;
+  background: #3a2c10;
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.card-cost-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--gold2);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  letter-spacing: 0.04em;
+}
+
+/* Category diamonds — top-left corner, overlapping art area */
+.card-diamonds {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 6;
+  display: flex;
+  gap: 2px;
+}
+
+.diamond {
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  border-radius: 1px;
+}
+
+.diamond-blue   { background: var(--blue); }
+.diamond-sage   { background: var(--sage); }
+.diamond-purple { background: var(--purple); }
+.diamond-dark   { background: var(--surface3); border: 1px solid var(--border); }
+
+/* Card body below art */
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 3px 4px 0 18px;
+  background: #252018;
+  position: relative;
+}
+
+.card-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.62rem;
+  color: var(--text1);
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+  padding-top: 3px;
+  text-align: center;
+}
+
+.card-stats {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 3px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.5rem;
+  color: var(--text2);
+  flex-wrap: wrap;
+}
+
+.stat-pair {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+/* Effect band — very bottom */
+.card-effect-band {
+  height: 22px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 5px 0 3px;
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.band-amber  { background: rgba(200,176,112,0.25); border-left: 3px solid #c8b070; }
+.band-sage   { background: rgba(122,184,112,0.20);  border-left: 3px solid #7ab870; }
+.band-purple { background: rgba(154,122,184,0.20); border-left: 3px solid #9a7ab8; }
+
+.card-effect-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.44rem;
+  line-height: 1.2;
+  color: var(--text2);
+  overflow: hidden;
+}
+
+.band-amber  .card-effect-text { color: #c8b070; }
+.band-sage   .card-effect-text { color: #7ab870; }
+.band-purple .card-effect-text { color: #9a7ab8; }
+
+/* ── VERSION BADGE ── */
+.version-badge {
+  position: fixed;
+  bottom: 12px;
+  right: 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  z-index: 100;
+}
+</style>
+</head>
+<body>
+
+<!-- ── HUD ── -->
+<div class="hud">
+  <div class="hud-left">
+    <span class="hud-player">🧗 Alex</span>
+    <span class="hud-turn">TURN 3</span>
+  </div>
+
+  <div class="hud-center">
+    <div class="phase-pill">PLAY</div>
+    <div class="phase-pill active">MOVE</div>
+    <div class="phase-pill">BUY</div>
+    <div class="phase-pill">END</div>
+  </div>
+
+  <div class="hud-right">
+    <div class="gold-display">
+      <span>💰</span><span>5</span>
+    </div>
+    <div class="deck-stats">
+      <div class="deck-stat">✋ 5</div>
+      <div class="deck-stat">📦 12</div>
+      <div class="deck-stat">♻ 3</div>
+    </div>
+    <div class="hud-help">?</div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- ── MOUNTAIN COLUMN ── -->
+  <div class="mountain-col">
+    <div class="col-header">Route</div>
+
+    <!-- Tile 1: Base Camp -->
+    <div class="tile" data-icon="🏕">
+      <div class="tile-body">
+        <div class="tile-top-row">
+          <div>
+            <div class="tile-name">Base Camp</div>
+            <div class="tile-zone">TRAILHEAD · ZONE A</div>
+          </div>
+          <div class="tile-elev">🪶 1</div>
+        </div>
+        <div class="tile-meta">
+          <div class="tile-tokens"></div>
+        </div>
+      </div>
+      <div class="tile-band" style="background:#4a7a3a;"></div>
+    </div>
+
+    <!-- Tile 2: Treeline Ridge -->
+    <div class="tile" data-icon="🌲">
+      <div class="tile-body">
+        <div class="tile-top-row">
+          <div>
+            <div class="tile-name">Treeline Ridge</div>
+            <div class="tile-zone">ALPINE · ZONE B</div>
+          </div>
+          <div class="tile-elev">🪶 4</div>
+        </div>
+        <div class="tile-meta">
+          <div class="tile-tokens">
+            <div class="token-stamp token-ben">B</div>
+          </div>
+          <div class="challenge-dot" style="background:#6a90c8;" title="Challenge present"></div>
+        </div>
+      </div>
+      <div class="tile-band" style="background:#4a7a3a;"></div>
+    </div>
+
+    <!-- Tile 3: Glacier Field — CURRENT -->
+    <div class="tile current" data-icon="🧊">
+      <div class="tile-body">
+        <div class="tile-top-row">
+          <div>
+            <div class="tile-name">Glacier Field</div>
+            <div class="tile-zone">HIGH ALPINE · ZONE C</div>
+          </div>
+          <div class="tile-elev">🪶 7</div>
+        </div>
+        <div class="tile-meta">
+          <div class="tile-tokens">
+            <div class="token-stamp token-alex">A</div>
+          </div>
+          <div class="challenge-dot" style="background:#9a7ab8;" title="Challenge present"></div>
+        </div>
+      </div>
+      <div class="tile-band" style="background:#7a5a30;"></div>
+    </div>
+
+    <!-- Tile 4: Icefall Passage -->
+    <div class="tile" data-icon="❄">
+      <div class="tile-body">
+        <div class="tile-top-row">
+          <div>
+            <div class="tile-name">Icefall Passage</div>
+            <div class="tile-zone">GLACIER · ZONE D</div>
+          </div>
+          <div class="tile-elev">🪶 10</div>
+        </div>
+        <div class="tile-meta">
+          <div class="tile-tokens"></div>
+          <div class="challenge-dot" style="background:#c8b070;" title="Challenge present"></div>
+        </div>
+      </div>
+      <div class="tile-band" style="background:#7a5a30;"></div>
+    </div>
+
+    <!-- Tile 5: The Summit — hidden -->
+    <div class="tile hidden" data-icon="🏔">
+      <div class="tile-body">
+        <div class="tile-top-row">
+          <div>
+            <div class="tile-name">??? Summit</div>
+            <div class="tile-zone">UNKNOWN · ZONE E</div>
+          </div>
+          <div class="tile-elev">🪶 ?</div>
+        </div>
+        <div class="tile-meta"></div>
+      </div>
+      <div class="tile-band" style="background:#c8a030;"></div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT AREA ── -->
+  <div class="right-area">
+    <div>
+      <div class="panel-heading">Choose Your Path</div>
+      <div class="panel-sub">Move phase · Glacier Field (Elev 7) · 1 move remaining</div>
+    </div>
+
+    <div class="move-options">
+
+      <div class="move-card">
+        <div class="move-dest">Icefall Passage</div>
+        <div class="move-detail">
+          <span>⬆ +3 elev</span>
+          <span>🧊 Glacier</span>
+        </div>
+        <div class="move-badge">2💰 · Axe needed</div>
+      </div>
+
+      <div class="move-card blue">
+        <div class="move-dest">Crevasse Route</div>
+        <div class="move-detail">
+          <span>⬆ +2 elev</span>
+          <span>🌬 Windy</span>
+        </div>
+        <div class="move-badge">1💰 · Free w/ Map</div>
+      </div>
+
+      <div class="move-card sage">
+        <div class="move-dest">Rest at Glacier Field</div>
+        <div class="move-detail">
+          <span>→ Hold position</span>
+          <span>🛡 Acclimatize</span>
+        </div>
+        <div class="move-badge">0💰 · Draw 1</div>
+      </div>
+
+    </div>
+
+    <button class="advance-btn">Advance →</button>
+  </div>
+</div>
+
+<!-- ── HAND TRAY ── -->
+<div class="hand-tray">
+  <div class="tray-header">
+    <span class="tray-label">In Hand</span>
+    <span class="tray-count">5</span>
+    <button class="end-turn-btn">END TURN</button>
+  </div>
+
+  <div class="hand-cards">
+
+    <!-- Card 1: Ice Axe — SELECTED, tool, play effect -->
+    <div class="card selected">
+      <div class="card-cost-strip">
+        <span class="card-cost-text">2g</span>
+      </div>
+      <div class="card-diamonds">
+        <div class="diamond diamond-blue"></div>
+        <div class="diamond diamond-dark"></div>
+      </div>
+      <div class="card-art card-art-tool">
+        <div class="card-emoji">⛏</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Ice Axe</div>
+        <div class="card-stats">
+          <div class="stat-pair">⬆3</div>
+          <div class="stat-pair">⚡2</div>
+        </div>
+      </div>
+      <div class="card-effect-band band-amber">
+        <div class="card-effect-text">Reduce move cost -1</div>
+      </div>
+    </div>
+
+    <!-- Card 2: Survey Map — utility, play effect -->
+    <div class="card">
+      <div class="card-cost-strip">
+        <span class="card-cost-text">1g</span>
+      </div>
+      <div class="card-diamonds">
+        <div class="diamond diamond-sage"></div>
+        <div class="diamond diamond-dark"></div>
+      </div>
+      <div class="card-art card-art-utility">
+        <div class="card-emoji">🗺</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Survey Map</div>
+        <div class="card-stats">
+          <div class="stat-pair">⚡1</div>
+          <div class="stat-pair">💰+1</div>
+        </div>
+      </div>
+      <div class="card-effect-band band-amber">
+        <div class="card-effect-text">Reveal 2 tiles</div>
+      </div>
+    </div>
+
+    <!-- Card 3: Acclimatize — skill, passive -->
+    <div class="card">
+      <div class="card-cost-strip">
+        <span class="card-cost-text">0g</span>
+      </div>
+      <div class="card-diamonds">
+        <div class="diamond diamond-purple"></div>
+        <div class="diamond diamond-dark"></div>
+      </div>
+      <div class="card-art card-art-skill">
+        <div class="card-emoji">🌬</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Acclimatize</div>
+        <div class="card-stats">
+          <div class="stat-pair">🛡3</div>
+          <div class="stat-pair">⬆1</div>
+        </div>
+      </div>
+      <div class="card-effect-band band-sage">
+        <div class="card-effect-text">Ignore weather</div>
+      </div>
+    </div>
+
+    <!-- Card 4: Piton Set — tool, play effect -->
+    <div class="card">
+      <div class="card-cost-strip">
+        <span class="card-cost-text">3g</span>
+      </div>
+      <div class="card-diamonds">
+        <div class="diamond diamond-blue"></div>
+        <div class="diamond diamond-dark"></div>
+      </div>
+      <div class="card-art card-art-tool">
+        <div class="card-emoji">🪝</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Piton Set</div>
+        <div class="card-stats">
+          <div class="stat-pair">⬆4</div>
+          <div class="stat-pair">🛡2</div>
+        </div>
+      </div>
+      <div class="card-effect-band band-amber">
+        <div class="card-effect-text">+2 next turn on rock</div>
+      </div>
+    </div>
+
+    <!-- Card 5: Trail Rations — utility, play effect -->
+    <div class="card">
+      <div class="card-cost-strip">
+        <span class="card-cost-text">1g</span>
+      </div>
+      <div class="card-diamonds">
+        <div class="diamond diamond-sage"></div>
+        <div class="diamond diamond-dark"></div>
+      </div>
+      <div class="card-art card-art-utility">
+        <div class="card-emoji">🍫</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">Trail Rations</div>
+        <div class="card-stats">
+          <div class="stat-pair">⚡2</div>
+          <div class="stat-pair">🛡1</div>
+        </div>
+      </div>
+      <div class="card-effect-band band-amber">
+        <div class="card-effect-text">Draw 1 card</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="version-badge">V2 · OPTION 4 · FIELD NOTES</div>
+
+</body>
+</html>

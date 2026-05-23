@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit — Dungeon Delve (V2 · Option 3)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Barlow+Semi+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #0e0a06;
+  --surface:  #1c1408;
+  --surface2: #261c0e;
+  --surface3: #302414;
+  --border:   #4a3820;
+  --border2:  #6a5030;
+  --amber:    #d4802a;
+  --amber2:   #f09840;
+  --rust:     #a05020;
+  --purple:   #4a2860;
+  --text1:    #ddc8a0;
+  --text2:    #a09070;
+  --text3:    #604830;
+}
+
+body {
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  background: var(--bg);
+  color: var(--text1);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════════
+   HUD BAR
+════════════════════════════════════════ */
+.hud {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 54px;
+  background: var(--surface);
+  border-bottom: 2px solid var(--amber);
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* LEFT: player identity */
+.hud-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.hud-accent-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 10px var(--amber), 0 0 18px rgba(212,128,42,0.4);
+  flex-shrink: 0;
+}
+
+.hud-player-text { display: flex; flex-direction: column; gap: 1px; }
+
+.hud-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--text1);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.hud-role {
+  font-family: 'Courier New', monospace;
+  font-size: 0.58rem;
+  color: var(--text3);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+
+/* CENTER: scroll-label phase display */
+.hud-phase-scroll {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+}
+
+/* Scroll end caps — rounded pill ends */
+.scroll-cap {
+  width: 24px;
+  height: 34px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.scroll-cap.left  {
+  border-radius: 50% 0 0 50% / 45% 0 0 45%;
+  border-right: none;
+}
+.scroll-cap.right {
+  border-radius: 0 50% 50% 0 / 0 45% 45% 0;
+  border-left: none;
+}
+.scroll-knob {
+  width: 5px;
+  height: 18px;
+  border-radius: 3px;
+  background: var(--border2);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.scroll-body {
+  background: var(--surface3);
+  border-top: 1px solid var(--border2);
+  border-bottom: 1px solid var(--border2);
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 18px;
+}
+
+.scroll-phase-side {
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--text3);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.scroll-phase-main {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--amber);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 0 14px rgba(212,128,42,0.55);
+  white-space: nowrap;
+}
+
+/* RIGHT: gold + deck stats + help */
+.hud-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.hud-gold {
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--amber2);
+  letter-spacing: 1px;
+}
+
+.hud-deck-stats {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  color: var(--text3);
+  line-height: 1.6;
+  text-align: right;
+}
+
+.hud-help {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: var(--text3);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.hud-help:hover { border-color: var(--amber); color: var(--amber); }
+
+/* ════════════════════════════════════════
+   MAIN LAYOUT
+════════════════════════════════════════ */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════════
+   MOUNTAIN COLUMN
+════════════════════════════════════════ */
+.mountain-col {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--surface);
+  /* stone-block grid texture via crosshatch */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 31px,
+      rgba(255,255,255,0.025) 31px,
+      rgba(255,255,255,0.025) 32px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 31px,
+      rgba(255,255,255,0.025) 31px,
+      rgba(255,255,255,0.025) 32px
+    );
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 14px 12px 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mountain-header {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--amber);
+  text-transform: uppercase;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.route-track {
+  display: flex;
+  flex-direction: column;
+}
+
+/* dotted corridor connector between rooms */
+.corridor {
+  width: 2px;
+  height: 14px;
+  margin-left: 17px;          /* aligns with zone-bar center */
+  border-left: 2px dotted rgba(106,80,48,0.5);
+}
+
+/* ── dungeon room tile ── */
+.room-tile {
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex;
+  align-items: stretch;
+  min-height: 74px;
+  position: relative;
+  overflow: hidden;
+  /* stone border inset effect */
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.06),
+    inset 0 0 0 3px rgba(0,0,0,0.5);
+}
+
+/* current position: amber glow */
+.room-tile.current {
+  border-color: var(--amber);
+  background: #241a0a;
+  box-shadow:
+    0 0 20px rgba(212,128,42,0.22),
+    0 0 8px  rgba(212,128,42,0.1),
+    inset 0 0 0 1px rgba(255,200,80,0.12),
+    inset 0 0 0 3px rgba(0,0,0,0.5);
+}
+
+/* hidden tile: dashed border, darker bg */
+.room-tile.hidden {
+  border: 1px dashed var(--border);
+  background: #130e06;
+  opacity: 0.72;
+}
+
+/* left zone accent bar */
+.zone-bar {
+  width: 4px;
+  flex-shrink: 0;
+  border-radius: 3px 0 0 3px;
+}
+.zone-bar.lower  { background: var(--rust); }
+.zone-bar.high   { background: var(--amber); }
+.zone-bar.summit { background: #d4a020; }
+
+.room-body {
+  flex: 1;
+  padding: 7px 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: relative;
+  min-width: 0;
+}
+
+/* faint terrain emoji watermark */
+.room-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.6rem;
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+
+.room-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: var(--text1);
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.room-tile.current .room-name { color: var(--amber2); }
+
+.room-sub {
+  font-size: 0.56rem;
+  color: var(--text2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+  font-family: 'Courier New', monospace;
+}
+
+.room-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+  min-height: 22px;
+}
+
+/* challenge pills */
+.challenge-badge {
+  font-family: 'Courier New', monospace;
+  font-size: 0.5rem;
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.challenge-badge.wind     { background: rgba(74,40,96,0.5);   color: #b090d0; border: 1px solid #4a2860; }
+.challenge-badge.ice      { background: rgba(24,60,90,0.5);   color: #80c0e0; border: 1px solid #1e4a6a; }
+.challenge-badge.crevasse { background: rgba(90,30,20,0.5);   color: #d08060; border: 1px solid #6a2a18; }
+
+/* player token */
+.player-token {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.25);
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+}
+
+/* elevation badge */
+.elev-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--amber);
+  opacity: 0.5;
+  line-height: 1;
+  align-self: center;
+  padding: 0 7px 0 4px;
+  flex-shrink: 0;
+}
+.room-tile.current .elev-badge {
+  opacity: 1;
+  text-shadow: 0 0 12px rgba(212,128,42,0.6);
+}
+.room-tile.hidden .elev-badge { opacity: 0.12; }
+
+/* hidden "?" center */
+.hidden-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 4px 0;
+}
+.hidden-q {
+  font-family: 'Cinzel', serif;
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--text2);
+  opacity: 0.2;
+  line-height: 1;
+}
+
+/* ════════════════════════════════════════
+   RIGHT AREA
+════════════════════════════════════════ */
+.right-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 20px 26px 20px 22px;
+  gap: 14px;
+}
+
+.panel-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  color: var(--amber);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+/* movement option cards */
+.move-options {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.move-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.14s, background 0.14s, box-shadow 0.14s;
+  /* stone texture on move cards too */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent, transparent 15px,
+      rgba(255,255,255,0.012) 15px,
+      rgba(255,255,255,0.012) 16px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent, transparent 15px,
+      rgba(255,255,255,0.012) 15px,
+      rgba(255,255,255,0.012) 16px
+    );
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.04),
+    inset 0 0 0 3px rgba(0,0,0,0.3);
+}
+.move-card:hover {
+  border-color: var(--amber);
+  background: #21180a;
+  box-shadow:
+    0 0 12px rgba(212,128,42,0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.06),
+    inset 0 0 0 3px rgba(0,0,0,0.3);
+}
+
+.move-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.move-info { flex: 1; min-width: 0; }
+
+.move-dest {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text1);
+  letter-spacing: 0.5px;
+}
+
+.move-effect {
+  font-size: 0.68rem;
+  color: var(--text2);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.move-zone-tag {
+  font-size: 0.56rem;
+  font-family: 'Courier New', monospace;
+  color: var(--text3);
+  letter-spacing: 1px;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+.move-cost {
+  padding: 5px 11px;
+  background: var(--amber);
+  color: var(--bg);
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.move-cost.free {
+  background: var(--surface3);
+  color: var(--text2);
+  border: 1px solid var(--border2);
+}
+
+/* ADVANCE button */
+.advance-btn {
+  align-self: flex-start;
+  padding: 13px 36px;
+  background: var(--amber);
+  color: var(--bg);
+  border: none;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 0 22px rgba(212,128,42,0.3);
+  transition: background 0.14s, box-shadow 0.14s;
+}
+.advance-btn:hover {
+  background: var(--amber2);
+  box-shadow: 0 0 32px rgba(240,152,64,0.5);
+}
+
+/* phase reminder callout */
+.phase-reminder {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: 3px;
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  color: var(--text2);
+  line-height: 1.55;
+  margin-top: auto;
+}
+.phase-reminder strong { color: var(--amber); }
+
+/* ════════════════════════════════════════
+   HAND TRAY
+════════════════════════════════════════ */
+.hand-tray {
+  height: 172px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-top: 2px solid var(--amber);
+  box-shadow: inset 0 8px 22px rgba(0,0,0,0.55);
+  padding: 10px 18px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hand-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hand-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--amber);
+  text-transform: uppercase;
+}
+
+.hand-count {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  color: var(--text3);
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1px 8px;
+}
+
+.end-turn-btn {
+  margin-left: auto;
+  padding: 5px 14px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  color: var(--text2);
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: border-color 0.14s, color 0.14s;
+}
+.end-turn-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+.hand-cards {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  align-items: flex-end;
+}
+.hand-cards::-webkit-scrollbar { height: 3px; }
+.hand-cards::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ════════════════════════════════════════
+   CARDS — strict Clank! 3-zone layout
+════════════════════════════════════════ */
+.card {
+  width: 90px;
+  height: 128px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.14s, box-shadow 0.14s;
+  display: flex;
+  flex-direction: column;
+  /* ensure border-top is part of the card */
+  border: 1px solid var(--border);
+}
+
+.card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 10px 26px rgba(212,128,42,0.38);
+  z-index: 5;
+}
+
+.card.selected {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 30px rgba(212,128,42,0.55);
+  border-color: var(--amber);
+  z-index: 6;
+}
+
+/* category top border — 3px, overrides the 1px border-top */
+.card.tool    { border-top: 3px solid var(--amber);  }
+.card.utility { border-top: 3px solid var(--rust);   }
+.card.skill   { border-top: 3px solid var(--purple); }
+
+/* ── Zone 1: Art area (top ~60% = 77px) ── */
+.card-art {
+  height: 77px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.card.tool    .card-art { background: linear-gradient(160deg, #0c1828, #1a2e48); }
+.card.utility .card-art { background: linear-gradient(160deg, #0a1e0e, #163218); }
+.card.skill   .card-art { background: linear-gradient(160deg, #180c28, #2c1848); }
+
+/* cost badge: circular, amber, top-right overlapping art */
+.card-cost {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--bg);
+  font-family: 'Courier New', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.7);
+}
+
+/* ── Zone 2: Name banner (middle ~10% = 13px) ── */
+.card-name-banner {
+  height: 13px;
+  background: rgba(14,10,6,0.75);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-name-text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text1);
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+}
+
+/* ── Zone 3: Resource row (bottom ~30% = 38px) ── */
+.card-resources {
+  flex: 1;
+  background: #1a1006;
+  padding: 4px 6px 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.resource-row {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.res-item {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.58rem;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+.res-icon { font-size: 0.6rem; line-height: 1; }
+.res-val  { font-weight: 700; color: var(--text1); }
+
+.card-effect {
+  font-size: 0.5rem;
+  color: var(--text3);
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ════════════════════════════════════════
+   SAMPLE BADGE
+════════════════════════════════════════ */
+.sample-badge {
+  position: fixed;
+  bottom: 14px;
+  right: 14px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 5px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  color: var(--text3);
+  letter-spacing: 1px;
+  z-index: 200;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     HUD BAR
+════════════════════════════════════════ -->
+<header class="hud">
+
+  <!-- LEFT: player identity -->
+  <div class="hud-player">
+    <div class="hud-accent-dot"></div>
+    <div class="hud-player-text">
+      <div class="hud-name">ALEX</div>
+      <div class="hud-role">CLIMBER</div>
+    </div>
+  </div>
+
+  <!-- CENTER: Clank!-style scroll-label phase -->
+  <div class="hud-phase-scroll">
+    <div class="scroll-cap left"><div class="scroll-knob"></div></div>
+    <div class="scroll-body">
+      <span class="scroll-phase-side">SUPPLY</span>
+      <span class="scroll-phase-main">MOVE</span>
+      <span class="scroll-phase-side">CAMP</span>
+    </div>
+    <div class="scroll-cap right"><div class="scroll-knob"></div></div>
+  </div>
+
+  <!-- RIGHT: gold + deck stats + help -->
+  <div class="hud-right">
+    <div class="hud-gold">💰 5</div>
+    <div class="hud-deck-stats">DECK 18 · DISCARD 7<br>TURN 4 · ROUND 2</div>
+    <div class="hud-help">?</div>
+  </div>
+
+</header>
+
+<!-- ════════════════════════════════════════
+     MAIN
+════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- ── MOUNTAIN COLUMN ── -->
+  <aside class="mountain-col">
+    <div class="mountain-header">▲ Ascent Route</div>
+
+    <div class="route-track">
+
+      <!-- TILE 5 — Summit Peak · elev 10 · HIDDEN -->
+      <div class="room-tile hidden">
+        <div class="zone-bar summit"></div>
+        <div class="hidden-center">
+          <div class="hidden-q">?</div>
+        </div>
+        <div class="elev-badge">10</div>
+      </div>
+
+      <div class="corridor"></div>
+
+      <!-- TILE 4 — High Ridge · elev 9 · high alpine -->
+      <div class="room-tile">
+        <div class="zone-bar high"></div>
+        <div class="room-body">
+          <div class="room-watermark">🏔️</div>
+          <div class="room-name">High Ridge</div>
+          <div class="room-sub">High Alpine</div>
+          <div class="room-bottom-row">
+            <span class="challenge-badge wind">⚡ WIND</span>
+          </div>
+        </div>
+        <div class="elev-badge">9</div>
+      </div>
+
+      <div class="corridor"></div>
+
+      <!-- TILE 3 — Ice Fall · elev 8 · high alpine -->
+      <div class="room-tile">
+        <div class="zone-bar high"></div>
+        <div class="room-body">
+          <div class="room-watermark">🧊</div>
+          <div class="room-name">Ice Fall</div>
+          <div class="room-sub">High Alpine</div>
+          <div class="room-bottom-row">
+            <span class="challenge-badge ice">❄️ ICE</span>
+          </div>
+        </div>
+        <div class="elev-badge">8</div>
+      </div>
+
+      <div class="corridor"></div>
+
+      <!-- TILE 2 — Glacier Field · elev 7 · CURRENT POSITION -->
+      <div class="room-tile current">
+        <div class="zone-bar high"></div>
+        <div class="room-body">
+          <div class="room-watermark">🌨️</div>
+          <div class="room-name">Glacier Field</div>
+          <div class="room-sub">High Alpine · Current</div>
+          <div class="room-bottom-row">
+            <div class="player-token" style="background:#c0392b;">A</div>
+          </div>
+        </div>
+        <div class="elev-badge">7</div>
+      </div>
+
+      <div class="corridor"></div>
+
+      <!-- TILE 1 — Base Camp · elev 4 · lower mountain -->
+      <div class="room-tile">
+        <div class="zone-bar lower"></div>
+        <div class="room-body">
+          <div class="room-watermark">⛺</div>
+          <div class="room-name">Base Camp</div>
+          <div class="room-sub">Lower Mountain</div>
+          <div class="room-bottom-row">
+            <span class="challenge-badge crevasse">🕳 CREVASSE</span>
+          </div>
+        </div>
+        <div class="elev-badge">4</div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ── RIGHT AREA ── -->
+  <main class="right-area">
+
+    <div class="panel-heading">Advance Route</div>
+
+    <!-- 3 movement option cards -->
+    <div class="move-options">
+
+      <!-- Option A: Ice Fall (elev 8, cost 2) -->
+      <div class="move-card">
+        <div class="move-icon">🧊</div>
+        <div class="move-info">
+          <div class="move-dest">Ice Fall</div>
+          <div class="move-effect">Requires 2 movement · Ice challenge on entry</div>
+          <div class="move-zone-tag">High Alpine · Elev 8</div>
+        </div>
+        <div class="move-cost">2 🥾</div>
+      </div>
+
+      <!-- Option B: High Ridge (elev 9, cost 3) -->
+      <div class="move-card">
+        <div class="move-icon">🏔️</div>
+        <div class="move-info">
+          <div class="move-dest">High Ridge</div>
+          <div class="move-effect">Requires 3 movement · Wind debuff next turn</div>
+          <div class="move-zone-tag">High Alpine · Elev 9</div>
+        </div>
+        <div class="move-cost">3 🥾</div>
+      </div>
+
+      <!-- Option C: Hold Position (free) -->
+      <div class="move-card">
+        <div class="move-icon">⛺</div>
+        <div class="move-info">
+          <div class="move-dest">Hold Position</div>
+          <div class="move-effect">Stay at Glacier Field · Recover 1 stamina</div>
+          <div class="move-zone-tag">Glacier Field · Elev 7</div>
+        </div>
+        <div class="move-cost free">FREE</div>
+      </div>
+
+    </div>
+
+    <!-- Advance button -->
+    <button class="advance-btn">ADVANCE</button>
+
+    <!-- Phase reminder -->
+    <div class="phase-reminder">
+      <strong>MOVE PHASE</strong> — Play movement cards from your hand to generate 🥾 points,
+      then choose a destination above. Unused movement is lost at end of phase.
+      After moving, proceed to the <strong>CAMP</strong> phase.
+    </div>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════
+     HAND TRAY
+════════════════════════════════════════ -->
+<div class="hand-tray">
+
+  <div class="hand-header">
+    <div class="hand-label">Hand</div>
+    <div class="hand-count">5 CARDS</div>
+    <button class="end-turn-btn">END TURN →</button>
+  </div>
+
+  <div class="hand-cards">
+
+    <!-- ── Ice Axe · tool · 2g · SELECTED ── -->
+    <div class="card tool selected">
+      <div class="card-art">
+        ⛏️
+        <div class="card-cost">2</div>
+      </div>
+      <div class="card-name-banner">
+        <span class="card-name-text">Ice Axe</span>
+      </div>
+      <div class="card-resources">
+        <div class="resource-row">
+          <div class="res-item"><span class="res-icon">🥾</span><span class="res-val">2</span></div>
+          <div class="res-item"><span class="res-icon">⚔️</span><span class="res-val">1</span></div>
+        </div>
+        <div class="card-effect">+1 vs ice challenges</div>
+      </div>
+    </div>
+
+    <!-- ── Survey Map · utility · 1g ── -->
+    <div class="card utility">
+      <div class="card-art">
+        🗺️
+        <div class="card-cost">1</div>
+      </div>
+      <div class="card-name-banner">
+        <span class="card-name-text">Survey Map</span>
+      </div>
+      <div class="card-resources">
+        <div class="resource-row">
+          <div class="res-item"><span class="res-icon">🥾</span><span class="res-val">1</span></div>
+          <div class="res-item"><span class="res-icon">💰</span><span class="res-val">1</span></div>
+        </div>
+        <div class="card-effect">Reveal next hidden tile</div>
+      </div>
+    </div>
+
+    <!-- ── Acclimatize · skill · 0g ── -->
+    <div class="card skill">
+      <div class="card-art">
+        🧘
+        <div class="card-cost">0</div>
+      </div>
+      <div class="card-name-banner">
+        <span class="card-name-text">Acclimatize</span>
+      </div>
+      <div class="card-resources">
+        <div class="resource-row">
+          <div class="res-item"><span class="res-icon">🥾</span><span class="res-val">1</span></div>
+        </div>
+        <div class="card-effect">Draw 1 card this phase</div>
+      </div>
+    </div>
+
+    <!-- ── Piton Set · tool · 3g ── -->
+    <div class="card tool">
+      <div class="card-art">
+        🪝
+        <div class="card-cost">3</div>
+      </div>
+      <div class="card-name-banner">
+        <span class="card-name-text">Piton Set</span>
+      </div>
+      <div class="card-resources">
+        <div class="resource-row">
+          <div class="res-item"><span class="res-icon">🥾</span><span class="res-val">3</span></div>
+          <div class="res-item"><span class="res-icon">⚔️</span><span class="res-val">2</span></div>
+        </div>
+        <div class="card-effect">Safe anchor; reuse next turn</div>
+      </div>
+    </div>
+
+    <!-- ── Trail Rations · utility · 1g ── -->
+    <div class="card utility">
+      <div class="card-art">
+        🍫
+        <div class="card-cost">1</div>
+      </div>
+      <div class="card-name-banner">
+        <span class="card-name-text">Trail Rations</span>
+      </div>
+      <div class="card-resources">
+        <div class="resource-row">
+          <div class="res-item"><span class="res-icon">🥾</span><span class="res-val">1</span></div>
+          <div class="res-item"><span class="res-icon">💰</span><span class="res-val">1</span></div>
+        </div>
+        <div class="card-effect">+1 stamina recovery</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- fixed sample badge -->
+<div class="sample-badge">V2 · OPTION 3 · DUNGEON DELVE</div>
+
+</body>
+</html>

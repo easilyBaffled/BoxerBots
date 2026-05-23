@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit — V2 UI Options (Board Game Inspired)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Barlow+Semi+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #070a10;
+  color: #cdd9e8;
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  min-height: 100vh;
+  padding: 48px 24px 64px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #f59e0b;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+.subtitle {
+  font-size: 0.85rem;
+  color: #4a6a88;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.prevLink {
+  font-size: 0.7rem;
+  color: #3a5068;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+.prevLink:hover { color: #5a7a98; }
+
+.divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2a4060, transparent);
+  margin: 20px auto 36px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #0d1520;
+  border: 1px solid #1e3050;
+  border-radius: 8px;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+}
+
+/* Preview area */
+.preview {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0,0,0,0.45) 0%, transparent 55%);
+}
+
+/* Per-option palette swatches */
+.swatches {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  gap: 4px;
+  z-index: 1;
+}
+.swatch {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.18);
+}
+
+/* Option-specific preview bgs */
+.opt1 .preview { background: linear-gradient(160deg, #d4e4f4 0%, #f0f4f8 100%); }
+.opt2 .preview { background: linear-gradient(160deg, #1a1208 0%, #2e1f0a 100%); }
+.opt3 .preview { background: linear-gradient(160deg, #0e0a06 0%, #261c0e 100%); }
+.opt4 .preview { background: linear-gradient(160deg, #1a1510 0%, #302a20 100%); }
+.opt5 .preview { background: linear-gradient(160deg, #080c10 0%, #162030 100%); }
+
+/* Option-specific hover borders */
+.opt1:hover { border-color: #4a90c4; box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 20px rgba(74,144,196,0.15); }
+.opt2:hover { border-color: #d4823a; box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 20px rgba(212,130,58,0.15); }
+.opt3:hover { border-color: #d4802a; box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 20px rgba(212,128,42,0.15); }
+.opt4:hover { border-color: #c8b070; box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 20px rgba(200,176,112,0.15); }
+.opt5:hover { border-color: #d4923c; box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 20px rgba(212,146,60,0.15); }
+
+.body { padding: 18px; }
+
+.optNum {
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #2a4060;
+  margin-bottom: 4px;
+  font-family: monospace;
+}
+
+.optName {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.opt1 .optName { color: #4a90c4; }
+.opt2 .optName { color: #d4823a; }
+.opt3 .optName { color: #d4802a; }
+.opt4 .optName { color: #c8b070; }
+.opt5 .optName { color: #d4923c; }
+
+.optInspo {
+  font-size: 0.7rem;
+  color: #3a5068;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+.trait {
+  font-size: 0.62rem;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid #1e3050;
+  color: #3a5068;
+}
+.opt1 .trait { border-color: rgba(74,144,196,0.25); color: #3a6888; }
+.opt2 .trait { border-color: rgba(212,130,58,0.25); color: #886838; }
+.opt3 .trait { border-color: rgba(212,128,42,0.25); color: #886028; }
+.opt4 .trait { border-color: rgba(200,176,112,0.2); color: #807060; }
+.opt5 .trait { border-color: rgba(212,146,60,0.25); color: #886838; }
+
+.cardKey {
+  font-size: 0.62rem;
+  color: #2a4060;
+  margin-bottom: 6px;
+  font-family: monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.cardSig {
+  font-size: 0.7rem;
+  color: #4a6a88;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  padding-left: 8px;
+  border-left: 2px solid #1e3050;
+}
+.opt1 .cardSig { border-color: rgba(74,144,196,0.4); }
+.opt2 .cardSig { border-color: rgba(212,130,58,0.4); }
+.opt3 .cardSig { border-color: rgba(212,128,42,0.4); }
+.opt4 .cardSig { border-color: rgba(200,176,112,0.3); }
+.opt5 .cardSig { border-color: rgba(212,146,60,0.4); }
+
+.viewBtn {
+  display: block;
+  padding: 9px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: opacity 0.12s;
+}
+.viewBtn:hover { opacity: 0.85; }
+.opt1 .viewBtn { background: #4a90c4; color: #f0f4f8; }
+.opt2 .viewBtn { background: #d4823a; color: #1a1208; }
+.opt3 .viewBtn { background: #d4802a; color: #0e0a06; }
+.opt4 .viewBtn { background: #c8b070; color: #1a1510; }
+.opt5 .viewBtn { background: #d4923c; color: #080c10; }
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.75rem;
+  color: #2a4060;
+  line-height: 1.9;
+}
+.footer strong { color: #3a5a78; }
+.footer a { color: #3a5a78; text-decoration: none; }
+.footer a:hover { color: #5a7a98; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">SUMMIT</div>
+  <div class="subtitle">V2 · Board Game–Inspired UI Options · 5 Directions</div>
+  <a class="prevLink" href="index.html">← View V1 options</a>
+</div>
+<div class="divider"></div>
+
+<div class="grid">
+
+  <!-- Option 1 -->
+  <a class="card opt1" href="v2-option1-alpine-route.html" target="_blank">
+    <div class="preview">
+      🧊
+      <div class="swatches">
+        <div class="swatch" style="background:#f0f4f8;"></div>
+        <div class="swatch" style="background:#4a90c4;"></div>
+        <div class="swatch" style="background:#1a2a3a;"></div>
+        <div class="swatch" style="background:#e8a020;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 01</div>
+      <div class="optName">Alpine Route</div>
+      <div class="optInspo">Inspired by K2 board game</div>
+      <div class="traits">
+        <span class="trait">Light / inverted palette</span>
+        <span class="trait">Route-map mountain</span>
+        <span class="trait">Weather forecast strip</span>
+        <span class="trait">Flat color cards</span>
+        <span class="trait">Monospace HUD</span>
+      </div>
+      <div class="cardKey">Card signature:</div>
+      <div class="cardSig">White bg · left color stripe · navy square cost badge top-right · no art gradient · monospace stats</div>
+      <div class="viewBtn">View Option 1 →</div>
+    </div>
+  </a>
+
+  <!-- Option 2 -->
+  <a class="card opt2" href="v2-option2-trail-journal.html" target="_blank">
+    <div class="preview">
+      🏕️
+      <div class="swatches">
+        <div class="swatch" style="background:#1a1208;"></div>
+        <div class="swatch" style="background:#d4823a;"></div>
+        <div class="swatch" style="background:#8ab870;"></div>
+        <div class="swatch" style="background:#c8b88a;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 02</div>
+      <div class="optName">Trail Journal</div>
+      <div class="optInspo">Inspired by PARKS board game</div>
+      <div class="traits">
+        <span class="trait">Earthy warm tones</span>
+        <span class="trait">Topographic tile texture</span>
+        <span class="trait">REI catalog feel</span>
+        <span class="trait">Left-edge cost strip</span>
+        <span class="trait">Shield tokens</span>
+      </div>
+      <div class="cardKey">Card signature:</div>
+      <div class="cardSig">Full-bleed art top 55% · Cinzel all-caps name · tinted bottom band · cost on left edge (not floating)</div>
+      <div class="viewBtn">View Option 2 →</div>
+    </div>
+  </a>
+
+  <!-- Option 3 -->
+  <a class="card opt3" href="v2-option3-dungeon-delve.html" target="_blank">
+    <div class="preview">
+      🔥
+      <div class="swatches">
+        <div class="swatch" style="background:#0e0a06;"></div>
+        <div class="swatch" style="background:#1c1408;"></div>
+        <div class="swatch" style="background:#d4802a;"></div>
+        <div class="swatch" style="background:#ddc8a0;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 03</div>
+      <div class="optName">Dungeon Delve</div>
+      <div class="optInspo">Inspired by Clank! board game</div>
+      <div class="traits">
+        <span class="trait">Dark mahogany + torchlight</span>
+        <span class="trait">Stone-texture tiles</span>
+        <span class="trait">Strict 3-zone cards</span>
+        <span class="trait">Cost badge overlaps art</span>
+        <span class="trait">Resource icon row</span>
+      </div>
+      <div class="cardKey">Card signature:</div>
+      <div class="cardSig">Art 60% → name banner 10% → resource icon row 30% · circular amber cost top-right overlapping art</div>
+      <div class="viewBtn">View Option 3 →</div>
+    </div>
+  </a>
+
+  <!-- Option 4 -->
+  <a class="card opt4" href="v2-option4-field-notes.html" target="_blank">
+    <div class="preview">
+      🦅
+      <div class="swatches">
+        <div class="swatch" style="background:#1a1510;"></div>
+        <div class="swatch" style="background:#c8b070;"></div>
+        <div class="swatch" style="background:#7ab870;"></div>
+        <div class="swatch" style="background:#e8dcc8;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 04</div>
+      <div class="optName">Field Notes</div>
+      <div class="optInspo">Inspired by Wingspan board game</div>
+      <div class="traits">
+        <span class="trait">Cream/parchment text</span>
+        <span class="trait">Category diamond icons</span>
+        <span class="trait">Colored effect band</span>
+        <span class="trait">Icon silhouette stats</span>
+        <span class="trait">Feather elevation badge</span>
+      </div>
+      <div class="cardKey">Card signature:</div>
+      <div class="cardSig">Diamond icons top-left · cost strip left edge · art area · name · colored bottom band by trigger timing (amber/green/purple)</div>
+      <div class="viewBtn">View Option 4 →</div>
+    </div>
+  </a>
+
+  <!-- Option 5 -->
+  <a class="card opt5" href="v2-option5-tome-of-ascent.html" target="_blank">
+    <div class="preview">
+      📖
+      <div class="swatches">
+        <div class="swatch" style="background:#080c10;"></div>
+        <div class="swatch" style="background:#4a7ab8;"></div>
+        <div class="swatch" style="background:#4aaa6a;"></div>
+        <div class="swatch" style="background:#d4923c;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 05</div>
+      <div class="optName">Tome of Ascent</div>
+      <div class="optInspo">Inspired by Gloomhaven / Frosthaven</div>
+      <div class="traits">
+        <span class="trait">Split top/bottom cards</span>
+        <span class="trait">Named ability ribbons</span>
+        <span class="trait">Class-color coded</span>
+        <span class="trait">Initiative tracker HUD</span>
+        <span class="trait">Hex-grid tile texture</span>
+      </div>
+      <div class="cardKey">Card signature:</div>
+      <div class="cardSig">Top half (primary action) · amber cost ribbon on center stripe · bottom half (discard effect) · class-color border glow</div>
+      <div class="viewBtn">View Option 5 →</div>
+    </div>
+  </a>
+
+</div>
+
+<div class="footer">
+  All five screens show the same game state: <strong>Alex at Elevation 7 · Move Phase · 5 gold · 5 cards in hand</strong><br>
+  Each inspired by a different physical board game's design language<br>
+  <a href="index.html">← V1 options</a> &nbsp;·&nbsp; Pick one or describe a mix to implement
+</div>
+
+</body>
+</html>
