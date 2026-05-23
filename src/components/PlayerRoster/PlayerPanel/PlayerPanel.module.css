@@ -3,13 +3,13 @@
   border-radius: 8px;
   border: 1.5px solid var(--border);
   overflow: hidden;
-  background: var(--card-bg);
+  background: var(--surface-2);
   transition: border-color 0.15s;
 }
 
 .panel.active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-light);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 10px rgba(245,158,11,0.15);
 }
 
 .colorBar {
@@ -35,11 +35,11 @@
 
 .badge {
   font-size: 0.65rem;
-  background: #fef9c3;
-  color: #92400e;
+  background: rgba(245,158,11,0.15);
+  color: var(--accent);
   padding: 1px 5px;
   border-radius: 4px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .activeBadge {
@@ -83,5 +83,5 @@
 
 .skill {
   font-size: 0.68rem;
-  color: #7c3aed;
+  color: #a78bfa;
 }

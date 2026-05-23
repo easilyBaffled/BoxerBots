@@ -13,11 +13,11 @@
 
 .card.current {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-light);
+  box-shadow: 0 0 0 2px var(--accent-light), 0 0 16px rgba(245,158,11,0.15);
 }
 
 .hidden {
-  opacity: 0.5;
+  opacity: 0.4;
   align-items: center;
   justify-content: center;
   border-style: dashed;
@@ -35,12 +35,16 @@
 }
 
 /* Terrain tints */
-.snow { background: #f0f7ff; }
-.ice { background: #e0f2fe; }
-.rock { background: #faf7f5; }
-.mixed { background: #f0fdf4; }
-.crevasse { background: #fdf4ff; }
-.summit { background: #fefce8; border-color: #ca8a04; }
+.snow     { background: rgba(180,210,255,0.07); border-color: #2a4060; }
+.ice      { background: rgba(100,200,255,0.08); border-color: #1e4a6a; }
+.rock     { background: rgba(140,110, 80,0.08); border-color: #3a2e20; }
+.mixed    { background: rgba( 80,160,100,0.07); border-color: #1e3a28; }
+.crevasse { background: rgba(140, 60,200,0.08); border-color: #3a1a5a; }
+.summit   {
+  background: rgba(250,190,40,0.12);
+  border-color: #c08000;
+  box-shadow: 0 0 20px rgba(250,190,40,0.2);
+}
 
 .topRow {
   display: flex;
@@ -102,8 +106,8 @@
 
 .elevation {
   font-size: 0.68rem;
-  color: var(--text-muted);
-  font-weight: 600;
+  color: var(--accent);
+  font-weight: 700;
 }
 
 @media (max-width: 680px) {
@@ -114,7 +118,4 @@
 
   .name { font-size: 0.9rem; }
   .terrain { font-size: 1.1rem; }
-
-  .emptySpace,
-  .elevation { /* keep same size, board is already full-width */ }
 }

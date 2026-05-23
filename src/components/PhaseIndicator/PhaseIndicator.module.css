@@ -4,16 +4,17 @@
   gap: 16px;
   padding: 10px 16px;
   background: var(--surface-2);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
   flex-wrap: wrap;
   flex-shrink: 0;
 }
 
 .player {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.9rem;
-  color: var(--text-primary);
+  color: var(--accent);
   white-space: nowrap;
+  letter-spacing: 0.3px;
 }
 
 .phases {
@@ -25,23 +26,26 @@
 .phase {
   padding: 4px 10px;
   border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
   background: var(--surface);
   color: var(--text-muted);
   border: 1.5px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .active {
   background: var(--accent);
-  color: white;
+  color: #0b111e;
   border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(245,158,11,0.3);
 }
 
 .done {
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--text-muted);
-  opacity: 0.6;
+  opacity: 0.4;
 }
 
 /* Compact mode (mobile) */
@@ -59,12 +63,15 @@
 .phasePill {
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 800;
   background: var(--accent);
-  color: white;
+  color: #0b111e;
   white-space: nowrap;
   flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 8px rgba(245,158,11,0.3);
 }
 
 .phaseHint {
@@ -85,16 +92,17 @@
   border: 1.5px solid var(--border);
   background: var(--surface);
   color: var(--text-secondary);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.85rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
+  transition: border-color 0.15s, color 0.15s;
 }
 
 .helpBtn:hover {
-  background: var(--surface-hover);
-  color: var(--text-primary);
+  border-color: var(--accent);
+  color: var(--accent);
 }

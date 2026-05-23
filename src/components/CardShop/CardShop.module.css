@@ -11,11 +11,11 @@
 }
 
 .title {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: var(--text-secondary);
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
 }
 
 .remaining {
@@ -42,8 +42,8 @@
   right: 0;
   text-align: center;
   font-size: 0.6rem;
-  color: #dc2626;
-  background: rgba(255,255,255,0.9);
+  color: #f87171;
+  background: rgba(0,0,0,0.7);
   padding: 2px;
   border-radius: 0 0 6px 6px;
 }
@@ -52,4 +52,5 @@
   color: var(--text-muted);
   font-size: 0.85rem;
   margin: 0;
+  font-style: italic;
 }

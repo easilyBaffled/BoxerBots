@@ -7,11 +7,11 @@
 }
 
 .title {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: var(--text-secondary);
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
   padding: 8px 12px 4px;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
@@ -50,5 +50,5 @@
 .message { word-break: break-word; }
 
 .system { color: var(--accent); }
-.challenge { color: #7c2d12; }
-.combat { color: #991b1b; }
+.challenge { color: #fbbf24; }
+.combat { color: #f87171; }

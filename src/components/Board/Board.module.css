@@ -2,6 +2,7 @@
   overflow-y: auto;
   height: 100%;
   padding: 12px;
+  background: linear-gradient(180deg, #050c18 0%, #0b111e 60%, #0f1825 100%);
 }
 
 .boardColumn {

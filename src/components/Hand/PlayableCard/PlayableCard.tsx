@@ -2,9 +2,9 @@ import type { PlayerCard } from '../../../types/cards';
 import styles from './PlayableCard.module.css';
 
 const CATEGORY_COLORS = {
-  tool: '#dbeafe',
-  utility: '#dcfce7',
-  skill: '#f3e8ff',
+  tool: '#0f1e36',
+  utility: '#0d1f18',
+  skill: '#1a1030',
 };
 
 const CATEGORY_ICONS = {

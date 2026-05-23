@@ -10,41 +10,44 @@
   align-items: center;
   gap: 6px;
   background: var(--surface-2);
-  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
   padding: 7px 10px;
   flex-wrap: wrap;
 }
 
 .bgIcon { font-size: 1rem; }
 .bgName { font-size: 0.8rem; font-weight: 700; color: var(--text-primary); }
-.bgFlavor { font-size: 0.68rem; color: var(--text-secondary); }
+.bgFlavor { font-size: 0.68rem; color: var(--accent); font-style: italic; }
 
 .goldDisplay {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  background: #fefce8;
-  border: 1.5px solid #fef08a;
+  background: rgba(245,158,11,0.1);
+  border: 1.5px solid rgba(245,158,11,0.3);
   border-radius: 8px;
   padding: 8px 12px;
 }
 
 .goldLabel {
-  font-size: 0.75rem;
-  color: #92400e;
-  font-weight: 600;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .goldValue {
   font-size: 1rem;
   font-weight: 800;
-  color: #92400e;
+  color: var(--accent);
 }
 
 .goldBreak {
   font-size: 0.7rem;
-  color: #a16207;
+  color: var(--text-secondary);
 }
 
 .phaseSection {
@@ -61,17 +64,23 @@
 
 .primaryBtn {
   padding: 10px 14px;
-  background: var(--accent);
-  color: white;
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  color: #0b111e;
   border: none;
   border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.88rem;
+  font-weight: 800;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, box-shadow 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  box-shadow: 0 2px 12px rgba(245,158,11,0.25);
 }
 
-.primaryBtn:hover { opacity: 0.88; }
+.primaryBtn:hover {
+  opacity: 0.92;
+  box-shadow: 0 4px 16px rgba(245,158,11,0.35);
+}
 
 .secondaryBtn {
   padding: 10px 14px;
@@ -79,20 +88,24 @@
   color: var(--text-secondary);
   border: 1.5px solid var(--border);
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .dangerBtn {
   padding: 10px 14px;
-  background: #fee2e2;
-  color: #dc2626;
-  border: 1.5px solid #fca5a5;
+  background: rgba(220,38,38,0.12);
+  color: #f87171;
+  border: 1.5px solid rgba(220,38,38,0.25);
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .moveButtons {
@@ -106,13 +119,21 @@
   background: var(--surface-2);
   border: 1.5px solid var(--border);
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.moveBtn:hover:not(:disabled) { background: var(--surface-hover); }
+.moveBtn:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .moveBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .jostleInfo {
@@ -120,9 +141,9 @@
   align-items: center;
   gap: 8px;
   font-size: 0.78rem;
-  color: #b45309;
-  background: #fffbeb;
-  border: 1px solid #fcd34d;
+  color: #fbbf24;
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.2);
   border-radius: 6px;
   padding: 6px 10px;
   flex-wrap: wrap;
@@ -130,26 +151,30 @@
 
 .jostleBtn {
   padding: 4px 10px;
-  background: #f59e0b;
-  color: white;
+  background: var(--accent);
+  color: #0b111e;
   border: none;
   border-radius: 5px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.78rem;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
 .jostleBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .campBtn {
   padding: 10px 14px;
-  background: #d1fae5;
-  color: #065f46;
-  border: 1.5px solid #6ee7b7;
+  background: rgba(74,222,128,0.1);
+  color: #4ade80;
+  border: 1.5px solid rgba(74,222,128,0.25);
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.85rem;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .stashSection {
@@ -166,6 +191,8 @@
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .stashEmpty {
@@ -201,13 +228,15 @@
 .stashTakeBtn {
   flex-shrink: 0;
   padding: 3px 9px;
-  background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fcd34d;
+  background: rgba(245,158,11,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(245,158,11,0.25);
   border-radius: 5px;
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .stashTakeBtn:disabled {

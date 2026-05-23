@@ -65,7 +65,6 @@ export function SetupScreen() {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <div className={styles.mountain}>🏔</div>
         <h1 className={styles.title}>Summit</h1>
         <p className={styles.subtitle}>A deck-building mountain climbing game</p>
 

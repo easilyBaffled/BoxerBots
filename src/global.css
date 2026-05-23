@@ -3,25 +3,25 @@
 }
 
 :root {
-  --color-red: #e53935;
-  --color-blue: #1e88e5;
-  --color-green: #43a047;
-  --color-yellow: #f9a825;
+  --color-red:    #ef4444;
+  --color-blue:   #60a5fa;
+  --color-green:  #4ade80;
+  --color-yellow: #fbbf24;
 
-  --accent: #2563eb;
-  --accent-light: #dbeafe;
+  --accent:       #f59e0b;
+  --accent-light: rgba(245, 158, 11, 0.18);
 
-  --surface: #f5f5f5;
-  --surface-2: #eeeeee;
-  --surface-hover: #e0e0e0;
-  --card-bg: #ffffff;
-  --border: #e0e0e0;
+  --surface:       #0b111e;
+  --surface-2:     #111827;
+  --surface-hover: #1e2d42;
+  --card-bg:       #141c2e;
+  --border:        #1e3050;
 
-  --text-primary: #1a1a1a;
-  --text-secondary: #555555;
-  --text-muted: #999999;
+  --text-primary:   #dce8f4;
+  --text-secondary: #7a9ab8;
+  --text-muted:     #3d5a7a;
 
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Barlow Semi Condensed', system-ui, sans-serif;
   font-size: 16px;
   color: var(--text-primary);
   background: var(--surface);
@@ -31,6 +31,7 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  background: var(--surface);
 }
 
 #root {

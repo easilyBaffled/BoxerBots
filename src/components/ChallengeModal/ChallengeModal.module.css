@@ -10,14 +10,14 @@
   align-items: flex-start;
 }
 
-.typeIcon { font-size: 2rem; flex-shrink: 0; }
+.typeIcon { font-size: 2.8rem; flex-shrink: 0; }
 
 .typeBadge {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-secondary);
+  letter-spacing: 1px;
+  color: var(--text-muted);
   margin-bottom: 4px;
 }
 
@@ -37,11 +37,12 @@
 /* Thresholds */
 .thresholds {
   background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .threshold {
@@ -53,27 +54,39 @@
 }
 
 .threshLabel { min-width: 110px; }
-.threshold.met { color: #ca8a04; font-weight: 600; }
-.threshold.metSolve { color: #16a34a; font-weight: 700; }
+.threshold.met { color: #fbbf24; font-weight: 600; }
+.threshold.metSolve { color: #4ade80; font-weight: 700; }
 
 .rewardBadge {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #16a34a;
+  color: #4ade80;
   white-space: nowrap;
   margin-left: auto;
 }
 
 .progressBar {
   flex: 1;
-  height: 6px;
+  height: 8px;
   background: var(--border);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
-.passBar { height: 100%; background: #f59e0b; border-radius: 3px; transition: width 0.2s; }
-.solveBar { height: 100%; background: #22c55e; border-radius: 3px; transition: width 0.2s; }
+.passBar {
+  height: 100%;
+  background: #f59e0b;
+  border-radius: 4px;
+  transition: width 0.2s;
+  box-shadow: 0 0 6px rgba(245,158,11,0.4);
+}
+.solveBar {
+  height: 100%;
+  background: #22c55e;
+  border-radius: 4px;
+  transition: width 0.2s;
+  box-shadow: 0 0 6px rgba(34,197,94,0.4);
+}
 
 .totalRow {
   display: flex;
@@ -82,7 +95,7 @@
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-primary);
-  padding-top: 6px;
+  padding-top: 8px;
   border-top: 1px solid var(--border);
   flex-wrap: wrap;
 }
@@ -95,8 +108,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: rgba(74,222,128,0.07);
+  border: 1px solid rgba(74,222,128,0.2);
   border-radius: 8px;
   padding: 8px 12px;
   flex-wrap: wrap;
@@ -105,7 +118,7 @@
 .innateLabel {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #166534;
+  color: #4ade80;
   flex-shrink: 0;
 }
 
@@ -118,8 +131,8 @@
 .inateStat {
   font-size: 0.78rem;
   font-weight: 700;
-  background: #dcfce7;
-  color: #15803d;
+  background: rgba(74,222,128,0.15);
+  color: #4ade80;
   padding: 2px 7px;
   border-radius: 4px;
 }
@@ -127,15 +140,15 @@
 .inateStatNeg {
   font-size: 0.78rem;
   font-weight: 700;
-  background: #fee2e2;
-  color: #dc2626;
+  background: rgba(239,68,68,0.15);
+  color: #f87171;
   padding: 2px 7px;
   border-radius: 4px;
 }
 
 .innateZero {
   font-size: 0.78rem;
-  color: #6b7280;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -147,11 +160,11 @@
 }
 
 .sectionLabel {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.8px;
 }
 
 .cards {
@@ -169,7 +182,7 @@
   font-style: italic;
 }
 
-/* Action buttons — row of 3 */
+/* Action buttons */
 .actions {
   display: flex;
   gap: 8px;
@@ -181,11 +194,13 @@
   color: var(--text-secondary);
   border: 1.5px solid var(--border);
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
   transition: background 0.15s;
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .retreatBtn:hover:not(:disabled) { background: var(--surface-hover); }
@@ -193,38 +208,45 @@
 
 .loseBtn {
   padding: 11px 14px;
-  background: #fee2e2;
-  color: #dc2626;
-  border: 1.5px solid #fca5a5;
+  background: rgba(220,38,38,0.15);
+  color: #f87171;
+  border: 1.5px solid rgba(220,38,38,0.3);
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .passBtn {
   flex: 1;
   padding: 11px 14px;
-  background: #fef3c7;
-  color: #92400e;
-  border: 1.5px solid #fcd34d;
+  background: rgba(245,158,11,0.15);
+  color: #fbbf24;
+  border: 1.5px solid rgba(245,158,11,0.35);
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.88rem;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .solveBtn {
   flex: 1;
   padding: 11px 14px;
-  background: #dcfce7;
-  color: #166534;
-  border: 1.5px solid #86efac;
+  background: rgba(34,197,94,0.15);
+  color: #4ade80;
+  border: 1.5px solid rgba(34,197,94,0.35);
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.88rem;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 12px rgba(34,197,94,0.15);
 }
 
 .failBtn {
@@ -234,17 +256,19 @@
   color: var(--text-muted);
   border: 1.5px solid var(--border);
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Penalty note */
 .penalty {
   font-size: 0.78rem;
-  color: #b45309;
-  background: #fffbeb;
-  border: 1px solid #fcd34d;
+  color: #fbbf24;
+  background: rgba(220,38,38,0.1);
+  border: 1px solid rgba(220,38,38,0.25);
   border-radius: 6px;
   padding: 8px 12px;
 }
