@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit — Mix & Match Component Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Barlow+Semi+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #070a10;
+  color: #cdd9e8;
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  padding: 48px 32px 80px;
+  min-height: 100vh;
+}
+
+/* ─── PAGE HEADER ─── */
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #f59e0b;
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.page-sub {
+  text-align: center;
+  font-size: 0.78rem;
+  color: #3a5068;
+  letter-spacing: 1.5px;
+  margin-bottom: 40px;
+}
+
+/* ─── SECTION WRAPPER ─── */
+.section {
+  margin-bottom: 56px;
+}
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245,158,11,0.3), transparent);
+}
+.section-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #f59e0b;
+  white-space: nowrap;
+}
+.section-hint {
+  text-align: center;
+  font-size: 0.65rem;
+  color: #2a4060;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  font-family: monospace;
+}
+
+/* ─── VARIANT LABEL ─── */
+.variant-label {
+  text-align: center;
+  margin-top: 10px;
+}
+.variant-letter {
+  font-family: monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f59e0b;
+  display: block;
+}
+.variant-name {
+  font-size: 0.6rem;
+  color: #2a4060;
+  letter-spacing: 1px;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION 1: CARDS
+═══════════════════════════════════════════ */
+.cards-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.card-slot { display: flex; flex-direction: column; align-items: center; }
+
+/* Shared card shell */
+.card {
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  cursor: default;
+}
+
+/* ── A: Stone & Gold (V1 original) ── */
+.ca {
+  width: 90px; height: 130px;
+  background: #141c2e;
+  border: 1px solid rgba(37,99,235,0.4);
+  border-top: 3px solid #2563eb;
+  display: flex;
+  flex-direction: column;
+}
+.ca .art {
+  height: 54px;
+  background: linear-gradient(160deg, #0c1d38 0%, #1a3a5c 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.ca .cost {
+  position: absolute; top: 6px; left: 6px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #0b111e;
+  font-size: 0.5rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  font-family: monospace;
+}
+.ca .icon { font-size: 1.8rem; }
+.ca .name-bar {
+  background: rgba(0,0,0,0.5);
+  padding: 3px 5px;
+  font-size: 0.62rem; font-weight: 700;
+  color: #dce8f4;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.ca .stats {
+  padding: 4px 5px;
+  flex: 1;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.ca .stat-row { display: flex; gap: 3px; }
+.ca .stat {
+  font-size: 0.5rem; padding: 1px 4px; border-radius: 10px;
+  background: rgba(37,99,235,0.2); color: #93c5fd; font-weight: 700;
+}
+.ca .fx { font-size: 0.5rem; color: #7a9ab8; line-height: 1.3; }
+.ca .dis { font-size: 0.44rem; color: #3d5a7a; margin-top: auto; }
+
+/* ── B: Alpine Route (V2-1) ── */
+.cb {
+  width: 90px; height: 130px;
+  background: #ffffff;
+  border: 1px solid #c8d8e8;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.cb::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: #4a90c4;
+  border-radius: 4px 0 0 4px;
+  z-index: 1;
+}
+.cb .art {
+  height: 55px;
+  background: #e8f0f8;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.cb .cost {
+  position: absolute; top: 6px; right: 6px;
+  width: 18px; height: 18px;
+  background: #1a2a3a;
+  color: #fff;
+  font-size: 0.48rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  font-family: monospace;
+  border-radius: 2px;
+}
+.cb .icon { font-size: 1.8rem; }
+.cb .name-bar {
+  padding: 4px 8px 2px;
+  font-size: 0.65rem; font-weight: 700;
+  color: #1a2a3a;
+  border-top: 1px solid #c8d8e8;
+  flex-shrink: 0;
+}
+.cb .stats {
+  padding: 2px 8px 4px;
+  flex: 1;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.cb .stat-row { font-size: 0.5rem; color: #4a6a8a; font-family: monospace; }
+.cb .fx { font-size: 0.5rem; color: #7a9ab8; line-height: 1.3; }
+.cb .dis { font-size: 0.44rem; color: #8aaac8; margin-top: auto; }
+
+/* ── C: Trail Journal (V2-2) ── */
+.cc {
+  width: 90px; height: 130px;
+  background: #2a1e10;
+  border: 1px solid #503820;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+.cc .art {
+  height: 72px;
+  background: linear-gradient(160deg, #1a1a2e 0%, #2e2a48 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.cc .cost-strip {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 14px;
+  background: #d4823a;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 3px;
+  font-family: monospace;
+  font-size: 0.48rem;
+  font-weight: 700;
+  color: #1a1208;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+}
+.cc .icon { font-size: 1.8rem; margin-left: 8px; }
+.cc .name-bar {
+  background: rgba(0,0,0,0.4);
+  padding: 3px 5px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem; font-weight: 700;
+  color: #c8b88a;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.cc .stats {
+  padding: 3px 5px;
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.cc .stat-row { font-size: 0.5rem; color: #907858; font-family: monospace; }
+.cc .fx { font-size: 0.5rem; color: #604830; line-height: 1.3; }
+.cc .dis { font-size: 0.44rem; color: #503820; margin-top: auto; }
+
+/* ── D: Dungeon Delve (V2-3) ── */
+.cd {
+  width: 90px; height: 130px;
+  background: #1c1408;
+  border: 1px solid #4a3820;
+  border-top: 3px solid #d4802a;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.cd .art {
+  height: 76px;
+  background: linear-gradient(160deg, #0c1828 0%, #1a2e48 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.cd .cost {
+  position: absolute; top: 5px; right: 5px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #d4802a;
+  color: #0e0a06;
+  font-size: 0.5rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  font-family: monospace;
+}
+.cd .icon { font-size: 2rem; }
+.cd .name-bar {
+  background: rgba(14,10,6,0.75);
+  padding: 3px 5px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem; font-weight: 700;
+  color: #ddc8a0;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.cd .res-row {
+  padding: 3px 4px 2px;
+  flex: 1;
+  background: #1a1006;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.cd .res {
+  font-size: 0.5rem; color: #a09070; font-family: monospace;
+  display: flex; align-items: center; gap: 2px;
+}
+
+/* ── E: Field Notes (V2-4) ── */
+.ce {
+  width: 90px; height: 130px;
+  background: #252018;
+  border: 1px solid #504030;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+.ce .cat-diamonds {
+  position: absolute; top: 4px; left: 4px;
+  display: flex; gap: 3px;
+  z-index: 2;
+}
+.ce .diamond {
+  width: 9px; height: 9px;
+  transform: rotate(45deg);
+  border-radius: 1px;
+}
+.ce .art {
+  height: 58px;
+  background: linear-gradient(160deg, #0c1828 0%, #1e3048 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.ce .cost-strip {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 13px;
+  background: #c8b070;
+  display: flex; align-items: center; justify-content: center;
+  font-family: monospace;
+  font-size: 0.42rem;
+  font-weight: 700;
+  color: #0a0a08;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+.ce .icon { font-size: 1.7rem; margin-left: 6px; }
+.ce .name-bar {
+  padding: 3px 5px;
+  font-weight: 700; font-size: 0.62rem;
+  color: #e8dcc8;
+  text-align: center;
+  flex-shrink: 0;
+}
+.ce .stats {
+  padding: 2px 4px;
+  flex: 1;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.ce .stat-row { font-size: 0.5rem; color: #a89870; font-family: monospace; }
+.ce .effect-band {
+  padding: 3px 5px;
+  border-top: 2px solid #c8b070;
+  background: rgba(200,176,112,0.12);
+  font-size: 0.48rem;
+  color: #c8b070;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+/* ── F: Tome of Ascent (V2-5) ── */
+.cf {
+  width: 92px; height: 138px;
+  background: #101828;
+  border: 1px solid #4a7ab8;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.cf .top-half {
+  flex: 1;
+  background: rgba(74,122,184,0.08);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 6px 4px 3px;
+}
+.cf .top-icon { font-size: 1.6rem; }
+.cf .top-val {
+  font-family: monospace;
+  font-size: 0.8rem; font-weight: 700;
+  color: #c8d8e8;
+  margin-top: 2px;
+}
+.cf .top-lbl {
+  font-family: monospace;
+  font-size: 0.4rem; color: #405570;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.cf .stripe {
+  height: 20px;
+  background: rgba(74,122,184,0.3);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.cf .stripe-cost {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 20px;
+  background: #d4923c;
+  display: flex; align-items: center; justify-content: center;
+  font-family: monospace;
+  font-size: 0.5rem; font-weight: 700;
+  color: #08080c;
+}
+.cf .stripe-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.48rem; font-weight: 700;
+  letter-spacing: 1px;
+  color: #c8d8e8;
+  text-transform: uppercase;
+}
+.cf .bot-half {
+  flex: 1;
+  background: rgba(0,0,0,0.15);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 3px 4px 4px;
+}
+.cf .bot-icon { font-size: 1.2rem; }
+.cf .bot-text { font-family: monospace; font-size: 0.48rem; color: #7090b0; margin-top: 2px; text-align: center; }
+.cf .bot-dis { font-family: monospace; font-size: 0.4rem; color: #405570; margin-top: 3px; }
+
+/* ═══════════════════════════════════════════
+   SECTION 2: MOUNTAIN BOARDS
+═══════════════════════════════════════════ */
+.mountain-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.mountain-col {
+  flex-shrink: 0;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+}
+.mountain-col .variant-label { margin-bottom: 8px; }
+
+/* Shared tile structure — each style overrides with its own classes */
+.m-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 6px;
+  flex: 1;
+}
+
+/* ── MA: Stone & Gold ── */
+.ma-wrap {
+  background: linear-gradient(180deg,#050c18 0%,#0b111e 100%);
+  border: 1px solid #1e3050;
+}
+.ma-tile {
+  background: #141c2e;
+  border: 1px solid #1e3050;
+  border-radius: 5px;
+  padding: 5px 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.6rem;
+  position: relative;
+  min-height: 36px;
+  overflow: hidden;
+}
+.ma-tile.current {
+  border-color: #f59e0b;
+  background: linear-gradient(90deg, rgba(245,158,11,0.08) 0%, #141c2e 60%);
+  box-shadow: 0 0 8px rgba(245,158,11,0.2);
+}
+.ma-tile.summit { border-color: rgba(245,158,11,0.5); }
+.ma-tile.hidden { border-style: dashed; opacity: 0.6; }
+.ma-tile .wm {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  font-size: 1.4rem; opacity: 0.05; pointer-events: none;
+}
+.ma-tile .tname { font-weight: 700; color: #dce8f4; flex: 1; font-size: 0.58rem; white-space: nowrap; overflow: hidden; }
+.ma-tile.hidden .tname { color: #3d5a7a; }
+.ma-tile .elev { font-family: monospace; font-size: 0.7rem; font-weight: 700; color: #f59e0b; flex-shrink: 0; }
+.ma-token { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.38rem; font-weight: 800; color: #0a0a0a; }
+.ma-token.active { box-shadow: 0 0 0 2px #f59e0b; }
+
+/* ── MB: Alpine Route (route-map nodes) ── */
+.mb-wrap {
+  background: #f0f4f8;
+  border: 1px solid #c8d8e8;
+  padding: 10px 0;
+  position: relative;
+  align-items: center;
+}
+.mb-wrap::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 10px; bottom: 10px;
+  width: 2px;
+  background: #c8d8e8;
+  transform: translateX(-50%);
+}
+.mb-node {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+  padding: 3px 10px;
+  width: 100%;
+}
+.mb-circle {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid #c8d8e8;
+  background: #ffffff;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.4rem;
+}
+.mb-node.current .mb-circle {
+  width: 22px; height: 22px;
+  background: #4a90c4;
+  border-color: #e8a020;
+  box-shadow: 0 0 0 3px rgba(232,160,32,0.3);
+}
+.mb-node.hidden .mb-circle { border-style: dashed; background: #e8f0f8; }
+.mb-node.summit .mb-circle { background: #1a2a3a; border-color: #4a90c4; }
+.mb-elev { font-family: monospace; font-size: 0.48rem; color: #4a90c4; font-weight: 700; flex-shrink: 0; }
+.mb-name { font-size: 0.52rem; font-weight: 700; color: #1a2a3a; white-space: nowrap; overflow: hidden; }
+.mb-node.hidden .mb-name { color: #8aaac8; }
+.mb-tok { width: 10px; height: 10px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.3rem; font-weight: 800; color: #fff; }
+
+/* ── MC: Trail Journal ── */
+.mc-wrap {
+  background: linear-gradient(180deg, #100a06 0%, #1a1208 100%);
+  border: 1px solid #503820;
+  position: relative;
+}
+.mc-wrap::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(180deg, rgba(212,130,58,0.03) 0px, rgba(212,130,58,0.03) 1px, transparent 1px, transparent 14px);
+  pointer-events: none;
+}
+.mc-tile {
+  background: #2a1e10;
+  border: 1px solid #503820;
+  border-radius: 3px;
+  padding: 4px 6px;
+  position: relative;
+  min-height: 36px;
+  overflow: hidden;
+}
+.mc-tile.current {
+  border-left: 3px solid #d4823a;
+  background: linear-gradient(90deg, rgba(212,130,58,0.08) 0%, #2a1e10 50%);
+}
+.mc-tile.hidden { border-style: dashed; opacity: 0.6; }
+.mc-tile.summit { border-color: #d4823a; }
+.mc-tile .wm {
+  position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
+  font-size: 1.2rem; opacity: 0.06; pointer-events: none;
+}
+.mc-tname { font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: 700; color: #c8b88a; }
+.mc-tile.hidden .mc-tname { color: #604830; }
+.mc-row { display: flex; align-items: center; justify-content: space-between; }
+.mc-elev { font-family: monospace; font-size: 0.6rem; font-weight: 700; color: #d4823a; }
+.mc-tok { width: 12px; height: 12px; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); display: inline-flex; align-items: center; justify-content: center; font-size: 0.32rem; font-weight: 800; color: #0a0a08; }
+
+/* ── MD: Dungeon Delve ── */
+.md-wrap {
+  background: #0e0a06;
+  border: 1px solid #4a3820;
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.018) 0px, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 18px), repeating-linear-gradient(90deg, rgba(255,255,255,0.018) 0px, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 18px);
+  position: relative;
+  padding-left: 18px;
+}
+.md-wrap::before {
+  content: '';
+  position: absolute;
+  left: 10px; top: 4px; bottom: 4px;
+  width: 1px;
+  border-left: 1px dashed rgba(106,80,48,0.4);
+}
+.md-tile {
+  background: #1c1408;
+  border: 1px solid #4a3820;
+  border-radius: 3px;
+  padding: 4px 6px;
+  position: relative;
+  min-height: 36px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 0 3px rgba(0,0,0,0.4);
+}
+.md-tile.current { border-color: #d4802a; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), 0 0 6px rgba(212,128,42,0.3); }
+.md-tile.hidden { border-style: dashed; opacity: 0.65; }
+.md-tile.summit { border-color: rgba(212,128,42,0.5); }
+.md-tile .wm { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; opacity: 0.04; }
+.md-tname { font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: 700; color: #ddc8a0; }
+.md-tile.hidden .md-tname { color: #604830; }
+.md-row { display: flex; align-items: center; justify-content: space-between; }
+.md-elev { font-family: monospace; font-size: 0.65rem; font-weight: 700; color: #d4802a; }
+.md-tok { width: 12px; height: 12px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.32rem; font-weight: 800; color: #0a0a08; }
+.md-zone { width: 3px; position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px 0 0 3px; }
+
+/* ── ME: Field Notes ── */
+.me-wrap {
+  background: #1a1510;
+  border: 1px solid #504030;
+}
+.me-tile {
+  background: #252018;
+  border: 1px solid #504030;
+  border-radius: 3px;
+  padding: 4px 6px 0;
+  position: relative;
+  min-height: 36px;
+  overflow: hidden;
+}
+.me-tile .wm { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; opacity: 0.05; }
+.me-tile.current { border-color: #c8b070; }
+.me-tile.hidden { border-style: dashed; opacity: 0.65; }
+.me-tname { font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: 700; color: #e8dcc8; }
+.me-tile.hidden .me-tname { color: #706050; }
+.me-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0; }
+.me-elev { font-size: 0.55rem; color: #c8b070; font-family: monospace; font-weight: 700; }
+.me-band {
+  margin: 3px -6px 0;
+  height: 5px;
+}
+.me-band-green  { background: rgba(122,184,112,0.4); }
+.me-band-blue   { background: rgba(106,144,200,0.4); }
+.me-band-amber  { background: rgba(200,176,112,0.4); }
+.me-band-gold   { background: rgba(212,146,60,0.5); }
+.me-tok { width: 12px; height: 12px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.32rem; font-weight: 800; color: #0a0a08; }
+
+/* ── MF: Tome of Ascent ── */
+.mf-wrap {
+  background: #080c10;
+  border: 1px solid #253548;
+  background-image: repeating-linear-gradient(60deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 22px), repeating-linear-gradient(-60deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 22px);
+}
+.mf-tile {
+  background: #101828;
+  border: 1px solid #253548;
+  border-radius: 3px;
+  padding: 4px 6px 4px 10px;
+  position: relative;
+  min-height: 36px;
+  overflow: hidden;
+}
+.mf-tile::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  border-radius: 3px 0 0 3px;
+}
+.mf-tile.zone-low::before  { background: #4aaa6a; }
+.mf-tile.zone-mid::before  { background: #4a7ab8; }
+.mf-tile.zone-high::before { background: #d4923c; }
+.mf-tile.zone-sum::before  { background: #f0b05a; }
+.mf-tile.current { border-color: #d4923c; box-shadow: 0 0 6px rgba(212,146,60,0.25); }
+.mf-tile.hidden { border-style: dashed; opacity: 0.6; }
+.mf-tile .wm { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; opacity: 0.04; }
+.mf-tname { font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: 700; color: #c8d8e8; }
+.mf-tile.hidden .mf-tname { color: #405570; }
+.mf-row { display: flex; align-items: center; justify-content: space-between; }
+.mf-elev { font-family: monospace; font-size: 0.85rem; font-weight: 700; color: #d4923c; line-height: 1; }
+.mf-tok { width: 12px; height: 12px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.32rem; font-weight: 800; color: #0a0a08; }
+
+/* ═══════════════════════════════════════════
+   SECTION 3: HUD BARS
+═══════════════════════════════════════════ */
+.hud-stack { display: flex; flex-direction: column; gap: 6px; }
+.hud-row { display: flex; align-items: center; gap: 8px; }
+.hud-tag {
+  font-family: monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #f59e0b;
+  width: 14px;
+  flex-shrink: 0;
+}
+.hud-bar {
+  flex: 1;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  overflow: hidden;
+  gap: 0;
+}
+.hz { display: flex; align-items: center; gap: 6px; padding: 0 14px; height: 100%; }
+.hz + .hz { border-left: 1px solid; }
+.hz.fill { flex: 1; justify-content: center; }
+
+/* ── HA: Stone & Gold ── */
+.ha {
+  background: #0b111e;
+  border: 1px solid #1e3050;
+  border-bottom: 2px solid rgba(245,158,11,0.3);
+}
+.ha .hz { border-left-color: #1e3050; }
+.ha-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(160deg,#1e3050,#2a4a6a); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #f59e0b; border: 2px solid #f59e0b; flex-shrink: 0; }
+.ha-name { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: #dce8f4; }
+.ha-gold { font-family: monospace; font-size: 0.9rem; font-weight: 700; color: #f59e0b; }
+.ha-pill { padding: 4px 10px; border-radius: 6px; font-size: 0.62rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: transparent; border: 1px solid #1e3050; color: #3d5a7a; }
+.ha-pill.active { background: #f59e0b; border-color: #f59e0b; color: #0b111e; }
+.ha-sep { color: #1e3050; font-size: 0.6rem; }
+.ha-deck { font-family: monospace; font-size: 0.62rem; color: #5a7a98; }
+
+/* ── HB: Alpine Route ── */
+.hb {
+  background: #f0f4f8;
+  border: 1px solid #c8d8e8;
+  border-bottom: 2px solid #4a90c4;
+}
+.hb .hz { border-left-color: #c8d8e8; }
+.hb-dot { width: 10px; height: 10px; border-radius: 50%; background: #4a90c4; flex-shrink: 0; }
+.hb-name { font-weight: 800; font-size: 0.85rem; color: #1a2a3a; letter-spacing: 1px; text-transform: uppercase; }
+.hb-sub { font-family: monospace; font-size: 0.5rem; color: #8aaac8; text-transform: uppercase; letter-spacing: 1px; }
+.hb-gold { font-family: monospace; font-size: 0.8rem; font-weight: 700; color: #e8a020; }
+.progress-bar { display: flex; gap: 1px; align-items: center; }
+.pb-seg { padding: 4px 8px; font-family: monospace; font-size: 0.5rem; letter-spacing: 1px; font-weight: 700; text-transform: uppercase; color: #8aaac8; background: #e8eef4; border: 1px solid #c8d8e8; }
+.pb-seg.done { background: #1a2a3a; color: #f0f4f8; border-color: #1a2a3a; }
+.pb-seg.active { background: #4a90c4; color: #fff; border-color: #4a90c4; }
+.hb-deck { font-family: monospace; font-size: 0.6rem; color: #4a6a8a; }
+
+/* ── HC: Trail Journal ── */
+.hc {
+  background: #2a1e10;
+  border: 1px solid #503820;
+  border-bottom: 2px solid #d4823a;
+}
+.hc .hz { border-left-color: #503820; }
+.hc-name { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: #c8b88a; }
+.hc-sub { font-family: monospace; font-size: 0.48rem; color: #604830; text-transform: uppercase; letter-spacing: 1px; }
+.hc-gold { font-family: monospace; font-size: 0.9rem; font-weight: 700; color: #d4823a; }
+.hc-trail { display: flex; align-items: center; gap: 6px; font-size: 0.6rem; color: #604830; }
+.hc-active { font-weight: 800; color: #d4823a; font-size: 0.7rem; }
+.hc-arr { color: #d4823a; }
+.hc-deck { font-family: monospace; font-size: 0.6rem; color: #604830; }
+
+/* ── HD: Tome of Ascent ── */
+.hd {
+  background: #101828;
+  border: 1px solid #253548;
+  border-bottom: 2px solid #d4923c;
+}
+.hd .hz { border-left-color: #253548; }
+.hd-name { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: #c8d8e8; letter-spacing: 2px; }
+.hd-sub { font-family: monospace; font-size: 0.48rem; color: #405570; text-transform: uppercase; letter-spacing: 1px; }
+.init-track { display: flex; align-items: center; gap: 5px; }
+.init-step { padding: 3px 7px; border: 1px solid #253548; border-radius: 2px; background: #162030; }
+.init-step.active { background: #d4923c; border-color: #d4923c; }
+.init-n { font-family: monospace; font-size: 0.5rem; font-weight: 700; color: #405570; display: block; }
+.init-step.active .init-n { color: #08080c; }
+.init-l { font-family: monospace; font-size: 0.45rem; text-transform: uppercase; letter-spacing: 0.5px; color: #405570; }
+.init-step.active .init-l { color: #08080c; font-weight: 700; }
+.init-arr { color: #253548; font-size: 0.55rem; }
+.hd-gold { font-family: monospace; font-size: 0.8rem; font-weight: 700; color: #d4923c; }
+.hd-deck { font-family: monospace; font-size: 0.6rem; color: #7090b0; }
+
+/* ── HE: Field Notes ── */
+.he {
+  background: #252018;
+  border: 1px solid #504030;
+  border-bottom: 2px solid #c8b070;
+}
+.he .hz { border-left-color: #504030; }
+.he-name { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; color: #e8dcc8; }
+.he-sub { font-family: monospace; font-size: 0.48rem; color: #706050; text-transform: uppercase; letter-spacing: 1px; }
+.he-gold { font-family: monospace; font-size: 0.85rem; font-weight: 700; color: #c8b070; }
+.he-pills { display: flex; gap: 4px; }
+.he-pill { padding: 3px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: #302a20; border: 1px solid #504030; color: #706050; }
+.he-pill.active { background: #c8b070; border-color: #c8b070; color: #1a1510; }
+.he-deck { font-family: monospace; font-size: 0.6rem; color: #706050; }
+</style>
+</head>
+<body>
+
+<div class="page-title">SUMMIT — MIX & MATCH</div>
+<p class="page-sub">Pick one from each section · Tell me A/B/C/D/E/F for each</p>
+
+<!-- ════════ SECTION 1: CARDS ════════ -->
+<div class="section">
+  <div class="section-divider">
+    <div class="section-line"></div>
+    <div class="section-label">Section 1 — Card Style</div>
+    <div class="section-line"></div>
+  </div>
+  <p class="section-hint">Same card (Ice Axe · Tool · 2g) in each visual style</p>
+
+  <div class="cards-row">
+
+    <!-- A: Stone & Gold -->
+    <div class="card-slot">
+      <div class="card ca">
+        <div class="art">
+          <span class="icon">⛏️</span>
+          <span class="cost">2g</span>
+        </div>
+        <div class="name-bar">Ice Axe</div>
+        <div class="stats">
+          <div class="stat-row">
+            <span class="stat">+3 str</span>
+            <span class="stat">+1 agi</span>
+          </div>
+          <div class="fx">Reduce move cost by 1</div>
+          <div class="dis">→ discard</div>
+        </div>
+      </div>
+      <div class="variant-label">
+        <span class="variant-letter">A</span>
+        <span class="variant-name">Stone & Gold</span>
+      </div>
+    </div>
+
+    <!-- B: Alpine Route -->
+    <div class="card-slot">
+      <div class="card cb">
+        <div class="art">
+          <span class="icon">⛏️</span>
+          <span class="cost">2g</span>
+        </div>
+        <div class="name-bar">Ice Axe</div>
+        <div class="stats">
+          <div class="stat-row">+3 str / +1 agi</div>
+          <div class="fx">Reduce move cost by 1</div>
+          <div class="dis">→ discard</div>
+        </div>
+      </div>
+      <div class="variant-label">
+        <span class="variant-letter">B</span>
+        <span class="variant-name">Alpine Route</span>
+      </div>
+    </div>
+
+    <!-- C: Trail Journal -->
+    <div class="card-slot">
+      <div class="card cc">
+        <div class="art">
+          <span class="icon">⛏️</span>
+          <span class="cost-strip">2g</span>
+        </div>
+        <div class="name-bar">Ice Axe</div>
+        <div class="stats">
+          <div class="stat-row">+3 str / +1 agi</div>
+          <div class="fx">Reduce move cost by 1</div>
+          <div class="dis">→ discard</div>
+        </div>
+      </div>
+      <div class="variant-label">
+        <span class="variant-letter">C</span>
+        <span class="variant-name">Trail Journal</span>
+      </div>
+    </div>
+
+    <!-- D: Dungeon Delve -->
+    <div class="card-slot">
+      <div class="card cd">
+        <div class="art">
+          <span class="icon">⛏️</span>
+          <span class="cost">2g</span>
+        </div>
+        <div class="name-bar">Ice Axe</div>
+        <div class="res-row">
+          <span class="res">🥾 1</span>
+          <span class="res">⚔️ 3</span>
+          <span class="res">-1 move</span>
+        </div>
+      </div>
+      <div class="variant-label">
+        <span class="variant-letter">D</span>
+        <span class="variant-name">Dungeon Delve</span>
+      </div>
+    </div>
+
+    <!-- E: Field Notes -->
+    <div class="card-slot">
+      <div class="card ce">
+        <div class="cat-diamonds">
+          <div class="diamond" style="background:#4a7ab8;"></div>
+          <div class="diamond" style="background:#4a7ab8; opacity:0.5;"></div>
+        </div>
+        <div class="art">
+          <span class="icon">⛏️</span>
+          <span class="cost-strip">2g</span>
+        </div>
+        <div class="name-bar">Ice Axe</div>
+        <div class="stats">
+          <div class="stat-row">⬆ 3 · ⚡ 1</div>
+        </div>
+        <div class="effect-band">Reduce move cost -1 this turn</div>
+      </div>
+      <div class="variant-label">
+        <span class="variant-letter">E</span>
+        <span class="variant-name">Field Notes</span>
+      </div>
+    </div>
+
+    <!-- F: Tome of Ascent -->
+    <div class="card-slot">
+      <div class="card cf">
+        <div class="top-half">
+          <div class="top-icon">⛏️</div>
+          <div class="top-val">+3 STR</div>
+          <div class="top-lbl">on play</div>
+        </div>
+        <div class="stripe">
+          <div class="stripe-cost">2g</div>
+          <span class="stripe-name">Ice Axe</span>
+        </div>
+        <div class="bot-half">
+          <div class="bot-icon">⚡</div>
+          <div class="bot-text">+1 AGI · -1 move cost</div>
+          <div class="bot-dis">→ DISCARD</div>
+        </div>
+      </div>
+      <div class="variant-label">
+        <span class="variant-letter">F</span>
+        <span class="variant-name">Tome of Ascent</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ SECTION 2: MOUNTAIN BOARD ════════ -->
+<div class="section">
+  <div class="section-divider">
+    <div class="section-line"></div>
+    <div class="section-label">Section 2 — Mountain Board</div>
+    <div class="section-line"></div>
+  </div>
+  <p class="section-hint">Same 7 tiles (Alex at Elevation 7) in each visual style · scroll →</p>
+
+  <div class="mountain-row">
+
+    <!-- MA: Stone & Gold -->
+    <div class="mountain-col">
+      <div class="variant-label" style="margin-bottom:8px;">
+        <span class="variant-letter">A</span>
+        <span class="variant-name">Stone & Gold</span>
+      </div>
+      <div class="m-wrap ma-wrap">
+        <div class="ma-tile summit"><span class="wm">🏔</span><span class="tname">Summit</span><span class="elev">10</span></div>
+        <div class="ma-tile hidden"><span class="tname">? Unknown</span><span class="elev" style="color:#3d5a7a">9</span></div>
+        <div class="ma-tile hidden"><span class="tname">? Unknown</span><span class="elev" style="color:#3d5a7a">8</span></div>
+        <div class="ma-tile current"><span class="wm">🌊</span><span class="tname">Glacier Field</span><span class="elev">7</span></div>
+        <div class="ma-tile" style="margin-top:1px;"><div style="display:flex;align-items:center;gap:4px;width:100%;"><span class="tname">Scree Slope</span><span class="ma-token" style="background:#fb923c;">M</span><span class="elev">5</span></div></div>
+        <div class="ma-tile"><span class="tname">Treeline</span><span class="elev">3</span></div>
+        <div class="ma-tile"><span class="tname">Base Camp</span><span class="elev">1</span></div>
+      </div>
+    </div>
+
+    <!-- MB: Alpine Route -->
+    <div class="mountain-col">
+      <div class="variant-label" style="margin-bottom:8px;">
+        <span class="variant-letter">B</span>
+        <span class="variant-name">Alpine Route</span>
+      </div>
+      <div class="m-wrap mb-wrap">
+        <div class="mb-node summit"><span class="mb-elev">10</span><div class="mb-circle">🏔</div><span class="mb-name">Summit</span></div>
+        <div class="mb-node hidden"><span class="mb-elev" style="color:#8aaac8">9</span><div class="mb-circle">?</div><span class="mb-name">Unknown</span></div>
+        <div class="mb-node hidden"><span class="mb-elev" style="color:#8aaac8">8</span><div class="mb-circle">?</div><span class="mb-name">Unknown</span></div>
+        <div class="mb-node current"><span class="mb-elev">7</span><div class="mb-circle"><span class="mb-tok" style="background:#4ade80;">A</span></div><span class="mb-name">Glacier Field</span></div>
+        <div class="mb-node"><span class="mb-elev">5</span><div class="mb-circle"><span class="mb-tok" style="background:#fb923c;">M</span></div><span class="mb-name">Scree Slope</span></div>
+        <div class="mb-node"><span class="mb-elev">3</span><div class="mb-circle"></div><span class="mb-name">Treeline</span></div>
+        <div class="mb-node"><span class="mb-elev">1</span><div class="mb-circle">⛺</div><span class="mb-name">Base Camp</span></div>
+      </div>
+    </div>
+
+    <!-- MC: Trail Journal -->
+    <div class="mountain-col">
+      <div class="variant-label" style="margin-bottom:8px;">
+        <span class="variant-letter">C</span>
+        <span class="variant-name">Trail Journal</span>
+      </div>
+      <div class="m-wrap mc-wrap" style="gap:4px;">
+        <div class="mc-tile summit"><span class="wm">🏔</span><div class="mc-row"><span class="mc-tname">Summit</span><span class="mc-elev">10</span></div></div>
+        <div class="mc-tile hidden"><div class="mc-row"><span class="mc-tname">Unexplored</span><span class="mc-elev" style="color:#604830">9</span></div></div>
+        <div class="mc-tile hidden"><div class="mc-row"><span class="mc-tname">Unexplored</span><span class="mc-elev" style="color:#604830">8</span></div></div>
+        <div class="mc-tile current"><span class="wm">🌊</span><div class="mc-row"><span class="mc-tname">Glacier Field</span><span class="mc-elev">7</span></div><div style="display:flex;gap:2px;margin-top:2px;"><span class="mc-tok" style="background:#4ade80;">A</span><span class="mc-tok" style="background:#60a5fa;">R</span></div></div>
+        <div class="mc-tile"><span class="wm">🪨</span><div class="mc-row"><span class="mc-tname">Scree Slope</span><span class="mc-elev">5</span></div></div>
+        <div class="mc-tile"><span class="wm">🌲</span><div class="mc-row"><span class="mc-tname">Treeline</span><span class="mc-elev">3</span></div></div>
+        <div class="mc-tile"><span class="wm">⛺</span><div class="mc-row"><span class="mc-tname">Base Camp</span><span class="mc-elev">1</span></div></div>
+      </div>
+    </div>
+
+    <!-- MD: Dungeon Delve -->
+    <div class="mountain-col">
+      <div class="variant-label" style="margin-bottom:8px;">
+        <span class="variant-letter">D</span>
+        <span class="variant-name">Dungeon Delve</span>
+      </div>
+      <div class="m-wrap md-wrap" style="gap:4px;">
+        <div class="md-tile summit"><div class="md-zone" style="background:#d4802a;"></div><span class="wm">🏔</span><div class="md-row"><span class="md-tname">Summit</span><span class="md-elev">10</span></div></div>
+        <div class="md-tile hidden"><div class="md-row"><span class="md-tname">Unknown</span><span class="md-elev" style="color:#604830">9</span></div></div>
+        <div class="md-tile hidden"><div class="md-row"><span class="md-tname">Unknown</span><span class="md-elev" style="color:#604830">8</span></div></div>
+        <div class="md-tile current"><div class="md-zone" style="background:#d4802a;"></div><span class="wm">🌊</span><div class="md-row"><span class="md-tname">Glacier Field</span><span class="md-elev">7</span></div><div style="display:flex;gap:2px;margin-top:2px;"><span class="md-tok" style="background:#4ade80;">A</span><span class="md-tok" style="background:#60a5fa;">R</span></div></div>
+        <div class="md-tile"><div class="md-zone" style="background:#a05020;"></div><span class="wm">🪨</span><div class="md-row"><span class="md-tname">Scree Slope</span><span class="md-elev">5</span></div></div>
+        <div class="md-tile"><div class="md-zone" style="background:#5a8a3a;"></div><span class="wm">🌲</span><div class="md-row"><span class="md-tname">Treeline</span><span class="md-elev">3</span></div></div>
+        <div class="md-tile"><div class="md-zone" style="background:#5a8a3a;"></div><span class="wm">⛺</span><div class="md-row"><span class="md-tname">Base Camp</span><span class="md-elev">1</span></div></div>
+      </div>
+    </div>
+
+    <!-- ME: Field Notes -->
+    <div class="mountain-col">
+      <div class="variant-label" style="margin-bottom:8px;">
+        <span class="variant-letter">E</span>
+        <span class="variant-name">Field Notes</span>
+      </div>
+      <div class="m-wrap me-wrap" style="gap:4px;">
+        <div class="me-tile summit"><span class="wm">🏔</span><div class="me-row"><span class="me-tname">Summit</span><span class="me-elev">🪶 10</span></div><div class="me-band me-band-gold"></div></div>
+        <div class="me-tile hidden"><div class="me-row"><span class="me-tname">Unexplored</span><span class="me-elev" style="color:#706050">? 9</span></div><div class="me-band" style="background:rgba(100,100,100,0.2);"></div></div>
+        <div class="me-tile hidden"><div class="me-row"><span class="me-tname">Unexplored</span><span class="me-elev" style="color:#706050">? 8</span></div><div class="me-band" style="background:rgba(100,100,100,0.2);"></div></div>
+        <div class="me-tile current"><span class="wm">🌊</span><div class="me-row"><span class="me-tname">Glacier Field</span><span class="me-elev">🪶 7</span></div><div style="display:flex;gap:2px;margin:2px 0;"><span class="me-tok" style="background:#4ade80;">A</span><span class="me-tok" style="background:#60a5fa;">R</span></div><div class="me-band me-band-amber"></div></div>
+        <div class="me-tile"><span class="wm">🪨</span><div class="me-row"><span class="me-tname">Scree Slope</span><span class="me-elev">🪶 5</span></div><div class="me-band me-band-blue"></div></div>
+        <div class="me-tile"><span class="wm">🌲</span><div class="me-row"><span class="me-tname">Treeline</span><span class="me-elev">🪶 3</span></div><div class="me-band me-band-green"></div></div>
+        <div class="me-tile"><span class="wm">⛺</span><div class="me-row"><span class="me-tname">Base Camp</span><span class="me-elev">🪶 1</span></div><div class="me-band me-band-green"></div></div>
+      </div>
+    </div>
+
+    <!-- MF: Tome of Ascent -->
+    <div class="mountain-col">
+      <div class="variant-label" style="margin-bottom:8px;">
+        <span class="variant-letter">F</span>
+        <span class="variant-name">Tome of Ascent</span>
+      </div>
+      <div class="m-wrap mf-wrap" style="gap:4px;">
+        <div class="mf-tile zone-sum"><span class="wm">🏔</span><div class="mf-row"><span class="mf-tname">Summit</span><span class="mf-elev">10</span></div></div>
+        <div class="mf-tile hidden zone-high"><div class="mf-row"><span class="mf-tname">Unknown</span><span class="mf-elev" style="color:#405570">9</span></div></div>
+        <div class="mf-tile hidden zone-high"><div class="mf-row"><span class="mf-tname">Unknown</span><span class="mf-elev" style="color:#405570">8</span></div></div>
+        <div class="mf-tile current zone-high"><span class="wm">🌊</span><div class="mf-row"><span class="mf-tname">Glacier Field</span><span class="mf-elev">7</span></div><div style="display:flex;gap:2px;margin-top:2px;"><span class="mf-tok" style="background:#4ade80;">A</span><span class="mf-tok" style="background:#60a5fa;">R</span></div></div>
+        <div class="mf-tile zone-mid"><span class="wm">🪨</span><div class="mf-row"><span class="mf-tname">Scree Slope</span><span class="mf-elev">5</span></div></div>
+        <div class="mf-tile zone-low"><span class="wm">🌲</span><div class="mf-row"><span class="mf-tname">Treeline</span><span class="mf-elev">3</span></div></div>
+        <div class="mf-tile zone-low"><span class="wm">⛺</span><div class="mf-row"><span class="mf-tname">Base Camp</span><span class="mf-elev">1</span></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ SECTION 3: HUD BARS ════════ -->
+<div class="section">
+  <div class="section-divider">
+    <div class="section-line"></div>
+    <div class="section-label">Section 3 — HUD Bar</div>
+    <div class="section-line"></div>
+  </div>
+  <p class="section-hint">Same game state (Alex · Move phase · 5g · 5/12/3 deck) in each style</p>
+
+  <div class="hud-stack">
+
+    <!-- A: Stone & Gold -->
+    <div class="hud-row">
+      <span class="hud-tag">A</span>
+      <div class="hud-bar ha">
+        <div class="hz">
+          <div class="ha-avatar">AL</div>
+          <div>
+            <div class="ha-name">Alex</div>
+            <div style="font-size:0.5rem;color:#3d5a7a;font-family:monospace;letter-spacing:1px;">LEAD CLIMBER</div>
+          </div>
+        </div>
+        <div class="hz"><span class="ha-gold">💰 5g</span></div>
+        <div class="hz fill">
+          <span class="ha-pill">Play</span>
+          <span class="ha-sep">›</span>
+          <span class="ha-pill active">Move</span>
+          <span class="ha-sep">›</span>
+          <span class="ha-pill">Buy</span>
+          <span class="ha-sep">›</span>
+          <span class="ha-pill">End</span>
+        </div>
+        <div class="hz"><span class="ha-deck">✋5 · 📦12 · ♻3</span></div>
+        <div class="hz"><button style="width:26px;height:26px;border:1px solid #1e3050;border-radius:4px;background:transparent;color:#3d5a7a;cursor:pointer;font-size:0.75rem;">?</button></div>
+      </div>
+    </div>
+
+    <!-- B: Alpine Route -->
+    <div class="hud-row">
+      <span class="hud-tag">B</span>
+      <div class="hud-bar hb">
+        <div class="hz">
+          <div class="hb-dot"></div>
+          <div>
+            <div class="hb-name">ALEX</div>
+            <div class="hb-sub">Lead Climber</div>
+          </div>
+        </div>
+        <div class="hz"><span class="hb-gold">💰 5g</span></div>
+        <div class="hz fill">
+          <div class="progress-bar">
+            <div class="pb-seg done">Play</div>
+            <div class="pb-seg active">Move</div>
+            <div class="pb-seg">Buy</div>
+            <div class="pb-seg">End</div>
+          </div>
+        </div>
+        <div class="hz"><span class="hb-deck">✋5 · 📦12 · ♻3</span></div>
+        <div class="hz"><button style="width:26px;height:26px;border:1px solid #c8d8e8;border-radius:2px;background:transparent;color:#4a6a8a;cursor:pointer;font-size:0.75rem;">?</button></div>
+      </div>
+    </div>
+
+    <!-- C: Trail Journal -->
+    <div class="hud-row">
+      <span class="hud-tag">C</span>
+      <div class="hud-bar hc">
+        <div class="hz">
+          <span style="font-size:1.1rem;">🧗</span>
+          <div>
+            <div class="hc-name">Alex</div>
+            <div class="hc-sub">Lead Climber</div>
+          </div>
+        </div>
+        <div class="hz"><span class="hc-gold">💰 5g</span></div>
+        <div class="hz fill">
+          <div class="hc-trail">
+            <span>Play</span>
+            <span class="hc-arr">▶</span>
+            <span class="hc-active">MOVE</span>
+            <span class="hc-arr">◀</span>
+            <span>Buy</span>
+            <span style="color:#503820;">◀</span>
+            <span>End</span>
+          </div>
+        </div>
+        <div class="hz"><span class="hc-deck">✋5 · 📦12 · ♻3</span></div>
+        <div class="hz"><button style="width:26px;height:26px;border:1px solid #503820;border-radius:2px;background:transparent;color:#604830;cursor:pointer;font-size:0.75rem;">?</button></div>
+      </div>
+    </div>
+
+    <!-- D: Tome of Ascent -->
+    <div class="hud-row">
+      <span class="hud-tag">D</span>
+      <div class="hud-bar hd">
+        <div class="hz">
+          <span style="font-size:1rem;">🧗</span>
+          <div>
+            <div class="hd-name">ALEX</div>
+            <div class="hd-sub">Lead · Day 3</div>
+          </div>
+        </div>
+        <div class="hz fill">
+          <div class="init-track">
+            <div class="init-step"><span class="init-n">1</span><span class="init-l">Play</span></div>
+            <span class="init-arr">→</span>
+            <div class="init-step active"><span class="init-n">2</span><span class="init-l">Move</span></div>
+            <span class="init-arr">→</span>
+            <div class="init-step"><span class="init-n">3</span><span class="init-l">Buy</span></div>
+            <span class="init-arr">→</span>
+            <div class="init-step"><span class="init-n">4</span><span class="init-l">End</span></div>
+          </div>
+        </div>
+        <div class="hz"><span class="hd-gold">💰 5</span></div>
+        <div class="hz"><span class="hd-deck">✋5 / 📦12 / ♻3</span></div>
+        <div class="hz"><button style="width:26px;height:26px;border:1px solid #253548;border-radius:3px;background:transparent;color:#405570;cursor:pointer;font-size:0.75rem;">?</button></div>
+      </div>
+    </div>
+
+    <!-- E: Field Notes -->
+    <div class="hud-row">
+      <span class="hud-tag">E</span>
+      <div class="hud-bar he">
+        <div class="hz">
+          <span style="font-size:1rem;">🧗</span>
+          <div>
+            <div class="he-name">Alex</div>
+            <div class="he-sub">Turn 3</div>
+          </div>
+        </div>
+        <div class="hz"><span class="he-gold">💰 5g</span></div>
+        <div class="hz fill">
+          <div class="he-pills">
+            <span class="he-pill">Play</span>
+            <span class="he-pill active">Move</span>
+            <span class="he-pill">Buy</span>
+            <span class="he-pill">End</span>
+          </div>
+        </div>
+        <div class="hz"><span class="he-deck">✋5 · 📦12 · ♻3</span></div>
+        <div class="hz"><button style="width:26px;height:26px;border:1px solid #504030;border-radius:4px;background:transparent;color:#706050;cursor:pointer;font-size:0.75rem;">?</button></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p style="text-align:center;font-size:0.68rem;color:#2a4060;margin-top:32px;font-family:monospace;letter-spacing:1px;">
+  Tell me: Card [A–F] · Mountain [A–F] · HUD [A–E] → I'll build the combined sample
+</p>
+
+</body>
+</html>
