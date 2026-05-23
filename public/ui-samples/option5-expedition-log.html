@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option 5 — Expedition Log</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #080e08;
+  --surface:  #0f1a0f;
+  --surface2: #162016;
+  --surface3: #1c2a1c;
+  --border:   #2a3e2a;
+  --border2:  #3a5a3a;
+  --accent:   #8ab870;
+  --accent2:  #b8d494;
+  --amber:    #d4923c;
+  --amber2:   #f0b85a;
+  --red:      #c0392b;
+  --text1:    #d4e8c2;
+  --text2:    #8aaa70;
+  --text3:    #5a7a50;
+  --mono:     'Share Tech Mono', monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text1);
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* LABEL CHIP */
+.label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* ═══════════════════════════════════════
+   TOP HUD BAR — expedition manifest
+═══════════════════════════════════════ */
+.hud {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
+}
+
+.hud::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--accent) 70%, transparent 100%);
+  opacity: 0.3;
+}
+
+.hudSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: 100%;
+}
+
+.hudSection + .hudSection {
+  border-left: 1px solid var(--border);
+}
+
+.hudSection.fill { flex: 1; justify-content: center; }
+.hudSection.right { margin-left: auto; }
+
+/* Player identity block */
+.playerTag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.playerBadge {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  background: linear-gradient(160deg, var(--accent) 0%, #5a8a3c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.75rem;
+  color: #0a1408;
+  flex-shrink: 0;
+}
+.playerInfo { line-height: 1.2; }
+.playerName {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text1);
+}
+.playerRole {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Phase display */
+.phaseBlock {
+  text-align: center;
+}
+.phaseLabel {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.phasePills {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.pill {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  background: transparent;
+}
+.pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0a1408;
+  font-weight: 700;
+}
+.pill-sep {
+  color: var(--text3);
+  font-size: 0.5rem;
+}
+
+/* Resources */
+.resource {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.resourceIcon { font-size: 0.85rem; }
+.resourceVal {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--amber);
+  font-weight: 700;
+}
+.resourceKey {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+
+/* Deck counts */
+.deckRow {
+  display: flex;
+  gap: 10px;
+}
+.deckStat {
+  text-align: center;
+}
+.deckNum {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--text2);
+  display: block;
+}
+.deckLbl {
+  font-family: var(--mono);
+  font-size: 0.48rem;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.helpBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 2px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════ */
+.main {
+  flex: 1;
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════
+   LEFT COLUMN — MOUNTAIN (terrain log)
+═══════════════════════════════════════ */
+.mountainCol {
+  width: 240px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(138,184,112,0.025) 0px,
+      rgba(138,184,112,0.025) 1px,
+      transparent 1px,
+      transparent 60px
+    ),
+    linear-gradient(180deg, #050a05 0%, #080e08 100%);
+}
+
+/* Summit label */
+.mountainHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+}
+.mountainHeaderLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+  opacity: 0.4;
+}
+.mountainHeaderText {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Terrain tile — the expedition log entry style */
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: 3px 1fr auto;
+  gap: 0 8px;
+  align-items: stretch;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.tile::after {
+  content: attr(data-icon);
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3rem;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.tileAccent {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--border2);
+}
+
+.tile.current {
+  border-color: var(--accent);
+  background: linear-gradient(90deg, rgba(138,184,112,0.08) 0%, transparent 50%);
+}
+.tile.current .tileAccent {
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(138,184,112,0.5);
+}
+
+.tile.summit {
+  border-color: var(--amber2);
+  background: linear-gradient(90deg, rgba(212,146,60,0.08) 0%, transparent 50%);
+}
+.tile.summit .tileAccent {
+  background: var(--amber2);
+  box-shadow: 0 0 8px rgba(240,184,90,0.5);
+}
+
+.tile.hidden {
+  border-style: dashed;
+  border-color: var(--border);
+  background: transparent;
+}
+
+.tileBody { min-width: 0; }
+
+.tileName {
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: var(--text1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+.tile.hidden .tileName { color: var(--text3); }
+
+.tileSection {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.tilePlayers {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.token {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  font-weight: 800;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #0a0a0a;
+}
+.token.active {
+  box-shadow: 0 0 0 2px var(--accent), 0 0 8px rgba(138,184,112,0.4);
+  border-color: rgba(255,255,255,0.5);
+}
+
+.tileRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.elevBadge {
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--amber);
+  line-height: 1;
+}
+.elevBadge small {
+  font-size: 0.45rem;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: block;
+  text-align: right;
+  margin-top: 1px;
+}
+
+.challengeTag {
+  font-family: var(--mono);
+  font-size: 0.48rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 2px 4px;
+  border-radius: 2px;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+}
+
+.hiddenMark {
+  font-family: var(--mono);
+  font-size: 1.2rem;
+  color: var(--text3);
+  text-align: center;
+  padding: 8px;
+}
+
+/* ═══════════════════════════════════════
+   RIGHT AREA — hand + controls
+═══════════════════════════════════════ */
+.rightArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Action panel */
+.actionPanel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.movementControl {
+  text-align: center;
+  max-width: 320px;
+  width: 100%;
+}
+.movTitle {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 16px;
+}
+.movGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.movBtn {
+  padding: 14px 20px;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  transition: all 0.15s;
+}
+.movBtn:hover {
+  background: var(--surface2);
+  border-color: var(--accent);
+}
+.movBtn.primary {
+  border-color: var(--accent);
+  background: rgba(138,184,112,0.08);
+}
+.movBtnIcon { font-size: 1.2rem; }
+.movBtnText { line-height: 1.3; }
+.movBtnName {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text1);
+}
+.movBtnSub {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.movBtnCost {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--amber);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════
+   HAND TRAY
+═══════════════════════════════════════ */
+.handTray {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 12px;
+}
+
+.handLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.handLabelText {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.handCount {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--accent);
+}
+.handEndBtn {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--amber);
+  border-radius: 2px;
+  background: rgba(212,146,60,0.08);
+  color: var(--amber);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.handEndBtn:hover {
+  background: rgba(212,146,60,0.18);
+}
+
+.handCards {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════
+   CARDS — field kit style
+═══════════════════════════════════════ */
+.card {
+  width: 90px;
+  height: 126px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface2);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+  flex-shrink: 0;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.04);
+  z-index: 10;
+}
+
+/* Category borders */
+.card.tool    { border-top: 3px solid #5a8ab8; }
+.card.utility { border-top: 3px solid #5aaa6a; }
+.card.skill   { border-top: 3px solid #8a6ab8; }
+
+.card.tool:hover    { box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 16px rgba(90,138,184,0.3); border-color: #5a8ab8; }
+.card.utility:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 16px rgba(90,170,106,0.3); border-color: #5aaa6a; }
+.card.skill:hover   { box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 16px rgba(138,106,184,0.3); border-color: #8a6ab8; }
+
+/* Art area */
+.cardArt {
+  height: 54px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.card.tool    .cardArt { background: linear-gradient(160deg, #0c1822 0%, #162a3a 100%); }
+.card.utility .cardArt { background: linear-gradient(160deg, #0c1810 0%, #162e1e 100%); }
+.card.skill   .cardArt { background: linear-gradient(160deg, #120c1e 0%, #221630 100%); }
+
+.artIcon { font-size: 2rem; }
+
+/* Cost badge — left-justified pill, military tag style */
+.costBadge {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: var(--amber);
+  color: #0a0a08;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 2px;
+  line-height: 1;
+}
+
+/* Grid lines on art area */
+.cardArt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(138,184,112,0.03) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(138,184,112,0.03) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+/* Name bar */
+.cardName {
+  background: rgba(0,0,0,0.6);
+  padding: 3px 5px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text1);
+  text-align: center;
+  line-height: 1.2;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Stats */
+.cardStats {
+  padding: 4px 5px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.statRow {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.stat {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  padding: 1px 4px;
+  border-radius: 2px;
+  color: #0a0a0a;
+  font-weight: 700;
+}
+.stat.str  { background: #c0392b; color: #fff; }
+.stat.agi  { background: #5aaa6a; color: #0a1408; }
+.stat.end  { background: #5a8ab8; color: #fff; }
+.stat.gold { background: var(--amber); color: #0a0a08; }
+
+.cardEffect {
+  font-size: 0.52rem;
+  color: var(--text3);
+  line-height: 1.3;
+  margin-top: 1px;
+}
+
+.discardHint {
+  font-family: var(--mono);
+  font-size: 0.45rem;
+  color: var(--text3);
+  margin-top: auto;
+  letter-spacing: 1px;
+}
+
+/* Selected card */
+.card.selected {
+  transform: translateY(-12px) scale(1.06);
+  z-index: 11;
+}
+.card.tool.selected    { box-shadow: 0 12px 32px rgba(0,0,0,0.6), 0 0 20px rgba(90,138,184,0.4); border-color: #5a8ab8; }
+.card.utility.selected { box-shadow: 0 12px 32px rgba(0,0,0,0.6), 0 0 20px rgba(90,170,106,0.4); border-color: #5aaa6a; }
+.card.skill.selected   { box-shadow: 0 12px 32px rgba(0,0,0,0.6), 0 0 20px rgba(138,106,184,0.4); border-color: #8a6ab8; }
+
+/* ═══════════════════════════════════════
+   SAMPLE LABEL
+═══════════════════════════════════════ */
+.sampleBadge {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  background: rgba(8,14,8,0.85);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 4px 10px;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+</style>
+</head>
+<body>
+
+<div class="sampleBadge">Option 5 · Expedition Log</div>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="hudSection">
+    <div class="playerTag">
+      <div class="playerBadge">AL</div>
+      <div class="playerInfo">
+        <div class="playerName">Alex</div>
+        <div class="playerRole">Lead Climber · Day 3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hudSection">
+    <div class="resource">
+      <span class="resourceIcon">💰</span>
+      <span class="resourceVal">5</span>
+      <span class="resourceKey">gold</span>
+    </div>
+  </div>
+
+  <div class="hudSection fill">
+    <div class="phaseBlock">
+      <div class="phaseLabel">Current Phase</div>
+      <div class="phasePills">
+        <span class="pill">Play</span>
+        <span class="pill-sep">›</span>
+        <span class="pill active">Move</span>
+        <span class="pill-sep">›</span>
+        <span class="pill">Buy</span>
+        <span class="pill-sep">›</span>
+        <span class="pill">End</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hudSection">
+    <div class="deckRow">
+      <div class="deckStat">
+        <span class="deckNum">5</span>
+        <span class="deckLbl">hand</span>
+      </div>
+      <div class="deckStat">
+        <span class="deckNum">12</span>
+        <span class="deckLbl">deck</span>
+      </div>
+      <div class="deckStat">
+        <span class="deckNum">3</span>
+        <span class="deckLbl">disc</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hudSection">
+    <button class="helpBtn">?</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- Mountain column -->
+  <div class="mountainCol">
+    <div class="mountainHeader">
+      <div class="mountainHeaderLine"></div>
+      <div class="mountainHeaderText">Route Log</div>
+      <div class="mountainHeaderLine" style="transform: scaleX(-1);"></div>
+    </div>
+
+    <!-- Summit -->
+    <div class="tile summit" data-icon="🏔">
+      <div class="tileAccent"></div>
+      <div class="tileBody">
+        <div class="tileName">The Summit</div>
+        <div class="tileSection">Final Objective</div>
+        <div class="tilePlayers"></div>
+      </div>
+      <div class="tileRight">
+        <div class="elevBadge">10<small>elev</small></div>
+      </div>
+    </div>
+
+    <!-- Hidden -->
+    <div class="tile hidden" data-icon="">
+      <div class="tileAccent"></div>
+      <div class="tileBody">
+        <div class="tileName" style="color:var(--text3)">▲ Unexplored</div>
+        <div class="tileSection">Unknown</div>
+      </div>
+      <div class="tileRight">
+        <div class="hiddenMark">?</div>
+      </div>
+    </div>
+
+    <div class="tile hidden" data-icon="">
+      <div class="tileAccent"></div>
+      <div class="tileBody">
+        <div class="tileName" style="color:var(--text3)">▲ Unexplored</div>
+        <div class="tileSection">Unknown</div>
+      </div>
+      <div class="tileRight">
+        <div class="hiddenMark">?</div>
+      </div>
+    </div>
+
+    <!-- Current position -->
+    <div class="tile current" data-icon="🌊">
+      <div class="tileAccent"></div>
+      <div class="tileBody">
+        <div class="tileName">Glacier Field</div>
+        <div class="tileSection">Snowfields · Zone C</div>
+        <div class="tilePlayers">
+          <div class="token active" style="background:#4ade80;">AL</div>
+          <div class="token" style="background:#60a5fa;">RJ</div>
+        </div>
+      </div>
+      <div class="tileRight">
+        <div class="elevBadge">7<small>elev</small></div>
+        <div class="challengeTag">weather</div>
+      </div>
+    </div>
+
+    <!-- Lower tiles -->
+    <div class="tile" data-icon="🪨">
+      <div class="tileAccent"></div>
+      <div class="tileBody">
+        <div class="tileName">Scree Slope</div>
+        <div class="tileSection">Rockfield · Zone B</div>
+        <div class="tilePlayers">
+          <div class="token" style="background:#fb923c;">MK</div>
+        </div>
+      </div>
+      <div class="tileRight">
+        <div class="elevBadge">5<small>elev</small></div>
+        <div class="challengeTag">terrain</div>
+      </div>
+    </div>
+
+    <div class="tile" data-icon="🌲">
+      <div class="tileAccent"></div>
+      <div class="tileBody">
+        <div class="tileName">Treeline</div>
+        <div class="tileSection">Forest · Zone A</div>
+        <div class="tilePlayers"></div>
+      </div>
+      <div class="tileRight">
+        <div class="elevBadge">3<small>elev</small></div>
+      </div>
+    </div>
+
+    <div class="tile" data-icon="⛺">
+      <div class="tileAccent"></div>
+      <div class="tileBody">
+        <div class="tileName">Base Camp</div>
+        <div class="tileSection">Origin · Start</div>
+        <div class="tilePlayers"></div>
+      </div>
+      <div class="tileRight">
+        <div class="elevBadge">1<small>elev</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right area -->
+  <div class="rightArea">
+    <!-- Move phase panel -->
+    <div class="actionPanel">
+      <div class="movementControl">
+        <div class="movTitle">Select Movement</div>
+        <div class="movGrid">
+          <button class="movBtn primary">
+            <span class="movBtnIcon">🧗</span>
+            <div class="movBtnText">
+              <div class="movBtnName">Advance to Ridge</div>
+              <div class="movBtnSub">Glacier Field → Knife Ridge · elev 8</div>
+            </div>
+            <div class="movBtnCost">2g</div>
+          </button>
+          <button class="movBtn">
+            <span class="movBtnIcon">⛺</span>
+            <div class="movBtnText">
+              <div class="movBtnName">Establish Camp</div>
+              <div class="movBtnSub">Rest and resupply at current position</div>
+            </div>
+            <div class="movBtnCost">0g</div>
+          </button>
+          <button class="movBtn">
+            <span class="movBtnIcon">🔽</span>
+            <div class="movBtnText">
+              <div class="movBtnName">Descend to Scree</div>
+              <div class="movBtnSub">Fall back to Scree Slope · elev 5</div>
+            </div>
+            <div class="movBtnCost">0g</div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hand tray -->
+    <div class="handTray">
+      <div class="handLabel">
+        <div class="handLabelText">Field Kit</div>
+        <div class="handCount">5 cards</div>
+        <button class="handEndBtn">End Turn →</button>
+      </div>
+
+      <div class="handCards">
+
+        <!-- Card 1: Tool (selected) -->
+        <div class="card tool selected">
+          <div class="cardArt">
+            <span class="artIcon">⛏️</span>
+            <span class="costBadge">2g</span>
+          </div>
+          <div class="cardName">Ice Axe</div>
+          <div class="cardStats">
+            <div class="statRow">
+              <span class="stat str">+3 str</span>
+              <span class="stat agi">+1 agi</span>
+            </div>
+            <div class="cardEffect">Reduces move cost by 1 this turn</div>
+            <div class="discardHint">→ discard</div>
+          </div>
+        </div>
+
+        <!-- Card 2: Utility -->
+        <div class="card utility">
+          <div class="cardArt">
+            <span class="artIcon">🗺️</span>
+            <span class="costBadge">1g</span>
+          </div>
+          <div class="cardName">Survey Map</div>
+          <div class="cardStats">
+            <div class="statRow">
+              <span class="stat gold">+2g</span>
+            </div>
+            <div class="cardEffect">Reveal next 2 tiles</div>
+            <div class="discardHint">→ discard</div>
+          </div>
+        </div>
+
+        <!-- Card 3: Skill -->
+        <div class="card skill">
+          <div class="cardArt">
+            <span class="artIcon">🧠</span>
+            <span class="costBadge">0g</span>
+          </div>
+          <div class="cardName">Acclimatize</div>
+          <div class="cardStats">
+            <div class="statRow">
+              <span class="stat end">+2 end</span>
+            </div>
+            <div class="cardEffect">Ignore weather penalty next challenge</div>
+            <div class="discardHint">→ discard</div>
+          </div>
+        </div>
+
+        <!-- Card 4: Tool -->
+        <div class="card tool">
+          <div class="cardArt">
+            <span class="artIcon">🔩</span>
+            <span class="costBadge">3g</span>
+          </div>
+          <div class="cardName">Piton Set</div>
+          <div class="cardStats">
+            <div class="statRow">
+              <span class="stat str">+4 str</span>
+            </div>
+            <div class="cardEffect">+2 next turn if on rock tile</div>
+            <div class="discardHint">→ discard</div>
+          </div>
+        </div>
+
+        <!-- Card 5: Utility -->
+        <div class="card utility">
+          <div class="cardArt">
+            <span class="artIcon">🎒</span>
+            <span class="costBadge">1g</span>
+          </div>
+          <div class="cardName">Trail Rations</div>
+          <div class="cardStats">
+            <div class="statRow">
+              <span class="stat end">+1 end</span>
+              <span class="stat gold">+1g</span>
+            </div>
+            <div class="cardEffect">Draw 1 additional card</div>
+            <div class="discardHint">→ discard</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit — UI Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Barlow+Semi+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #070a10;
+  color: #cdd9e8;
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  min-height: 100vh;
+  padding: 48px 24px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #f59e0b;
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #5a7a98;
+  letter-spacing: 1px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.option {
+  background: #0d1520;
+  border: 1px solid #1e3050;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  text-decoration: none;
+  display: block;
+}
+
+.option:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+}
+
+/* Preview thumbnails — colored to suggest each option's palette */
+.preview {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0,0,0,0.4) 0%, transparent 60%);
+}
+
+/* Palette swatches per option */
+.opt1 .preview { background: linear-gradient(160deg, #0d0a12 0%, #1a0f25 50%, #0d0a12 100%); }
+.opt2 .preview { background: linear-gradient(160deg, #07090f 0%, #0f1828 50%, #07090f 100%); }
+.opt3 .preview { background: linear-gradient(160deg, #0c0906 0%, #1c1208 50%, #0c0906 100%); }
+.opt4 .preview { background: linear-gradient(160deg, #030308 0%, #05050f 50%, #030308 100%); }
+.opt5 .preview { background: linear-gradient(160deg, #080e08 0%, #111e10 50%, #080e08 100%); }
+
+.previewColors {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  gap: 5px;
+  z-index: 1;
+}
+
+.swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.body {
+  padding: 20px;
+}
+
+.optNum {
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #3d5a7a;
+  margin-bottom: 6px;
+}
+
+.optName {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.opt1 .optName { color: #c4933f; }
+.opt2 .optName { color: #38bdf8; }
+.opt3 .optName { color: #ea580c; }
+.opt4 .optName { color: #00e5ff; }
+.opt5 .optName { color: #8ab870; }
+
+.optTagline {
+  font-size: 0.8rem;
+  color: #5a7a98;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.trait {
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid #1e3050;
+  color: #5a7a98;
+}
+
+.opt1 .trait { border-color: rgba(196,147,63,0.3); color: #a07838; }
+.opt2 .trait { border-color: rgba(56,189,248,0.25); color: #3a8ab8; }
+.opt3 .trait { border-color: rgba(234,88,12,0.3); color: #a05820; }
+.opt4 .trait { border-color: rgba(0,229,255,0.2); color: #009ab8; }
+.opt5 .trait { border-color: rgba(138,184,112,0.3); color: #5a8a50; }
+
+.viewBtn {
+  display: block;
+  margin: 16px 20px 20px;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.viewBtn:hover { opacity: 0.85; }
+
+.opt1 .viewBtn { background: #c4933f; color: #0d0a12; }
+.opt2 .viewBtn { background: #38bdf8; color: #07090f; }
+.opt3 .viewBtn { background: #ea580c; color: #0c0906; }
+.opt4 .viewBtn { background: #00e5ff; color: #030308; }
+.opt5 .viewBtn { background: #8ab870; color: #080e08; }
+
+.note {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.8rem;
+  color: #3d5a7a;
+  line-height: 1.8;
+}
+
+.note strong { color: #5a7a98; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">SUMMIT</div>
+  <div class="subtitle">Choose a visual direction · 5 options · Same game state</div>
+</div>
+
+<div class="grid">
+
+  <!-- Option 1 -->
+  <div class="option opt1">
+    <div class="preview">
+      🏔️
+      <div class="previewColors">
+        <div class="swatch" style="background:#0d0a12;"></div>
+        <div class="swatch" style="background:#1d1428;"></div>
+        <div class="swatch" style="background:#c4933f;"></div>
+        <div class="swatch" style="background:#e8d5a0;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 01</div>
+      <div class="optName">Stone & Gold</div>
+      <div class="optTagline">Dark Fantasy · Slay the Spire DNA</div>
+      <div class="traits">
+        <span class="trait">Cinzel headings</span>
+        <span class="trait">Double card borders</span>
+        <span class="trait">Roman elevation (VII)</span>
+        <span class="trait">Rich amber accents</span>
+        <span class="trait">Portrait art cards</span>
+      </div>
+    </div>
+    <a class="viewBtn" href="option1-stone-gold.html" target="_blank">View Option 1 →</a>
+  </div>
+
+  <!-- Option 2 -->
+  <div class="option opt2">
+    <div class="preview">
+      🧊
+      <div class="previewColors">
+        <div class="swatch" style="background:#07090f;"></div>
+        <div class="swatch" style="background:#0d1525;"></div>
+        <div class="swatch" style="background:#38bdf8;"></div>
+        <div class="swatch" style="background:#d0e8f8;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 02</div>
+      <div class="optName">Arctic Steel</div>
+      <div class="optTagline">Clean Strategy · Minimal & Precise</div>
+      <div class="traits">
+        <span class="trait">Electric blue accents</span>
+        <span class="trait">Thin hairline borders</span>
+        <span class="trait">Zero-padded elevation (07)</span>
+        <span class="trait">Phase underline indicator</span>
+        <span class="trait">Category stat pills</span>
+      </div>
+    </div>
+    <a class="viewBtn" href="option2-arctic-steel.html" target="_blank">View Option 2 →</a>
+  </div>
+
+  <!-- Option 3 -->
+  <div class="option opt3">
+    <div class="preview">
+      🔥
+      <div class="previewColors">
+        <div class="swatch" style="background:#0c0906;"></div>
+        <div class="swatch" style="background:#1c1208;"></div>
+        <div class="swatch" style="background:#ea580c;"></div>
+        <div class="swatch" style="background:#fbbf24;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 03</div>
+      <div class="optName">Midnight Ember</div>
+      <div class="optTagline">Gothic / Inscryption · Brooding & Textured</div>
+      <div class="traits">
+        <span class="trait">Ember orange accents</span>
+        <span class="trait">Inner bevel card shadows</span>
+        <span class="trait">Wood-grain texture tiles</span>
+        <span class="trait">Roman numerals</span>
+        <span class="trait">High contrast</span>
+      </div>
+    </div>
+    <a class="viewBtn" href="option3-midnight-ember.html" target="_blank">View Option 3 →</a>
+  </div>
+
+  <!-- Option 4 -->
+  <div class="option opt4">
+    <div class="preview">
+      ⚡
+      <div class="previewColors">
+        <div class="swatch" style="background:#030308;"></div>
+        <div class="swatch" style="background:#08080f;"></div>
+        <div class="swatch" style="background:#00e5ff;"></div>
+        <div class="swatch" style="background:#ff6b35;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 04</div>
+      <div class="optName">Neon Cliff</div>
+      <div class="optTagline">Arcade / Void · High Energy & Electric</div>
+      <div class="traits">
+        <span class="trait">Cyan + orange neon</span>
+        <span class="trait">Neon outline cards</span>
+        <span class="trait">ALL-CAPS everywhere</span>
+        <span class="trait">Square cost badge</span>
+        <span class="trait">Altitude line texture</span>
+      </div>
+    </div>
+    <a class="viewBtn" href="option4-neon-cliff.html" target="_blank">View Option 4 →</a>
+  </div>
+
+  <!-- Option 5 -->
+  <div class="option opt5">
+    <div class="preview">
+      🧭
+      <div class="previewColors">
+        <div class="swatch" style="background:#080e08;"></div>
+        <div class="swatch" style="background:#0f1a0f;"></div>
+        <div class="swatch" style="background:#8ab870;"></div>
+        <div class="swatch" style="background:#d4923c;"></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="optNum">Option 05</div>
+      <div class="optName">Expedition Log</div>
+      <div class="optTagline">Tactical Alpine · Military & Grounded</div>
+      <div class="traits">
+        <span class="trait">Tactical green palette</span>
+        <span class="trait">Left-stripe terrain tiles</span>
+        <span class="trait">Monospace readouts</span>
+        <span class="trait">Amber cost tags</span>
+        <span class="trait">Grid-line art area</span>
+      </div>
+    </div>
+    <a class="viewBtn" href="option5-expedition-log.html" target="_blank">View Option 5 →</a>
+  </div>
+
+</div>
+
+<div class="note">
+  All five options show the same game state: <strong>Alex at Elevation 7 · Move Phase · 5 gold · 5 cards in hand</strong><br>
+  Click any option to open it full-screen · Pick one (or describe a mix) to implement
+</div>
+
+</body>
+</html>

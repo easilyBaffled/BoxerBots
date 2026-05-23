@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option 1: Stone &amp; Gold</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Barlow+Semi+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Barlow Semi Condensed', sans-serif; background: #0d0a12; color: #e8d5b0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+.hud { display: flex; align-items: center; gap: 20px; padding: 10px 20px; background: #13101a; border-bottom: 2px solid #c4933f; flex-shrink: 0; }
+.hud-player { display: flex; align-items: center; gap: 10px; }
+.hud-avatar { width: 38px; height: 38px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #8b4513, #3a1a05); border: 2px solid #c4933f; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 0 12px rgba(196,147,63,0.35); }
+.hud-name { font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 700; color: #e8d5b0; letter-spacing: 1px; }
+.hud-gold { font-size: 0.75rem; color: #c4933f; font-weight: 700; }
+.hud-phases { display: flex; gap: 4px; margin-left: auto; }
+.phase-pill { padding: 5px 13px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; background: #1e1828; color: #4a3525; border: 1px solid #2d2040; }
+.phase-pill.active { background: #c4933f; color: #0d0a12; box-shadow: 0 0 14px rgba(196,147,63,0.4); }
+.phase-pill.done { color: #2d2040; }
+.hud-right { display: flex; gap: 14px; font-size: 0.75rem; color: #4a3525; }
+.hud-right strong { color: #8b7355; }
+
+.main { display: flex; flex: 1; overflow: hidden; }
+
+.board { width: 285px; flex-shrink: 0; background: linear-gradient(180deg, #060305 0%, #0d0a12 100%); overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 8px; border-right: 1px solid #2d2040; }
+.board-label { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 2.5px; color: #4a3525; text-transform: uppercase; text-align: center; padding-bottom: 8px; border-bottom: 1px solid #2d2040; margin-bottom: 4px; }
+
+.mountain-tile { border-radius: 5px; padding: 10px 12px; border: 1px solid #2d2040; background: #13101a; display: flex; flex-direction: column; gap: 6px; min-height: 96px; position: relative; box-shadow: inset 0 0 0 1px rgba(196,147,63,0.08); }
+.mountain-tile.current { border-color: #c4933f; background: #160f1e; box-shadow: 0 0 0 1px #c4933f, 0 0 22px rgba(196,147,63,0.18), inset 0 0 0 1px rgba(196,147,63,0.2); }
+.mountain-tile.hidden { opacity: 0.45; border-style: dashed; align-items: center; justify-content: center; min-height: 68px; }
+.tile-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.tile-name { font-size: 0.78rem; font-weight: 700; color: #e8d5b0; line-height: 1.2; }
+.tile-terrain { font-size: 1.1rem; }
+.tile-section { font-size: 0.56rem; color: #4a3525; text-transform: uppercase; letter-spacing: 0.8px; }
+.tile-challenges { display: flex; gap: 4px; flex-wrap: wrap; }
+.challenge-badge { font-size: 0.62rem; font-weight: 700; padding: 2px 7px; border-radius: 3px; border: 1px solid currentColor; }
+.challenge-weather { color: #7dd3fc; background: rgba(125,211,252,0.06); }
+.challenge-terrain { color: #fdba74; background: rgba(253,186,116,0.06); }
+.challenge-condition { color: #c084fc; background: rgba(192,132,252,0.06); }
+.tile-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+.tile-tokens { display: flex; gap: 5px; }
+.player-token { width: 30px; height: 30px; border-radius: 50%; background: #7f1d1d; border: 2px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 800; color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+.player-token.active { border-color: #c4933f; box-shadow: 0 0 0 2px #c4933f, 0 0 10px rgba(196,147,63,0.4); transform: scale(1.1); }
+.empty-slot { width: 30px; height: 30px; border-radius: 50%; border: 2px dashed #2d2040; }
+.tile-elev { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: #4a3525; }
+.mountain-tile.current .tile-elev { color: #c4933f; }
+
+.right-area { flex: 1; display: flex; flex-direction: column; background: #0f0c16; }
+.controls { padding: 16px; border-bottom: 1px solid #2d2040; display: flex; flex-direction: column; gap: 10px; }
+.controls-hint { font-size: 0.78rem; color: #4a3525; line-height: 1.4; }
+.move-btns { display: flex; gap: 8px; }
+.btn-move { flex: 1; padding: 13px; background: #1e1828; color: #8b7355; border: 1px solid #2d2040; border-radius: 4px; font-family: inherit; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.12s; }
+.btn-move:hover { border-color: #c4933f; color: #c4933f; }
+.btn-secondary { padding: 11px; background: transparent; color: #4a3525; border: 1px solid #2d2040; border-radius: 4px; font-family: inherit; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.8px; text-transform: uppercase; cursor: pointer; }
+
+.hand-area { padding: 13px 16px 15px; background: #0a0810; border-top: 2px solid #2d2040; box-shadow: inset 0 8px 20px rgba(0,0,0,0.5); flex-shrink: 0; }
+.hand-label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #2d2040; margin-bottom: 11px; font-weight: 700; }
+.cards-row { display: flex; gap: 10px; }
+
+.card { width: 94px; height: 132px; border-radius: 6px; border: 1px solid #2d2040; display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; position: relative; box-shadow: 0 4px 14px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(196,147,63,0.1); }
+.card:hover { transform: translateY(-10px); }
+.card.tool { border-top: 3px solid #2563eb; border-color: rgba(37,99,235,0.5); }
+.card.utility { border-top: 3px solid #16a34a; border-color: rgba(22,163,74,0.5); }
+.card.skill { border-top: 3px solid #7c3aed; border-color: rgba(124,58,237,0.5); }
+.card.tool:hover { box-shadow: 0 18px 36px rgba(0,0,0,0.7), 0 0 22px rgba(37,99,235,0.22); }
+.card.utility:hover { box-shadow: 0 18px 36px rgba(0,0,0,0.7), 0 0 22px rgba(22,163,74,0.22); }
+.card.skill:hover { box-shadow: 0 18px 36px rgba(0,0,0,0.7), 0 0 22px rgba(124,58,237,0.22); }
+.card.committed { transform: translateY(-10px); outline: 2px solid #22c55e; outline-offset: 1px; box-shadow: 0 0 18px rgba(34,197,94,0.25); }
+
+.card-art { height: 54px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 2rem; position: relative; }
+.card.tool .card-art { background: linear-gradient(160deg, #0c1d38, #1a3a5c); }
+.card.utility .card-art { background: linear-gradient(160deg, #0a1e14, #163d26); }
+.card.skill .card-art { background: linear-gradient(160deg, #18102e, #2d1a50); }
+.card-cost { position: absolute; top: 6px; left: 6px; width: 22px; height: 22px; border-radius: 50%; background: #c4933f; color: #0d0a12; font-size: 0.58rem; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 6px rgba(196,147,63,0.4); }
+.card-name { background: rgba(0,0,0,0.65); padding: 4px 7px; font-size: 0.65rem; font-weight: 700; color: #e8d5b0; line-height: 1.2; flex-shrink: 0; border-top: 1px solid rgba(196,147,63,0.15); }
+.card-stats { flex: 1; padding: 5px 7px; background: #13101a; display: flex; flex-direction: column; gap: 3px; }
+.stat-row { display: flex; gap: 3px; flex-wrap: wrap; }
+.stat-pill { font-size: 0.54rem; font-weight: 700; padding: 1px 4px; border-radius: 3px; background: rgba(232,213,176,0.07); color: #8b7355; }
+.card-effect { font-size: 0.53rem; color: #4a3525; line-height: 1.3; margin-top: 1px; }
+
+.nav { position: fixed; bottom: 16px; right: 16px; display: flex; gap: 8px; }
+.nav a { padding: 8px 14px; background: #1e1828; color: #c4933f; border: 1px solid #c4933f; border-radius: 4px; text-decoration: none; font-family: 'Barlow Semi Condensed', sans-serif; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<div class="hud">
+  <div class="hud-player">
+    <div class="hud-avatar">🧗</div>
+    <div>
+      <div class="hud-name">Alex</div>
+      <div class="hud-gold">💰 5 gold banked</div>
+    </div>
+  </div>
+  <div class="hud-phases">
+    <div class="phase-pill done">✓ Play</div>
+    <div class="phase-pill active">Move</div>
+    <div class="phase-pill">Buy</div>
+    <div class="phase-pill">End</div>
+  </div>
+  <div class="hud-right">
+    <span>✋ <strong>4</strong> hand</span>
+    <span>📦 <strong>11</strong> deck</span>
+    <span>♻ <strong>5</strong> discard</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="board">
+    <div class="board-label">▲ The Summit</div>
+
+    <div class="mountain-tile hidden">
+      <div style="font-size:1.8rem;opacity:0.3">?</div>
+      <div style="font-size:0.58rem;color:#2d2040;letter-spacing:1px;text-transform:uppercase">Unexplored</div>
+    </div>
+
+    <div class="mountain-tile current">
+      <div class="tile-top">
+        <div>
+          <div class="tile-name">Crevasse Field</div>
+          <div class="tile-section">Death Zone Entry</div>
+        </div>
+        <div class="tile-terrain">⚠️</div>
+      </div>
+      <div class="tile-challenges">
+        <div class="challenge-badge challenge-terrain">🗻 Crevasse Gap</div>
+      </div>
+      <div class="tile-bottom">
+        <div class="tile-tokens">
+          <div class="player-token active" style="background:#7f1d1d">A</div>
+          <div class="player-token" style="background:#1e40af">B</div>
+          <div class="empty-slot"></div>
+        </div>
+        <div class="tile-elev">VII</div>
+      </div>
+    </div>
+
+    <div class="mountain-tile">
+      <div class="tile-top">
+        <div>
+          <div class="tile-name">Exposed Ridge</div>
+          <div class="tile-section">High Altitude</div>
+        </div>
+        <div class="tile-terrain">🪨</div>
+      </div>
+      <div class="tile-challenges">
+        <div class="challenge-badge challenge-weather">⛈ Sudden Storm</div>
+        <div class="challenge-badge challenge-condition">💀 Frostbite</div>
+      </div>
+      <div class="tile-bottom">
+        <div class="tile-tokens">
+          <div class="player-token" style="background:#166534">C</div>
+          <div class="empty-slot"></div>
+          <div class="empty-slot"></div>
+        </div>
+        <div class="tile-elev">VI</div>
+      </div>
+    </div>
+
+    <div class="mountain-tile">
+      <div class="tile-top">
+        <div>
+          <div class="tile-name">Frozen Creek Crossing</div>
+          <div class="tile-section">Mid Mountain</div>
+        </div>
+        <div class="tile-terrain">🧊</div>
+      </div>
+      <div class="tile-challenges">
+        <div class="challenge-badge challenge-terrain">🗻 Thin Ice</div>
+      </div>
+      <div class="tile-bottom">
+        <div class="tile-tokens">
+          <div class="empty-slot"></div>
+          <div class="empty-slot"></div>
+          <div class="empty-slot"></div>
+          <div class="empty-slot"></div>
+        </div>
+        <div class="tile-elev">V</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-area">
+    <div class="controls">
+      <div class="controls-hint">Move up the mountain. Challenges fire automatically on entry. You may descend to avoid them.</div>
+      <div class="move-btns">
+        <button class="btn-move">↑ Climb</button>
+        <button class="btn-move">↓ Descend</button>
+      </div>
+      <button class="btn-secondary">Skip Move →</button>
+    </div>
+  </div>
+</div>
+
+<div class="hand-area">
+  <div class="hand-label">Your Hand — Click to commit to challenge</div>
+  <div class="cards-row">
+    <div class="card tool committed">
+      <div class="card-art">🔧<div class="card-cost">3</div></div>
+      <div class="card-name">Ice Axe</div>
+      <div class="card-stats">
+        <div class="stat-row"><span class="stat-pill">+3 str</span><span class="stat-pill">+1 agi</span></div>
+      </div>
+    </div>
+    <div class="card utility">
+      <div class="card-art">🎒<div class="card-cost">2</div></div>
+      <div class="card-name">First Aid Kit</div>
+      <div class="card-stats">
+        <div class="stat-row"><span class="stat-pill">+2 surv</span></div>
+        <div class="card-effect">Remove respawning condition on play</div>
+      </div>
+    </div>
+    <div class="card skill">
+      <div class="card-art">⭐<div class="card-cost">4</div></div>
+      <div class="card-name">Iron Will</div>
+      <div class="card-stats">
+        <div class="stat-row"><span class="stat-pill">+2 surv</span><span class="stat-pill">+1 str</span></div>
+        <div class="card-effect">Permanent. Resist jostle by discarding 2.</div>
+      </div>
+    </div>
+    <div class="card tool">
+      <div class="card-art">🧊<div class="card-cost">2</div></div>
+      <div class="card-name">Crampons</div>
+      <div class="card-stats">
+        <div class="stat-row"><span class="stat-pill">+2 agi</span></div>
+        <div class="card-effect">No fall penalty on ice terrain.</div>
+      </div>
+    </div>
+    <div class="card utility">
+      <div class="card-art">⚡<div class="card-cost">1</div></div>
+      <div class="card-name">Energy Drink</div>
+      <div class="card-stats">
+        <div class="stat-row"><span class="stat-pill">+1 str</span><span class="stat-pill">+1 agi</span></div>
+        <div class="card-effect">Gain 1 gold this turn.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <a href="index.html">← All Options</a>
+  <a href="option2-arctic-steel.html">Option 2 →</a>
+</div>
+</body>
+</html>
