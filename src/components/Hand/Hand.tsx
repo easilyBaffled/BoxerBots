@@ -23,7 +23,7 @@ export function Hand() {
   return (
     <div className={styles.hand}>
       <div className={styles.label}>
-        Hand ({activePlayer.hand.length}) {isPlayPhase ? '— click to play' : ''}
+        Hand ({activePlayer.hand.length}) {isPlayPhase ? '— click to use & discard' : ''}
       </div>
       <div className={styles.cards}>
         {activePlayer.hand.map(card => (
@@ -32,6 +32,7 @@ export function Hand() {
             card={card}
             onClick={isPlayPhase ? () => playCard(card.id) : undefined}
             dimmed={!isPlayPhase}
+            showDiscardHint={isPlayPhase}
           />
         ))}
       </div>

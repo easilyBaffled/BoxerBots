@@ -20,9 +20,10 @@ interface Props {
   committed?: boolean;
   dimmed?: boolean;
   showCost?: boolean;
+  showDiscardHint?: boolean;
 }
 
-export function PlayableCard({ card, onClick, selected, committed, dimmed, showCost }: Props) {
+export function PlayableCard({ card, onClick, selected, committed, dimmed, showCost, showDiscardHint }: Props) {
   const statEntries = Object.entries(card.stats).filter(([, v]) => (v ?? 0) > 0);
 
   return (
@@ -47,6 +48,9 @@ export function PlayableCard({ card, onClick, selected, committed, dimmed, showC
       )}
       {card.effect && (
         <div className={styles.effect}>{card.effect}</div>
+      )}
+      {showDiscardHint && (
+        <div className={styles.discardHint}>→ discard</div>
       )}
     </div>
   );

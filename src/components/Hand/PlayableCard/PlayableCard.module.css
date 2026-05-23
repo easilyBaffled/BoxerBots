@@ -84,6 +84,14 @@
   margin-top: 2px;
 }
 
+.discardHint {
+  font-size: 0.62rem;
+  color: #9ca3af;
+  text-align: right;
+  margin-top: 2px;
+  font-style: italic;
+}
+
 @media (max-width: 680px) {
   .card {
     min-width: 130px;

@@ -62,7 +62,7 @@ export function TurnControls() {
 
       {turnPhase === 'play' && (
         <div className={styles.phaseSection}>
-          <div className={styles.hint}>Play cards from your hand to build resources, then move.</div>
+          <div className={styles.hint}>Playing a card <strong>discards it</strong>. Use cards for their effects (draw, gold, permanent skills) — or skip and save them for a challenge.</div>
           <button className={styles.primaryBtn} onClick={() => dispatch({ type: 'ADVANCE_PHASE' })}>
             Done Playing →
           </button>
