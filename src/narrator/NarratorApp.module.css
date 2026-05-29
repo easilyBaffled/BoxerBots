@@ -221,6 +221,75 @@
   font-style: italic;
 }
 
+.sectionTitle {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c9a84c;
+  margin-bottom: 0.35rem;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: #5a5040;
+  margin: 0 0 0.6rem;
+  line-height: 1.5;
+}
+
+.ok {
+  font-size: 0.78rem;
+  color: #6dbd6d;
+  margin: 0.3rem 0 0;
+}
+
+.fileLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.fileInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.fileBtn {
+  background: transparent;
+  border: 1px solid #3a3228;
+  border-radius: 4px;
+  color: #d4c9b0;
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.fileLabel:hover .fileBtn {
+  border-color: #7a6e5a;
+}
+
+.fileName {
+  font-size: 0.8rem;
+  color: #7a6e5a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 260px;
+}
+
+.textareaSmall {
+  min-height: 60px;
+}
+
 .error {
   font-size: 0.82rem;
   color: #c0504a;

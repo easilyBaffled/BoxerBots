@@ -14,6 +14,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['kokoro-js', '@huggingface/transformers'],
+    exclude: ['kokoro-js', '@huggingface/transformers', 'onnxruntime-web'],
   },
 })
