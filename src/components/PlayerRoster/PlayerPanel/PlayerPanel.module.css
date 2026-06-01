@@ -9,7 +9,7 @@
 
 .panel.active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent), 0 0 10px rgba(245,158,11,0.15);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 10px rgba(207,154,50,0.15);
 }
 
 .colorBar {
@@ -35,7 +35,7 @@
 
 .badge {
   font-size: 0.65rem;
-  background: rgba(245,158,11,0.15);
+  background: rgba(207,154,50,0.15);
   color: var(--accent);
   padding: 1px 5px;
   border-radius: 4px;
@@ -83,5 +83,5 @@
 
 .skill {
   font-size: 0.68rem;
-  color: #a78bfa;
+  color: #7040a0;
 }

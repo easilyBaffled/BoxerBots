@@ -32,7 +32,7 @@
 .boardArea {
   flex: 1;
   overflow: hidden;
-  background: linear-gradient(180deg, #050c18 0%, #0b111e 100%);
+  background: linear-gradient(180deg, #f5eed8 0%, #e7d9b8 100%);
 }
 
 .rightPanel {
@@ -69,7 +69,7 @@
 .mobileBoardPanel {
   flex: 1;
   overflow: hidden;
-  background: linear-gradient(180deg, #050c18 0%, #0b111e 100%);
+  background: linear-gradient(180deg, #f5eed8 0%, #e7d9b8 100%);
 }
 
 .mobileHandPanel {

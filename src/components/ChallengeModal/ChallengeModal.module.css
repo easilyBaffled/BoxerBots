@@ -54,13 +54,13 @@
 }
 
 .threshLabel { min-width: 110px; }
-.threshold.met { color: #fbbf24; font-weight: 600; }
-.threshold.metSolve { color: #4ade80; font-weight: 700; }
+.threshold.met { color: #b88020; font-weight: 600; }
+.threshold.metSolve { color: #3a7830; font-weight: 700; }
 
 .rewardBadge {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #4ade80;
+  color: #3a7830;
   white-space: nowrap;
   margin-left: auto;
 }
@@ -75,17 +75,17 @@
 
 .passBar {
   height: 100%;
-  background: #f59e0b;
+  background: #cf9a32;
   border-radius: 4px;
   transition: width 0.2s;
-  box-shadow: 0 0 6px rgba(245,158,11,0.4);
+  box-shadow: 0 0 6px rgba(207,154,50,0.4);
 }
 .solveBar {
   height: 100%;
-  background: #22c55e;
+  background: #3a7830;
   border-radius: 4px;
   transition: width 0.2s;
-  box-shadow: 0 0 6px rgba(34,197,94,0.4);
+  box-shadow: 0 0 6px rgba(58,120,48,0.4);
 }
 
 .totalRow {
@@ -108,8 +108,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(74,222,128,0.07);
-  border: 1px solid rgba(74,222,128,0.2);
+  background: rgba(58,120,48,0.08);
+  border: 1px solid rgba(58,120,48,0.22);
   border-radius: 8px;
   padding: 8px 12px;
   flex-wrap: wrap;
@@ -118,7 +118,7 @@
 .innateLabel {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #4ade80;
+  color: #3a7830;
   flex-shrink: 0;
 }
 
@@ -131,8 +131,8 @@
 .inateStat {
   font-size: 0.78rem;
   font-weight: 700;
-  background: rgba(74,222,128,0.15);
-  color: #4ade80;
+  background: rgba(58,120,48,0.15);
+  color: #3a7830;
   padding: 2px 7px;
   border-radius: 4px;
 }
@@ -140,8 +140,8 @@
 .inateStatNeg {
   font-size: 0.78rem;
   font-weight: 700;
-  background: rgba(239,68,68,0.15);
-  color: #f87171;
+  background: rgba(196,64,48,0.15);
+  color: #c44030;
   padding: 2px 7px;
   border-radius: 4px;
 }
@@ -208,9 +208,9 @@
 
 .loseBtn {
   padding: 11px 14px;
-  background: rgba(220,38,38,0.15);
-  color: #f87171;
-  border: 1.5px solid rgba(220,38,38,0.3);
+  background: rgba(196,64,48,0.12);
+  color: #c44030;
+  border: 1.5px solid rgba(196,64,48,0.3);
   border-radius: 8px;
   font-weight: 700;
   font-size: 0.85rem;
@@ -223,9 +223,9 @@
 .passBtn {
   flex: 1;
   padding: 11px 14px;
-  background: rgba(245,158,11,0.15);
-  color: #fbbf24;
-  border: 1.5px solid rgba(245,158,11,0.35);
+  background: rgba(207,154,50,0.15);
+  color: #b88020;
+  border: 1.5px solid rgba(207,154,50,0.4);
   border-radius: 8px;
   font-weight: 800;
   font-size: 0.88rem;
@@ -237,16 +237,16 @@
 .solveBtn {
   flex: 1;
   padding: 11px 14px;
-  background: rgba(34,197,94,0.15);
-  color: #4ade80;
-  border: 1.5px solid rgba(34,197,94,0.35);
+  background: rgba(58,120,48,0.15);
+  color: #3a7830;
+  border: 1.5px solid rgba(58,120,48,0.4);
   border-radius: 8px;
   font-weight: 800;
   font-size: 0.88rem;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 0 12px rgba(34,197,94,0.15);
+  box-shadow: 0 0 12px rgba(58,120,48,0.15);
 }
 
 .failBtn {
@@ -266,9 +266,9 @@
 /* Penalty note */
 .penalty {
   font-size: 0.78rem;
-  color: #fbbf24;
-  background: rgba(220,38,38,0.1);
-  border: 1px solid rgba(220,38,38,0.25);
+  color: #b88020;
+  background: rgba(196,64,48,0.08);
+  border: 1px solid rgba(196,64,48,0.2);
   border-radius: 6px;
   padding: 8px 12px;
 }

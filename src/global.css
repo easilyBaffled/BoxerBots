@@ -3,23 +3,23 @@
 }
 
 :root {
-  --color-red:    #ef4444;
-  --color-blue:   #60a5fa;
-  --color-green:  #4ade80;
-  --color-yellow: #fbbf24;
+  --color-red:    #c44030;
+  --color-blue:   #3a6898;
+  --color-green:  #3a7830;
+  --color-yellow: #b88020;
 
-  --accent:       #f59e0b;
-  --accent-light: rgba(245, 158, 11, 0.18);
+  --accent:       #cf9a32;
+  --accent-light: rgba(207, 154, 50, 0.20);
 
-  --surface:       #0b111e;
-  --surface-2:     #111827;
-  --surface-hover: #1e2d42;
-  --card-bg:       #141c2e;
-  --border:        #1e3050;
+  --surface:       #e7d9b8;
+  --surface-2:     #d8c9a0;
+  --surface-hover: #ccbc8a;
+  --card-bg:       #f0e9d5;
+  --border:        #a89060;
 
-  --text-primary:   #dce8f4;
-  --text-secondary: #7a9ab8;
-  --text-muted:     #3d5a7a;
+  --text-primary:   #332f28;
+  --text-secondary: #5a4830;
+  --text-muted:     #8a7050;
 
   font-family: 'Barlow Semi Condensed', system-ui, sans-serif;
   font-size: 16px;

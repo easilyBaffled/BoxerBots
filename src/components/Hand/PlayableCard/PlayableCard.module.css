@@ -18,7 +18,7 @@
 
 .clickable:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 6px 20px rgba(51,47,40,0.25);
 }
 
 .selected {
@@ -27,8 +27,8 @@
 }
 
 .committed {
-  border-color: #22c55e;
-  box-shadow: 0 0 0 2px rgba(34,197,94,0.25), 0 0 12px rgba(34,197,94,0.2);
+  border-color: #3a7830;
+  box-shadow: 0 0 0 2px rgba(58,120,48,0.25), 0 0 12px rgba(58,120,48,0.2);
   transform: translateY(-4px);
 }
 
@@ -48,7 +48,7 @@
 .cost {
   font-size: 0.7rem;
   font-weight: 700;
-  background: rgba(245,158,11,0.15);
+  background: rgba(207,154,50,0.15);
   color: var(--accent);
   padding: 1px 5px;
   border-radius: 4px;
@@ -70,7 +70,7 @@
 .stat {
   font-size: 0.66rem;
   font-weight: 700;
-  background: rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.08);
   padding: 1px 4px;
   border-radius: 3px;
   color: var(--text-primary);
@@ -80,7 +80,7 @@
   font-size: 0.66rem;
   color: var(--text-secondary);
   line-height: 1.3;
-  border-top: 1px solid rgba(255,255,255,0.07);
+  border-top: 1px solid rgba(0,0,0,0.1);
   padding-top: 3px;
   margin-top: 2px;
 }
