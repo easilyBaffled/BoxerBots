@@ -1,7 +1,8 @@
 .card {
   border-radius: 8px;
   padding: 8px;
-  border: 2px solid transparent;
+  border: 1.5px solid var(--border);
+  background: var(--card-bg);
   min-width: 100px;
   max-width: 120px;
   font-size: 0.78rem;
@@ -11,6 +12,11 @@
   transition: transform 0.1s, border-color 0.15s, box-shadow 0.15s;
   user-select: none;
 }
+
+/* Category identity — colored left stripe + very subtle tint */
+.tool    { border-left: 3px solid #b87030; background: linear-gradient(135deg, rgba(184,112,48,0.07) 0%, var(--card-bg) 50%); }
+.utility { border-left: 3px solid #487040; background: linear-gradient(135deg, rgba(72,112,64,0.07)  0%, var(--card-bg) 50%); }
+.skill   { border-left: 3px solid #7040a0; background: linear-gradient(135deg, rgba(112,64,160,0.07) 0%, var(--card-bg) 50%); }
 
 .clickable {
   cursor: pointer;
@@ -43,7 +49,21 @@
   align-items: center;
 }
 
-.category { font-size: 0.9rem; }
+.categoryLine {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.categoryIcon { font-size: 0.9rem; }
+
+.categoryLabel {
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 
 .cost {
   font-size: 0.7rem;

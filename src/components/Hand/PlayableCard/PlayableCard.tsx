@@ -1,16 +1,16 @@
 import type { PlayerCard } from '../../../types/cards';
 import styles from './PlayableCard.module.css';
 
-const CATEGORY_COLORS = {
-  tool: '#0f1e36',
-  utility: '#0d1f18',
-  skill: '#1a1030',
-};
-
-const CATEGORY_ICONS = {
+const CATEGORY_ICONS: Record<string, string> = {
   tool: '🔧',
   utility: '🎒',
   skill: '⭐',
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  tool: 'Tool',
+  utility: 'Utility',
+  skill: 'Skill',
 };
 
 interface Props {
@@ -28,12 +28,14 @@ export function PlayableCard({ card, onClick, selected, committed, dimmed, showC
 
   return (
     <div
-      className={`${styles.card} ${selected ? styles.selected : ''} ${committed ? styles.committed : ''} ${dimmed ? styles.dimmed : ''} ${onClick ? styles.clickable : ''}`}
-      style={{ background: CATEGORY_COLORS[card.category] }}
+      className={`${styles.card} ${styles[card.category] ?? ''} ${selected ? styles.selected : ''} ${committed ? styles.committed : ''} ${dimmed ? styles.dimmed : ''} ${onClick ? styles.clickable : ''}`}
       onClick={onClick}
     >
       <div className={styles.header}>
-        <span className={styles.category}>{CATEGORY_ICONS[card.category]}</span>
+        <div className={styles.categoryLine}>
+          <span className={styles.categoryIcon}>{CATEGORY_ICONS[card.category]}</span>
+          <span className={styles.categoryLabel}>{CATEGORY_LABELS[card.category]}</span>
+        </div>
         {showCost && <span className={styles.cost}>{card.cost}g</span>}
       </div>
       <div className={styles.name}>{card.name}</div>
